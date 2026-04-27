@@ -1,190 +1,185 @@
 <!doctype html>
 <html lang="pt-BR" class="h-full">
- <head>
+<head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ACS Conecta</title>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="estilo.css">
-  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
-  <script src="/_sdk/element_sdk.js" type="text/javascript"></script>
- </head>
- <body class="h-full bg-slate-50">
-  <div id="app" class="h-full w-full flex"><!-- Sidebar -->
-   <aside class="w-64 bg-slate-900 text-white p-6 hidden md:flex flex-col flex-shrink-0">
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    /* Esconder scrollbar mas manter funcionalidade */
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
+</head>
+<body class="h-full bg-slate-50 flex flex-col md:flex-row overflow-hidden">
+
+  <aside class="w-64 bg-slate-900 text-white p-6 hidden md:flex flex-col flex-shrink-0">
     <div class="flex items-center gap-3 mb-8">
-     <div class="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center"><i data-lucide="heart-pulse" style="width:20px;height:20px;"></i>
-     </div><span class="font-700 text-lg">ACS Conecta</span>
+      <div class="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center">
+        <i data-lucide="heart-pulse" class="text-white" style="width:20px;height:20px;"></i>
+      </div>
+      <span class="font-700 text-lg">ACS Conecta</span>
     </div>
-    <nav class="space-y-2 flex-1"><a href="#home" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left hover:bg-slate-800 transition-colors bg-slate-800"> <i data-lucide="layout-dashboard" style="width:18px;height:18px;"></i> Início </a> <a href="#families" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left hover:bg-slate-800 transition-colors"> <i data-lucide="users" style="width:18px;height:18px;"></i> Famílias </a> <a href="#appointments" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left hover:bg-slate-800 transition-colors"> <i data-lucide="calendar" style="width:18px;height:18px;"></i> Consultas </a> <a href="#visits" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left hover:bg-slate-800 transition-colors"> <i data-lucide="home" style="width:18px;height:18px;"></i> Visitas </a>
+    <nav class="space-y-2 flex-1">
+      <a href="#home" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left hover:bg-slate-800 transition-colors">
+        <i data-lucide="layout-dashboard" style="width:18px;height:18px;"></i> Início
+      </a>
+      <a href="#families" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left hover:bg-slate-800 transition-colors">
+        <i data-lucide="users" style="width:18px;height:18px;"></i> Famílias
+      </a>
+      <a href="#appointments" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left hover:bg-slate-800 transition-colors">
+        <i data-lucide="calendar" style="width:18px;height:18px;"></i> Consultas
+      </a>
+      <a href="#visits" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left hover:bg-slate-800 transition-colors">
+        <i data-lucide="home" style="width:18px;height:18px;"></i> Visitas
+      </a>
     </nav>
-    <div class="border-t border-slate-700 pt-4 space-y-4">
-     <div>
+    <div class="border-t border-slate-700 pt-4">
       <p class="text-sm text-slate-400">Ana Silva</p>
-      <p class="text-xs text-slate-500 mt-1">Agente Comunitária</p>
-     </div><button onclick="handleLogout()" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left bg-red-600/20 hover:bg-red-600/30 text-red-400 hover:text-red-300 transition-colors font-600 text-sm"> <i data-lucide="log-out" style="width:18px;height:18px;"></i> Sair </button>
+      <button onclick="handleLogout()" class="w-full mt-4 flex items-center gap-3 px-4 py-3 rounded-xl bg-red-600/20 text-red-400 hover:bg-red-600/30 transition-colors font-600 text-sm">
+        <i data-lucide="log-out" style="width:18px;height:18px;"></i> Sair
+      </button>
     </div>
-   </aside><!-- Main Content -->
-   <main class="flex-1 overflow-auto">
-    <div class="p-6 md:p-8 max-w-6xl"><!-- HOME -->
-     <div id="home">
-      <h2 class="text-3xl font-800 text-slate-800 mb-2">Bem-vindo(a), Ana!</h2>
-      <p class="text-slate-500 mb-8">Aqui está o resumo da sua área de atuação.</p>
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-       <div class="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm">
-        <div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center mb-3"><i data-lucide="users" class="text-blue-600" style="width:20px;height:20px;"></i>
-        </div>
-        <p class="text-2xl font-700 text-slate-800">18</p>
-        <p class="text-sm text-slate-500">Famílias cadastradas</p>
-       </div>
-       <div class="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm">
-        <div class="w-10 h-10 bg-amber-100 rounded-xl flex items-center justify-center mb-3"><i data-lucide="calendar" class="text-amber-600" style="width:20px;height:20px;"></i>
-        </div>
-        <p class="text-2xl font-700 text-slate-800">7</p>
-        <p class="text-sm text-slate-500">Consultas agendadas</p>
-       </div>
-       <div class="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm">
-        <div class="w-10 h-10 bg-emerald-100 rounded-xl flex items-center justify-center mb-3"><i data-lucide="home" class="text-emerald-600" style="width:20px;height:20px;"></i>
-        </div>
-        <p class="text-2xl font-700 text-slate-800">12</p>
-        <p class="text-sm text-slate-500">Visitas realizadas</p>
-       </div>
+  </aside>
+
+  <header class="md:hidden bg-slate-900 text-white p-4 flex items-center justify-between shadow-lg">
+    <div class="flex items-center gap-2">
+      <div class="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center">
+        <i data-lucide="heart-pulse" class="text-white" style="width:16px;height:16px;"></i>
       </div>
-      <div class="bg-white rounded-2xl p-6 border border-slate-100">
-       <h3 class="font-700 text-slate-800 mb-4">Ações rápidas</h3>
-       <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        <div class="flex items-center gap-3 p-4 bg-blue-50 rounded-xl cursor-pointer hover:bg-blue-100 transition-colors"><i data-lucide="user-plus" class="text-blue-600" style="width:20px;height:20px;"></i> <span class="text-sm font-600 text-blue-800">Cadastrar família</span>
-        </div>
-        <div class="flex items-center gap-3 p-4 bg-amber-50 rounded-xl cursor-pointer hover:bg-amber-100 transition-colors"><i data-lucide="calendar-plus" class="text-amber-600" style="width:20px;height:20px;"></i> <span class="text-sm font-600 text-amber-800">Agendar consulta</span>
-        </div>
-        <div class="flex items-center gap-3 p-4 bg-emerald-50 rounded-xl cursor-pointer hover:bg-emerald-100 transition-colors"><i data-lucide="clipboard-plus" class="text-emerald-600" style="width:20px;height:20px;"></i> <span class="text-sm font-600 text-emerald-800">Registrar visita</span>
-        </div>
-       </div>
-      </div>
-     </div><!-- FAMILIES -->
-     <div id="families" class="hidden">
-      <div class="flex items-center justify-between mb-6">
-       <h2 class="text-3xl font-800 text-slate-800">Famílias Cadastradas</h2><button class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl font-600 text-sm flex items-center gap-2 transition-colors"> <i data-lucide="plus" style="width:16px;height:16px;"></i> Nova Família </button>
-      </div>
-      <div class="space-y-3">
-       <div class="bg-white rounded-xl p-4 border border-slate-100 flex items-center justify-between">
-        <div>
-         <p class="font-600 text-slate-800">Silva Santos</p>
-         <p class="text-sm text-slate-500">Rua das Flores, 123 • 5 membro(s)</p>
-         <p class="text-xs text-slate-400">(21) 98765-4321</p>
-        </div><button class="text-red-400 hover:text-red-600 p-2"> <i data-lucide="trash-2" style="width:16px;height:16px;"></i> </button>
-       </div>
-       <div class="bg-white rounded-xl p-4 border border-slate-100 flex items-center justify-between">
-        <div>
-         <p class="font-600 text-slate-800">Maria Oliveira</p>
-         <p class="text-sm text-slate-500">Av. Principal, 456 • 3 membro(s)</p>
-         <p class="text-xs text-slate-400">(21) 99876-5432</p>
-        </div><button class="text-red-400 hover:text-red-600 p-2"> <i data-lucide="trash-2" style="width:16px;height:16px;"></i> </button>
-       </div>
-       <div class="bg-white rounded-xl p-4 border border-slate-100 flex items-center justify-between">
-        <div>
-         <p class="font-600 text-slate-800">José Pereira</p>
-         <p class="text-sm text-slate-500">Travessa do Comércio, 789 • 4 membro(s)</p>
-         <p class="text-xs text-slate-400">(21) 91234-5678</p>
-        </div><button class="text-red-400 hover:text-red-600 p-2"> <i data-lucide="trash-2" style="width:16px;height:16px;"></i> </button>
-       </div>
-      </div>
-     </div><!-- APPOINTMENTS -->
-     <div id="appointments" class="hidden">
-      <div class="flex items-center justify-between mb-6">
-       <h2 class="text-3xl font-800 text-slate-800">Consultas Agendadas</h2><button class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl font-600 text-sm flex items-center gap-2 transition-colors"> <i data-lucide="plus" style="width:16px;height:16px;"></i> Nova Consulta </button>
-      </div>
-      <div class="space-y-3">
-       <div class="bg-white rounded-xl p-4 border border-slate-100 flex items-center justify-between">
-        <div>
-         <p class="font-600 text-slate-800">Pedro Silva</p>
-         <p class="text-sm text-slate-500">Clínica Geral • 15/01/2024 às 10:30</p>
-        </div><button class="text-red-400 hover:text-red-600 p-2"> <i data-lucide="trash-2" style="width:16px;height:16px;"></i> </button>
-       </div>
-       <div class="bg-white rounded-xl p-4 border border-slate-100 flex items-center justify-between">
-        <div>
-         <p class="font-600 text-slate-800">Carla Santos</p>
-         <p class="text-sm text-slate-500">Pré-natal • 15/01/2024 às 14:00</p>
-        </div><button class="text-red-400 hover:text-red-600 p-2"> <i data-lucide="trash-2" style="width:16px;height:16px;"></i> </button>
-       </div>
-       <div class="bg-white rounded-xl p-4 border border-slate-100 flex items-center justify-between">
-        <div>
-         <p class="font-600 text-slate-800">Lucas Oliveira</p>
-         <p class="text-sm text-slate-500">Pediatria • 16/01/2024 às 09:00</p>
-        </div><button class="text-red-400 hover:text-red-600 p-2"> <i data-lucide="trash-2" style="width:16px;height:16px;"></i> </button>
-       </div>
-      </div>
-     </div><!-- VISITS -->
-     <div id="visits" class="hidden">
-      <div class="flex items-center justify-between mb-6">
-       <h2 class="text-3xl font-800 text-slate-800">Visitas Domiciliares</h2><button class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl font-600 text-sm flex items-center gap-2 transition-colors"> <i data-lucide="plus" style="width:16px;height:16px;"></i> Nova Visita </button>
-      </div>
-      <div class="space-y-3">
-       <div class="bg-white rounded-xl p-4 border border-slate-100 flex items-center justify-between">
-        <div>
-         <p class="font-600 text-slate-800">Silva Santos</p>
-         <p class="text-sm text-slate-500">14/01/2024 • Família apresenta bom estado geral</p>
-        </div>
-        <div class="flex items-center gap-2"><span class="text-xs px-2 py-1 rounded-full font-500 bg-green-100 text-green-700">Realizada</span> <button class="text-red-400 hover:text-red-600 p-2"> <i data-lucide="trash-2" style="width:16px;height:16px;"></i> </button>
-        </div>
-       </div>
-       <div class="bg-white rounded-xl p-4 border border-slate-100 flex items-center justify-between">
-        <div>
-         <p class="font-600 text-slate-800">Maria Oliveira</p>
-         <p class="text-sm text-slate-500">13/01/2024 • Acompanhamento de gestante</p>
-        </div>
-        <div class="flex items-center gap-2"><span class="text-xs px-2 py-1 rounded-full font-500 bg-green-100 text-green-700">Realizada</span> <button class="text-red-400 hover:text-red-600 p-2"> <i data-lucide="trash-2" style="width:16px;height:16px;"></i> </button>
-        </div>
-       </div>
-       <div class="bg-white rounded-xl p-4 border border-slate-100 flex items-center justify-between">
-        <div>
-         <p class="font-600 text-slate-800">José Pereira</p>
-         <p class="text-sm text-slate-500">12/01/2024 • Residência fechada</p>
-        </div>
-        <div class="flex items-center gap-2"><span class="text-xs px-2 py-1 rounded-full font-500 bg-red-100 text-red-700">Ausente</span> <button class="text-red-400 hover:text-red-600 p-2"> <i data-lucide="trash-2" style="width:16px;height:16px;"></i> </button>
-        </div>
-       </div>
-      </div>
-     </div>
+      <span class="font-700">ACS Conecta</span>
     </div>
-   </main>
-  </div>
+    <button onclick="handleLogout()" class="text-slate-400"><i data-lucide="log-out" style="width:20px;height:20px;"></i></button>
+  </header>
+
+  <main class="flex-1 overflow-y-auto no-scrollbar pb-24 md:pb-8">
+    <div class="p-4 md:p-8 max-w-6xl mx-auto">
+      
+      <section id="home" class="content-section">
+        <h2 class="text-2xl md:text-3xl font-800 text-slate-800 mb-1">Bem-vindo(a), Ana!</h2>
+        <p class="text-slate-500 mb-6 text-sm md:text-base">Resumo da sua área de atuação.</p>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+          <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm">
+            <div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center mb-3"><i data-lucide="users" class="text-blue-600"></i></div>
+            <p class="text-2xl font-700 text-slate-800">18</p>
+            <p class="text-xs text-slate-500 uppercase tracking-wider font-600">Famílias</p>
+          </div>
+          <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm">
+            <div class="w-10 h-10 bg-amber-100 rounded-xl flex items-center justify-center mb-3"><i data-lucide="calendar" class="text-amber-600"></i></div>
+            <p class="text-2xl font-700 text-slate-800">7</p>
+            <p class="text-xs text-slate-500 uppercase tracking-wider font-600">Consultas</p>
+          </div>
+          <div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm">
+            <div class="w-10 h-10 bg-emerald-100 rounded-xl flex items-center justify-center mb-3"><i data-lucide="home" class="text-emerald-600"></i></div>
+            <p class="text-2xl font-700 text-slate-800">12</p>
+            <p class="text-xs text-slate-500 uppercase tracking-wider font-600">Visitas</p>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 border border-slate-100">
+          <h3 class="font-700 text-slate-800 mb-4">Ações rápidas</h3>
+          <div class="grid grid-cols-1 gap-3">
+            <button class="flex items-center gap-3 p-4 bg-blue-50 rounded-xl hover:bg-blue-100 transition-colors text-left">
+              <i data-lucide="user-plus" class="text-blue-600"></i>
+              <span class="text-sm font-600 text-blue-800">Cadastrar nova família</span>
+            </button>
+            <button class="flex items-center gap-3 p-4 bg-amber-50 rounded-xl hover:bg-amber-100 transition-colors text-left">
+              <i data-lucide="calendar-plus" class="text-amber-600"></i>
+              <span class="text-sm font-600 text-amber-800">Agendar nova consulta</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section id="families" class="content-section hidden">
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-2xl font-800 text-slate-800">Famílias</h2>
+          <button class="bg-emerald-600 text-white p-2 rounded-lg"><i data-lucide="plus"></i></button>
+        </div>
+        <div class="space-y-3">
+            <div class="bg-white rounded-xl p-4 border border-slate-100 flex justify-between items-center">
+                <div>
+                    <p class="font-600 text-slate-800">Silva Santos</p>
+                    <p class="text-xs text-slate-500 italic">Rua das Flores, 123</p>
+                </div>
+                <i data-lucide="chevron-right" class="text-slate-300"></i>
+            </div>
+        </div>
+      </section>
+
+      <section id="appointments" class="content-section hidden">
+        <h2 class="text-2xl font-800 text-slate-800 mb-6">Consultas</h2>
+        <div class="bg-white rounded-xl p-8 text-center text-slate-400 border-2 border-dashed">
+            Nenhuma consulta para hoje.
+        </div>
+      </section>
+
+      <section id="visits" class="content-section hidden">
+        <h2 class="text-2xl font-800 text-slate-800 mb-6">Visitas</h2>
+        <p class="text-slate-500">Histórico de visitas domiciliares.</p>
+      </section>
+
+    </div>
+  </main>
+
+  <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-6 py-3 flex justify-between items-center z-50">
+    <a href="#home" class="mobile-nav-btn flex flex-col items-center gap-1 text-slate-400">
+      <i data-lucide="layout-dashboard" style="width:20px;height:20px;"></i>
+      <span class="text-[10px] font-600">Início</span>
+    </a>
+    <a href="#families" class="mobile-nav-btn flex flex-col items-center gap-1 text-slate-400">
+      <i data-lucide="users" style="width:20px;height:20px;"></i>
+      <span class="text-[10px] font-600">Famílias</span>
+    </a>
+    <a href="#appointments" class="mobile-nav-btn flex flex-col items-center gap-1 text-slate-400">
+      <i data-lucide="calendar" style="width:20px;height:20px;"></i>
+      <span class="text-[10px] font-600">Agenda</span>
+    </a>
+    <a href="#visits" class="mobile-nav-btn flex flex-col items-center gap-1 text-slate-400">
+      <i data-lucide="home" style="width:20px;height:20px;"></i>
+      <span class="text-[10px] font-600">Visitas</span>
+    </a>
+  </nav>
+
   <script>
-   function handleLogout() {
-    window.location.href = 'index.html';
-   }
-   
-   // Show/hide sections with hash links
-   window.addEventListener('load', () => {
-    const hash = window.location.hash.slice(1) || 'home';
-    document.querySelectorAll('div[id*="-"]').forEach(el => el.classList.add('hidden'));
-    const section = document.getElementById(hash);
-    if (section) section.classList.remove('hidden');
+    function handleLogout() {
+      if(confirm("Deseja sair do sistema?")) window.location.href = 'index.html';
+    }
 
-    // Update nav button styling
-    document.querySelectorAll('.nav-btn').forEach(btn => {
-     btn.classList.remove('bg-slate-800');
-     const href = btn.getAttribute('href').slice(1);
-     if (href === hash) btn.classList.add('bg-slate-800');
+    function updateNavigation() {
+      const hash = window.location.hash || '#home';
+      
+      // Esconder todas as seções
+      document.querySelectorAll('.content-section').forEach(section => {
+        section.classList.add('hidden');
+      });
+
+      // Mostrar seção atual
+      const activeSection = document.querySelector(hash);
+      if (activeSection) activeSection.classList.remove('hidden');
+
+      // Atualizar estilo dos botões (Desktop e Mobile)
+      const allBtns = document.querySelectorAll('.nav-btn, .mobile-nav-btn');
+      allBtns.forEach(btn => {
+        const isActive = btn.getAttribute('href') === hash;
+        if (btn.classList.contains('nav-btn')) {
+          btn.classList.toggle('bg-slate-800', isActive);
+        } else {
+          btn.classList.toggle('text-emerald-600', isActive);
+          btn.classList.toggle('text-slate-400', !isActive);
+        }
+      });
+    }
+
+    window.addEventListener('hashchange', updateNavigation);
+    window.addEventListener('load', () => {
+        updateNavigation();
+        lucide.createIcons();
     });
-   });
-
-   window.addEventListener('hashchange', () => {
-    const hash = window.location.hash.slice(1) || 'home';
-    document.querySelectorAll('div[id*="-"]').forEach(el => el.classList.add('hidden'));
-    const section = document.getElementById(hash);
-    if (section) section.classList.remove('hidden');
-
-    document.querySelectorAll('.nav-btn').forEach(btn => {
-     btn.classList.remove('bg-slate-800');
-     const href = btn.getAttribute('href').slice(1);
-     if (href === hash) btn.classList.add('bg-slate-800');
-    });
-   });
-
-   lucide.createIcons();
   </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9ef808dfc771e2d0',t:'MTc3NjcyODg1Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>

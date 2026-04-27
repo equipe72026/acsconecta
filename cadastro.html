@@ -31,7 +31,7 @@
        Campo obrigatório
       </div>
      </div><!-- Sexo -->
-     <div><label for="gender" class="block text-sm font-600 text-slate-200 mb-2">Sexo *</label> <select id="gender" class="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent" required> <option value="">Selecione o sexo</option> <option value="M">Masculino</option> <option value="F">Feminino</option> <option value="O">Outro</option> </select>
+     <div><label for="gender" class="block text-sm font-600 text-slate-200 mb-2">Sexo *</label> <select id="gender" class="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent" required> <option class="text-black">Selecione o sexo</option> <option class="text-black" value="M">Masculino</option> <option class="text-black" value="F">Feminino</option> <option class="text-black" value="O">Outro</option> </select>
       <div class="error-message">
        Campo obrigatório
       </div>
@@ -61,6 +61,35 @@
      <div><label for="confirmPassword" class="block text-sm font-600 text-slate-200 mb-2">Confirmar Senha *</label> <input type="password" id="confirmPassword" placeholder="Confirme sua senha" class="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent" required>
       <div class="error-message">
        As senhas devem ser iguais
+      </div>
+      <div>
+        <label for="unit" class="block text-sm font-600 text-slate-200 mb-2">Unidade de Saúde *</label>
+        <select id="unit" class="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent" required>
+          <option value="" class="text-black">Selecione uma unidade</option>
+          
+          <optgroup label="Centros Municipais de Saúde (CMS)" class="text-black">
+            <option value="CMS Adão Pereira Nunes" class="text-black">CMS Adão Pereira Nunes</option>
+            <option value="CMS Alvimar de Carvalho" class="text-black">CMS Alvimar de Carvalho</option>
+            <option value="CMS Belizário Penna" class="text-black">CMS Belizário Penna</option>
+            <option value="CMS Dr. Woodrow Pimentel Pantoja" class="text-black">CMS Dr. Woodrow Pimentel Pantoja</option>
+            <option value="CMS Manoel de Abreu" class="text-black">CMS Manoel de Abreu</option>
+            <option value="CMS Pedro Nava" class="text-black">CMS Pedro Nava</option>
+            <option value="CMS Professor Edgard Magalhães Gomes" class="text-black">CMS Professor Edgard Magalhães Gomes</option>
+            <option value="CMS Vila do Céu" class="text-black">CMS Vila do Céu</option>
+          </optgroup>
+      
+          <optgroup label="Clínicas da Família (CF)" class="text-black">
+            <option value="CF Agenor de Miranda Araújo Neto" class="text-black">CF Agenor de Miranda Araújo Neto</option>
+            <option value="CF Alkindar Soares Pereira Filho" class="text-black">CF Alkindar Soares Pereira Filho</option>
+            <option value="CF Antônio Gonçalves Villa Sobrinho" class="text-black">CF Antônio Gonçalves Villa Sobrinho</option>
+            <option value="CF Dr. Rogério Rocco" class="text-black">CF Dr. Rogério Rocco</option>
+            <option value="CF Edgard Ferreira do Amaral" class="text-black">CF Edgard Ferreira do Amaral</option>
+            <option value="CF Everton de Souza Santos" class="text-black">CF Everton de Souza Santos</option>
+            <option value="CF Medalhista Olímpico Bruno Schmidt" class="text-black">CF Medalhista Olímpico Bruno Schmidt</option>
+            <option value="CF Valdecir Salustiano Cardozo" class="text-black">CF Valdecir Salustiano Cardozo</option>
+          </optgroup>
+        </select>
+        <div class="error-message">Campo obrigatório</div>
       </div>
      </div><!-- Submit Button --> <button type="submit" class="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-700 transition-colors duration-200 transform hover:scale-105 mt-8"> Cadastrar </button>
     </form><!-- Login Link -->
