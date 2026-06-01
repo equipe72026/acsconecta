@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalhes da Família - SevenSys</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="areacas.css">
+    <style>
+        .container-detalhes { padding: 20px; max-width: 900px; margin: auto; }
+        .cabecalho-info { background: #f4f4f4; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 5px solid #2c3e50; }
+        
+        .membro-card { 
+            background: white; 
+            padding: 20px; 
+            margin-bottom: 15px; 
+            border-radius: 8px; 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1); 
+            border: 1px solid #eee;
+        }
+        
+        .membro-nome { color: #2980b9; font-size: 1.2em; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
+        .grid-info { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-bottom: 15px; }
+        
+        .info-label { font-weight: bold; color: #555; font-size: 0.9em; }
+        
+        /* Estilo das Tags de Saúde */
+        .tags-saude { display: flex; flex-wrap: wrap; gap: 8px; }
+        .tag { padding: 5px 12px; border-radius: 20px; font-size: 0.85em; font-weight: bold; color: white; }
+        .tag-hipertenso { background: #e67e22; } /* Laranja */
+        .tag-diabetico { background: #e74c3c; } /* Vermelho */
+        .tag-gestante { background: #9b59b6; }  /* Roxo */
+        .tag-vacina { background: #34495e; }    /* Cinza escuro */
+        .tag-normal { background: #27ae60; }    /* Verde */
+    </style>
+</head>
+<body>
+    <header class="topo-pagina">
+        <h2 class="titulo">Informações da Família</h2>
+        <a href="familiascadastradas.html" class="btn-voltar">← Voltar</a>
+    </header>
+
+    <main class="container-detalhes">
+        <div id="cabecalho-familia" class="cabecalho-info">
+            </div>
+
+        <h3>Membros da Família</h3>
+        <div id="lista-membros-completa">
+            </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const params = new URLSearchParams(window.location.search);
+            const idFamilia = params.get('id');
+            const loginAtivo = sessionStorage.getItem('loginUsuario');
+            
+            if (!loginAtivo) { window.location.href = "login.html"; return; }
+
+            // Busca a família específica no "banco" do usuário logado
+            const lista = JSON.parse(localStorage.getItem(loginAtivo + '_lista_familias') || "[]");
+            const familia = lista.find(f => f.id == idFamilia);
+
+            if (familia) {
+                // 1. Preenche o cabeçalho
+                document.getElementById('cabecalho-familia').innerHTML = `
+                    <p><strong>Endereço:</strong> ${familia.endereco}</p>
+                    <p><strong>Data do Cadastro:</strong> ${familia.data}</p>
+                    <p><strong>Total de Integrantes:</strong> ${familia.membros.length}</p>
+                `;
+
+                // 2. Renderiza todos os membros
+                const container = document.getElementById('lista-membros-completa');
+                familia.membros.forEach((m, index) => {
+                    const card = document.createElement('div');
+                    card.className = 'membro-card';
+                    
+                    // Lógica para as tags de saúde
+                    let tagsHTML = '';
+                    if (m.hipertenso) tagsHTML += '<span class="tag tag-hipertenso">Hipertenso</span>';
+                    if (m.diabetico) tagsHTML += '<span class="tag tag-diabetico">Diabético</span>';
+                    if (m.gestante) tagsHTML += '<span class="tag tag-gestante">Gestante</span>';
+                    if (m.vacina) tagsHTML += '<span class="tag tag-vacina">Vacina Atrasada</span>';
+                    
+                    // Se não tiver nada marcado, mostra "Sem observações"
+                    if (tagsHTML === '') tagsHTML = '<span class="tag tag-normal">Sem condições específicas</span>';
+
+                    card.innerHTML = `
+                        <div class="membro-nome">${index + 1}. ${m.nome}</div>
+                        <div class="grid-info">
+                            <div><span class="info-label">CPF:</span><br>${m.cpf || 'Não informado'}</div>
+                            <div><span class="info-label">Nascimento:</span><br>${m.nascimento}</div>
+                            <div><span class="info-label">Sexo:</span><br>${m.sexo === 'M' ? 'Masculino' : 'Feminino'}</div>
+                        </div>
+                        <div class="info-label" style="margin-bottom: 8px;">Condições de Saúde:</div>
+                        <div class="tags-saude">
+                            ${tagsHTML}
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+            } else {
+                document.getElementById('lista-membros-completa').innerHTML = "<p>Erro: Família não encontrada.</p>";
+            }
+        });
+    </script>
+</body>
+</html>

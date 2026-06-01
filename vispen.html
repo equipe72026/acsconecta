@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visitas Pendentes - Área ACS</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="areacas.css">
+    <style>
+        .container-listagem { padding: 20px; max-width: 900px; margin: auto; }
+        .alerta-topo {
+            background-color: #fcf8e3;
+            border: 1px solid #faebcc;
+            color: #8a6d3b;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+        .familia-item { 
+            background: white; 
+            padding: 20px; 
+            margin-bottom: 15px; 
+            border-radius: 8px; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border-left: 6px solid #e74c3c; /* Vermelho/Laranja para Pendente */
+        }
+        .info-principal { margin-bottom: 10px; }
+        .nome-familia { font-size: 1.2em; color: #2c3e50; display: block; }
+        .endereco-familia { color: #666; font-size: 0.9em; margin: 5px 0; }
+        .status-visita { color: #c0392b; font-size: 0.9em; font-weight: bold; }
+        
+        .btn-visitar {
+            display: inline-block;
+            background: #27ae60;
+            color: white;
+            text-decoration: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+        .btn-visitar:hover { background: #219150; }
+    </style>
+</head>
+<body>
+
+<header class="topo-pagina">
+    <a href="index.html"><img src="img/semfindo.png" alt="Logo" class="logo"></a>
+    <h2 class="titulo">Visitas Pendentes</h2>
+    <a href="acsarea.html" class="btn-voltar">← Voltar</a>
+</header>
+
+<main class="container-listagem">
+    <div class="alerta-topo" id="alertaContador">
+        <p>📊 Verificando pendências no sistema...</p>
+    </div>
+
+    <div id="listaPendentes">
+        </div>
+</main>
+
+<footer>
+    <p>© 2026 - SevenSys</p>
+</footer>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const loginAtivo = sessionStorage.getItem('loginUsuario');
+        
+        if (!loginAtivo) {
+            window.location.href = "login.html";
+            return;
+        }
+
+        const container = document.getElementById('listaPendentes');
+        const alertaTopo = document.getElementById('alertaContador');
+
+        // 1. Carrega as listas do LocalStorage baseadas no usuário logado
+        const listaFamilias = JSON.parse(localStorage.getItem(loginAtivo + '_lista_familias') || "[]");
+        const historicoVisitas = JSON.parse(localStorage.getItem(loginAtivo + '_historico_visitas') || "[]");
+
+        // 2. Filtra as famílias que NÃO possuem nenhuma visita registrada no histórico
+        // Usamos o endereço ou o id para cruzar os dados. Como o histórico usa 'nomeFamilia' e 'endereco', cruzaremos por eles.
+        const familiasPendentes = listaFamilias.filter(familia => {
+            // Verifica se existe alguma visita no histórico com o mesmo endereço ou primeiro membro correspondente
+            const jaFoiVisitada = historicoVisitas.some(visita => 
+                visita.endereco.trim().toLowerCase() === familia.endereco.trim().toLowerCase()
+            );
+            return !jaFoiVisitada; // Retorna true apenas se nunca tiver sido visitada
+        });
+
+        // 3. Atualiza a mensagem de alerta do topo com base no número real
+        if (familiasPendentes.length === 0) {
+            alertaTopo.className = "alerta-topo";
+            alertaTopo.style.backgroundColor = "#dff0d8";
+            alertaTopo.style.borderColor = "#d6e9c6";
+            alertaTopo.style.color = "#3c763d";
+            alertaTopo.innerHTML = `<p>✅ <strong>Excelente!</strong> Todas as famílias cadastradas já receberam visitas.</p>`;
+            
+            container.innerHTML = `
+                <div style="text-align:center; margin-top:50px; color:#666;">
+                    <p>Nenhuma visita pendente encontrada para as famílias atuais.</p>
+                </div>`;
+            return;
+        } else {
+            alertaTopo.innerHTML = `<p>⚠️ <strong>Atenção:</strong> Você possui <strong>${familiasPendentes.length}</strong> família(s) cadastrada(s) aguardando a primeira visita.</p>`;
+        }
+
+        // 4. Renderiza as famílias que faltam ser visitadas
+        container.innerHTML = "";
+        familiasPendentes.forEach(fam => {
+            const div = document.createElement('div');
+            div.className = 'familia-item';
+            div.innerHTML = `
+                <div class="familia-resumo">
+                    <div class="info-principal">
+                        <strong class="nome-familia">Responsável: ${fam.primeiroMembro}</strong>
+                        <p class="endereco-familia">📍 <strong>Endereço:</strong> ${fam.endereco}</p>
+                        <p class="status-visita">❌ Status: Nova família (Nenhuma visita realizada)</p>
+                    </div>
+                    <div class="acoes" style="margin-top: 10px;">
+                        <a href="visita.html?id=${fam.id}" class="btn-visitar">Realizar Visita</a>
+                    </div>
+                </div>
+            `;
+            container.appendChild(div);
+        });
+    });
+</script>
+
+</body>
+</html>

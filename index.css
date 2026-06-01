@@ -1,0 +1,129 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background-image: url("img/trasno.png");
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed; /* Mantém o fundo parado ao rolar */
+    background-repeat: no-repeat;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.titulo {
+    font-size: 1.8rem;
+    flex-grow: 1;
+    text-align: center;
+}
+
+.espacador { width: 100px; } /* Auxilia na centralização perfeita do título */
+
+/* CONTAINER PRINCIPAL */
+.container {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 40px;
+    padding: 50px 20px;
+}
+
+.img-lateral {
+    width: 280px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    transition: transform 0.3s;
+}
+
+.img-lateral:hover {
+    transform: scale(1.05);
+}
+
+/* BLOCO DE TEXTO */
+.texto {
+    max-width: 500px;
+    background-color: rgba(255, 255, 255, 0.92);
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+}
+
+.texto h2, .texto h3 {
+    color: rgb(16, 158, 163);
+    margin-bottom: 12px;
+}
+
+.texto p {
+    line-height: 1.6;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+/* LISTA */
+.lista {
+    list-style: none;
+    margin-bottom: 30px;
+}
+
+.lista li {
+    margin-bottom: 8px;
+    padding-left: 20px;
+    position: relative;
+}
+
+.lista li::before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    color: rgb(16, 158, 163);
+    font-weight: bold;
+}
+
+/* BOTÃO CENTRALIZADO */
+.container-botao {
+    text-align: center; /* Centraliza o botão dentro da div de texto */
+}
+
+.botaoacs {
+    display: inline-block;
+    text-decoration: none;
+    background-color: rgb(16, 158, 163);
+    color: white;
+    padding: 12px 30px;
+    border-radius: 50px;
+    font-weight: bold;
+    transition: background 0.3s;
+}
+
+.botaoacs:hover {
+    background-color: rgb(12, 120, 124);
+}
+
+/* FOOTER */
+footer {
+
+    color: white;
+    text-align: center;
+    padding: 15px;
+    margin-top: auto;
+}
+
+/* RESPONSIVO */
+@media (max-width: 1024px) {
+    .container {
+        flex-direction: column;
+    }
+    
+    .img-lateral {
+        width: 80%;
+        max-width: 300px;
+    }
+
+    .espacador { display: none; }
+}

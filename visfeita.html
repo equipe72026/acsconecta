@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Histórico de Visitas - Área ACS</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="areacas.css">
+    <style>
+        .container-listagem { padding: 20px; max-width: 900px; margin: auto; }
+        .busca-container { margin-bottom: 20px; }
+        #inputBusca { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ddd; }
+        
+        .familia-item { 
+            background: white; 
+            padding: 20px; 
+            margin-bottom: 15px; 
+            border-radius: 8px; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border-left: 6px solid #27ae60; /* Verde para visitas concluídas */
+        }
+        
+        .info-principal { margin-bottom: 10px; }
+        .nome-familia { font-size: 1.2em; color: #2c3e50; display: block; }
+        .endereco-familia { color: #666; font-size: 0.9em; margin: 5px 0; }
+        
+        .tag-data { 
+            background: #27ae60; 
+            color: white; 
+            padding: 3px 10px; 
+            border-radius: 12px; 
+            font-size: 0.8em; 
+            font-weight: bold;
+        }
+
+        .relatorio-box {
+            margin-top: 15px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            border: 1px dashed #ccc;
+            font-style: italic;
+            color: #444;
+        }
+        
+        .id-visit { color: #999; font-weight: bold; margin-right: 10px; }
+
+        /* Estilização das Ações adicionadas */
+        .acoes-visita {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn-editar {
+            background-color: #2980b9;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85em;
+        }
+
+        .btn-excluir {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85em;
+        }
+
+        .btn-editar:hover { background-color: #1f618d; }
+        .btn-excluir:hover { background-color: #c0392b; }
+    </style>
+</head>
+<body>
+
+<header class="topo-pagina">
+    <a href="index.html"><img src="img/semfindo.png" alt="Logo" class="logo"></a>
+    <h2 class="titulo">Histórico de Visitas Realizadas</h2>
+    <a href="acsarea.html" class="btn-voltar">← Voltar</a>
+</header>
+
+<main class="container-listagem">
+    <div class="busca-container">
+        <input type="text" id="inputBusca" placeholder="Buscar por família, endereço ou relatório..." onkeyup="filtrarVisitas()">
+    </div>
+
+    <div id="listaVisitas"></div>
+</main>
+
+<footer>
+    <p>© 2026 - SevenSys</p>
+</footer>
+
+<script>
+    const loginAtivo = sessionStorage.getItem('loginUsuario');
+    const chaveHistorico = loginAtivo + '_historico_visitas';
+
+    document.addEventListener('DOMContentLoaded', function() {
+        if (!loginAtivo) {
+            window.location.href = "login.html";
+            return;
+        }
+        renderizarVisitas();
+    });
+
+    function renderizarVisitas() {
+        const container = document.getElementById('listaVisitas');
+        const historico = JSON.parse(localStorage.getItem(chaveHistorico) || "[]");
+
+        if (historico.length === 0) {
+            container.innerHTML = `
+                <div style="text-align:center; margin-top:50px; color:#666;">
+                    <p>Nenhuma visita realizada por enquanto.</p>
+                </div>`;
+            return;
+        }
+
+        container.innerHTML = "";
+
+        // Mapeia mantendo o índice real do array original antes do reverse para as funções funcionarem corretamente
+        const historicoMapeado = historico.map((v, idx) => ({ ...v, indiceOriginal: idx }));
+        
+        // Inverte para exibir as mais recentes primeiro
+        historicoMapeado.reverse().forEach((v, index) => {
+            const div = document.createElement('div');
+            div.className = 'familia-item';
+            div.innerHTML = `
+                <div class="familia-resumo">
+                    <div class="info-principal">
+                        <span class="id-visit">#${historico.length - index}</span>
+                        <strong class="nome-familia">${v.nomeFamilia}</strong>
+                        <p class="endereco-familia">${v.endereco}</p>
+                    </div>
+                    <div class="info-indicadores">
+                        <span class="tag-data">Realizada em: ${v.dataVisita}</span>
+                    </div>
+                    <div class="relatorio-box">
+                        <strong>Relatório:</strong> "${v.relatorio}"
+                    </div>
+                    <div class="acoes-visita">
+                        <button class="btn-editar" onclick="editarRelatorio(${v.indiceOriginal})">Editar Relatório</button>
+                        <button class="btn-excluir" onclick="excluirVisita(${v.indiceOriginal})">Excluir Visita</button>
+                    </div>
+                </div>
+            `;
+            container.appendChild(div);
+        });
+    }
+
+    // Função para Editar o Relatório da Visita
+    function editarRelatorio(index) {
+        let historico = JSON.parse(localStorage.getItem(chaveHistorico) || "[]");
+        const novoRelatorio = prompt("Edite o relatório da visita domiciliar:", historico[index].relatorio);
+        
+        if (novoRelatorio !== null && novoRelatorio.trim() !== "") {
+            historico[index].relatorio = novoRelatorio.trim();
+            localStorage.setItem(chaveHistorico, JSON.stringify(historico));
+            renderizarVisitas();
+            alert("Relatório atualizado com sucesso!");
+        }
+    }
+
+    // Função para Excluir a Visita e devolver o status para "Pendente"
+    function excluirVisita(index) {
+        if (confirm("Deseja realmente excluir o registro desta visita? O painel de pendências e o somatório serão reajustados.")) {
+            let historico = JSON.parse(localStorage.getItem(chaveHistorico) || "[]");
+            
+            // Remove do array de histórico
+            historico.splice(index, 1);
+            localStorage.setItem(chaveHistorico, JSON.stringify(historico));
+
+            // Atualiza os contadores globais do Dashboard do ACS logado
+            let visitasFeitas = parseInt(localStorage.getItem(loginAtivo + '_totalVisitas') || 0);
+            let visitasPendentes = parseInt(localStorage.getItem(loginAtivo + '_totalPendentes') || 0);
+
+            if (visitasFeitas > 0) visitasFeitas--;
+            visitasPendentes++; // Volta a constar como uma visita pendente no sistema
+
+            localStorage.setItem(loginAtivo + '_totalVisitas', visitasFeitas);
+            localStorage.setItem(loginAtivo + '_totalPendentes', visitasPendentes);
+
+            // Recarrega os dados na tela
+            renderizarVisitas();
+            alert("Registro de visita excluído! A visita retornou para a lista de Pendentes.");
+        }
+    }
+
+    // Função de filtro em tempo real
+    function filtrarVisitas() {
+        const busca = document.getElementById('inputBusca').value.toLowerCase();
+        const itens = document.querySelectorAll('.familia-item');
+        
+        itens.forEach(item => {
+            const texto = item.innerText.toLowerCase();
+            item.style.display = texto.includes(busca) ? "block" : "none";
+        });
+    }
+</script>
+
+</body>
+</html>

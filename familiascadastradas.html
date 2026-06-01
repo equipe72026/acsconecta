@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Famílias Cadastradas</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="areacas.css">
+    <style>
+        .container-familias { padding: 20px; max-width: 800px; margin: auto; }
+        .familia-item { 
+            background: white; 
+            padding: 15px; 
+            margin-bottom: 15px; 
+            border-radius: 8px; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border-left: 5px solid #2c3e50;
+        }
+        .info-principal { font-weight: bold; font-size: 1.1em; color: #2c3e50; }
+        .detalhes { font-size: 0.9em; color: #666; margin: 10px 0; }
+        .acoes { display: flex; gap: 10px; flex-wrap: wrap; }
+        
+        /* Estilização dos Botões */
+        .btn-visita { background: #27ae60; color: white; border: none; padding: 8px 12px; cursor: pointer; border-radius: 4px; }
+        .btn-excluir { background: #c0392b; color: white; border: none; padding: 8px 12px; cursor: pointer; border-radius: 4px; }
+        .btn-detalhes { background: #2980b9; color: white; border: none; padding: 8px 12px; cursor: pointer; border-radius: 4px; }
+        
+        /* Modal de Detalhes */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; }
+        .modal-content { background: white; padding: 20px; border-radius: 8px; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto; }
+        .fechar-modal { background: #7f8c8d; color: white; border: none; padding: 8px 12px; cursor: pointer; border-radius: 4px; margin-top: 15px; }
+    </style>
+</head>
+<body>
+
+<header class="topo-pagina">
+    <a href="index.html"><img src="img/semfindo.png" alt="Logo" class="logo"></a>
+    <h2 class="titulo">Famílias Cadastradas</h2>
+    <a href="acsarea.html" class="btn-voltar">← Voltar</a>
+</header>
+
+<main class="container-familias">
+    <div id="listaFamilias">
+        </div>
+</main>
+
+<div id="modalDetalhes" class="modal">
+    <div class="modal-content">
+        <h3>Membros da Família</h3>
+        <div id="conteudoModal"></div>
+        <button class="fechar-modal" onclick="fecharModal()">Fechar</button>
+    </div>
+</div>
+
+<footer>
+    <p>© 2026 - SevenSys</p>
+</footer>
+
+<script>
+    const loginAtivo = sessionStorage.getItem('loginUsuario');
+
+    document.addEventListener('DOMContentLoaded', function() {
+        if (!loginAtivo) {
+            window.location.href = "login.html";
+            return;
+        }
+        renderizarLista();
+    });
+
+    function renderizarLista() {
+        const container = document.getElementById('listaFamilias');
+        const chaveLista = loginAtivo + '_lista_familias';
+        const lista = JSON.parse(localStorage.getItem(chaveLista) || "[]");
+
+        if (lista.length === 0) {
+            container.innerHTML = "<p style='text-align:center; color:#666;'>Nenhuma família cadastrada por este usuário.</p>";
+            return;
+        }
+
+        container.innerHTML = "";
+        lista.forEach((familia, index) => {
+            const div = document.createElement('div');
+            div.className = 'familia-item';
+            div.innerHTML = `
+                <div class="info-principal">Responsável: ${familia.primeiroMembro}</div>
+                <div class="detalhes">
+                    <strong>📍 Endereço:</strong> ${familia.endereco}<br>
+                    <strong>📅 Data de Cadastro:</strong> ${familia.data}<br>
+                    <strong>👥 Total de Membros:</strong> ${familia.membros ? familia.membros.length : 1}
+                </div>
+                <div class="acoes">
+                    <button class="btn-visita" onclick="fazerVisita(${familia.id})">Realizar Visita</button>
+                    <button class="btn-detalhes" onclick="verDetalhes(${familia.id})">Ver Integrantes</button>
+                    <button class="btn-excluir" onclick="excluirFamilia(${index})">Excluir Família</button>
+                </div>
+            `;
+            container.appendChild(div);
+        });
+    }
+
+    function excluirFamilia(index) {
+        if (confirm("Tem certeza que deseja excluir esta família? Esta ação não pode ser desfeita.")) {
+            let lista = JSON.parse(localStorage.getItem(loginAtivo + '_lista_familias') || "[]");
+            
+            lista.splice(index, 1);
+            localStorage.setItem(loginAtivo + '_lista_familias', JSON.stringify(lista));
+
+            let totalFamilias = parseInt(localStorage.getItem(loginAtivo + '_totalFamilias') || 0);
+            let totalPendentes = parseInt(localStorage.getItem(loginAtivo + '_totalPendentes') || 0);
+
+            if (totalFamilias > 0) totalFamilias--;
+            if (totalPendentes > 0) totalPendentes--;
+
+            localStorage.setItem(loginAtivo + '_totalFamilias', totalFamilias);
+            localStorage.setItem(loginAtivo + '_totalPendentes', totalPendentes);
+
+            renderizarLista();
+            alert("Família excluída e contadores atualizados!");
+        }
+    }
+
+    function fazerVisita(id) {
+        window.location.href = `visita.html?id=${id}`;
+    }
+
+    function verDetalhes(id) {
+        const lista = JSON.parse(localStorage.getItem(loginAtivo + '_lista_familias') || "[]");
+        const familia = lista.find(f => f.id === id);
+
+        if (!familia || !familia.membros) {
+            alert("Detalhes não encontrados.");
+            return;
+        }
+
+        const modalConteudo = document.getElementById('conteudoModal');
+        modalConteudo.innerHTML = "";
+
+        familia.membros.forEach((m, idx) => {
+            modalConteudo.innerHTML += `
+                <div style="border-bottom: 1px solid #eee; padding: 10px 0;">
+                    <strong>Membro ${idx + 1}:</strong> ${m.nome}<br>
+                    🎂 Nascimento: ${m.nascimento} | 🧑‍🤝‍🧑 Sexo: ${m.sexo}<br>
+                    🪪 CPF: ${m.cpf} | 📱 Cel: ${m.celular}<br>
+                    📌 Condições: ${[
+                        m.hipertenso ? "Hipertenso" : "",
+                        m.diabetico ? "Diabético" : "",
+                        m.gestante ? "Gestante" : "",
+                        m.vacina ? "Vacina Atrasada" : ""
+                    ].filter(Boolean).join(", ") || "Nenhuma"}
+                </div>
+            `;
+        });
+
+        document.getElementById('modalDetalhes').style.display = 'flex';
+    }
+
+    function fecharModal() {
+        document.getElementById('modalDetalhes').style.display = 'none';
+    }
+</script>
+</body>
+</html>

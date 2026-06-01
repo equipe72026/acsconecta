@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrar Visita Domiciliar</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="areacas.css">
+    <style>
+        .container-visita { padding: 20px; max-width: 600px; margin: auto; }
+        .box-info { background: #f8f9fa; padding: 15px; border-radius: 6px; margin-bottom: 20px; border: 1px solid #ddd; }
+        .campo-formulario { margin-bottom: 15px; display: flex; flex-direction: column; }
+        .campo-formulario label { font-weight: bold; margin-bottom: 5px; color: #2c3e50; }
+        .campo-formulario textarea { padding: 10px; border-radius: 4px; border: 1px solid #ccc; font-family: inherit; font-size: 1em; resize: vertical; }
+        .btn-salvar-visita { background: #27ae60; color: white; border: none; padding: 12px; font-size: 1em; font-weight: bold; cursor: pointer; border-radius: 4px; width: 100%; }
+        .btn-salvar-visita:hover { background: #219150; }
+    </style>
+</head>
+<body>
+
+<header class="topo-pagina">
+    <h2 class="titulo">Registrar Visita</h2>
+    <a href="vispen.html" class="btn-voltar">← Voltar</a>
+</header>
+
+<main class="container-visita">
+    <div class="box-info" id="dadosFamilia">
+        <p>Carregando dados da família...</p>
+    </div>
+
+    <form id="formRegistroVisita" onsubmit="event.preventDefault(); registrarVisita();">
+        <div class="campo-formulario">
+            <label for="relatorio">Relatório da Visita Domiciliar:</label>
+            <textarea id="relatorio" rows="6" placeholder="Descreva a situação de saúde encontrada, orientações passadas e observações importantes..." required></textarea>
+        </div>
+        <button type="submit" class="btn-salvar-visita">CONCLUIR E SALVAR VISITA</button>
+    </form>
+</main>
+
+<footer>
+    <p>© 2026 - SevenSys</p>
+</footer>
+
+<script>
+    const loginAtivo = sessionStorage.getItem('loginUsuario');
+    
+    // Captura os parâmetros passados na URL (?id=...)
+    const urlParams = new URLSearchParams(window.location.search);
+    const familiaId = urlParams.get('id');
+    
+    let familiaSelecionada = null;
+
+    document.addEventListener('DOMContentLoaded', function() {
+        if (!loginAtivo) { window.location.href = "login.html"; return; }
+        if (!familiaId) { alert("Nenhuma família especificada."); window.location.href = "vispen.html"; return; }
+
+        // Carrega a lista de famílias para puxar os dados visuais
+        const listaFamilias = JSON.parse(localStorage.getItem(loginAtivo + '_lista_familias') || "[]");
+        familiaSelecionada = listaFamilias.find(f => f.id == familiaId);
+
+        if (!familiaSelecionada) {
+            alert("Família não localizada.");
+            window.location.href = "vispen.html";
+            return;
+        }
+
+        // Exibe os dados da família na tela antes de digitar o relatório
+        document.getElementById('dadosFamilia').innerHTML = `
+            <strong>Responsável:</strong> ${familiaSelecionada.primeiroMembro}<br>
+            <strong>📍 Endereço:</strong> ${familiaSelecionada.endereco}
+        `;
+    });
+
+    function registrarVisita() {
+        const relatorioTexto = document.getElementById('relatorio').value;
+
+        // 1. Instancia o histórico de visitas do usuário ativo
+        const chaveHistorico = loginAtivo + '_historico_visitas';
+        let historico = JSON.parse(localStorage.getItem(chaveHistorico) || "[]");
+
+        // 2. Cria o novo objeto de visita realizada
+        const novaVisita = {
+            idVisita: Date.now(),
+            idFamilia: familiaSelecionada.id,
+            nomeFamilia: familiaSelecionada.primeiroMembro,
+            endereco: familiaSelecionada.endereco,
+            relatorio: relatorioTexto,
+            dataVisita: new Date().toLocaleDateString('pt-BR')
+        };
+
+        // 3. Adiciona ao histórico e salva
+        historico.push(novaVisita);
+        localStorage.setItem(chaveHistorico, JSON.stringify(historico));
+
+        // 4. ATUALIZAÇÃO DOS CONTADORES PARA O DASHBOARD (acsarea.html)
+        let totalVisitasFeitas = parseInt(localStorage.getItem(loginAtivo + '_totalVisitas') || 0);
+        let totalVisitasPendentes = parseInt(localStorage.getItem(loginAtivo + '_totalPendentes') || 0);
+
+        // Incrementa o número de visitas feitas
+        totalVisitasFeitas++;
+        
+        // Diminui de forma segura o número de visitas pendentes caso seja maior que zero
+        if (totalVisitasPendentes > 0) {
+            totalVisitasPendentes--;
+        }
+
+        // Devolve os dados corrigidos ao localStorage
+        localStorage.setItem(loginAtivo + '_totalVisitas', totalVisitasFeitas);
+        localStorage.setItem(loginAtivo + '_totalPendentes', totalVisitasPendentes);
+
+        // 5. Retorno de confirmação e redirecionamento
+        alert("Visita registrada com sucesso! Indicadores atualizados no painel.");
+        window.location.href = "visfeita.html"; // Direciona para o Histórico de Realizadas
+    }
+</script>
+</body>
+</html>

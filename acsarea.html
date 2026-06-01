@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel do Usuário</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="areacas.css">
+    <style>
+        .user-welcome {
+            color: #fff;
+            font-size: 1rem;
+            margin-left: 10px;
+            font-weight: normal;
+        }
+    </style>
+</head>
+<body>
+    <header class="topo-pagina">
+        <a href="index.html"><img src="img/semfindo.png" alt="Logo" class="logo"></a>
+        <h2 class="titulo">
+            Área ACS 
+            <span id="nome-exibicao" style="margin-left: 15px; color: rgb(0, 0, 0);"></span>
+        </h2>
+    </header>
+    
+    <div class="container">
+        <h1>Dashboard</h1>
+        <a href="cadfam.html"><input type="button" class="sairmenu" value="Cadastrar Familia"> </a>
+    </div>
+
+    <div class="cards">
+        <a href="familiascadastradas.html" class="card-link">
+            <div class="card">
+                <h3>Famílias cadastradas</h3>
+                <span id="count-familias" class="numero-exibicao">0</span>
+            </div>
+        </a>
+    
+        <a href="visfeita.html" class="card-link">
+            <div class="card">
+                <h3>Visitas feitas</h3>
+                <span id="count-visitas" class="numero-exibicao">0</span>
+            </div>
+        </a>
+    
+        <a href="vispen.html" class="card-link">
+            <div class="card">
+                <h3>Visitas pendentes</h3>
+                <span id="count-pendentes" class="numero-exibicao">0</span>
+            </div>
+        </a>
+    </div>
+
+    <a href="index.html" onclick="logout()"><input type="button" class="sairmenu" value="Sair"></a>
+
+    <footer>
+        <p>© 2026 - SevenSys</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const nomeSalvo = sessionStorage.getItem('nomeUsuario');
+            const loginSalvo = sessionStorage.getItem('loginUsuario'); // Pega o login (ex: acs1)
+
+            if (nomeSalvo && loginSalvo) {
+                document.getElementById('nome-exibicao').textContent = "| Bem-vindo, " + nomeSalvo;
+
+                // BUSCA DADOS INDIVIDUAIS: Usamos o login no nome da chave
+                const familias = localStorage.getItem(loginSalvo + '_totalFamilias') || 0;
+                const visitas = localStorage.getItem(loginSalvo + '_totalVisitas') || 0;
+                const pendentes = localStorage.getItem(loginSalvo + '_totalPendentes') || 0;
+
+                // Aplica na tela
+                document.getElementById('count-familias').textContent = familias;
+                document.getElementById('count-visitas').textContent = visitas;
+                document.getElementById('count-pendentes').textContent = pendentes;
+            } else {
+                window.location.href = "index.html"; 
+            }
+        });
+    
+        function logout() {
+            sessionStorage.removeItem('nomeUsuario');
+        }
+    </script>
+</body>
+</html>

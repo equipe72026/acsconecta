@@ -1,0 +1,233 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    background-image: url("img/trasno.png");
+}
+
+/* NAV - Ajustado para alinhar o botão voltar e o título */
+nav {
+    background-color: #109ea3;
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    gap: 20px; /* Espaço entre o botão e o título */
+}
+
+/* BOTÃO VOLTAR */
+.btn-voltar {
+    display: inline-block;
+    text-decoration: none;
+    background-color: rgb(16, 158, 163);
+    color: white;
+    padding: 12px 30px;
+    border-radius: 50px;
+    font-weight: bold;
+    transition: background 0.3s;
+}
+
+.btn-voltar:hover {
+    background-color: rgba(255, 255, 255, 0.4);
+    text-align: right;
+}
+
+/* CONTAINER */
+.container {
+    max-width: 1000px;
+    margin: 30px auto;
+    text-align: center;
+}
+
+/* GRID */
+.cards {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    max-width: 1000px;
+    margin: 0 auto 40px auto;
+    padding: 0 20px;
+}
+
+/* CARD INDIVIDUAL */
+.card {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    width: 220px;
+    text-align: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+    border-top: 6px solid #109ea3;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+}
+
+.card h3 {
+    margin: 0 0 15px 0;
+    color: #333;
+    font-size: 1.1rem;
+}
+
+/* NÚMERO DE EXIBIÇÃO DENTRO DO CARD */
+.numero-exibicao {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #109ea3;
+    display: block;
+}
+
+/* TOPO DA PÁGINA (HEADER) */
+.topo-pagina {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 40px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.logo {
+    height: 90px;
+    width: auto;
+}
+
+.titulo {
+    color: #109ea3;
+    margin: 0;
+    font-size: 1.8rem;
+    flex-grow: 1;
+    text-align: center;
+}
+
+/* LINKS DOS CARDS */
+.card-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* ==========================================================================
+   ESTILIZAÇÃO DOS BOTÕES MENU (CADASTRAR FAMÍLIA E SAIR)
+   ========================================================================== */
+
+/* Estilo Base para os inputs de botão */
+.sairmenu {
+    font-size: 1rem;
+    font-weight: bold;
+    padding: 14px 32px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    display: inline-block;
+    margin: 10px;
+}
+
+/* Botão Cadastrar Família (Especificidade pelo container ou ordem visual) */
+.container a .sairmenu {
+    background-color: #109ea3;
+    color: white;
+}
+
+.container a .sairmenu:hover {
+    background-color: #0b777a;
+    box-shadow: 0 5px 12px rgba(16, 158, 163, 0.3);
+    transform: translateY(-2px);
+}
+
+.container a .sairmenu:active {
+    transform: translateY(0);
+}
+
+/* Botão Sair (Posicionado isoladamente abaixo dos cards) */
+body > a .sairmenu {
+    background-color: #e74c3c;
+    color: white;
+    display: block;
+    width: max-content;
+    margin: 20px auto 40px auto; /* Centraliza horizontalmente na tela */
+}
+
+body > a .sairmenu:hover {
+    background-color: #c0392b;
+    box-shadow: 0 5px 12px rgba(231, 76, 60, 0.3);
+    transform: translateY(-2px);
+}
+
+body > a .sairmenu:active {
+    transform: translateY(0);
+}
+
+/* ==========================================================================
+   RODAPÉ
+   ========================================================================== */
+footer {
+    color: rgb(0, 0, 0);
+    text-align: center;
+    padding: 5px 0;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+
+footer p {
+    margin: 5px 0;
+    font-size: 0.9rem;
+}
+
+/* CLASSES DE SUPORTE */
+.full-width {
+    grid-column: 1 / -1;
+}
+
+.main-container {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Estilização focada no formulário e rodapé */
+.login-container {
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+}
+
+.login-form {
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 400px;
+}
+
+.input-group {
+    margin-bottom: 20px;
+}
+
+.input-group label {
+    display: block;
+    font-weight: bold;
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+    color: #444;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+    box-sizing: border-box; /* Evita que o input saia da caixa */
+    transition: border-color 0.3s;
+}
+
+.input-group input:focus {
+    border-color: #007bff;
+    outline: none;
+}

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel do Usuário</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="areacas.css">
+</head>
+<body>
+<header class="topo-pagina">
+    <a href="index.html"><img src="img/semfindo.png" alt="Logo" class="logo"></a>
+    <h2 class="titulo">Entre com suas credenciais</h2>
+</header>
+
+<main class="login-container">
+    <form id="loginForm" class="login-form">
+        <div class="input-group">
+            <label for="ilogin">Usuário</label>
+            <input type="text" name="login" id="ilogin" placeholder="Digite seu usuário" required>
+        </div>
+
+        <div class="input-group">
+            <label for="isenha">Senha</label>
+            <input type="password" name="senha" id="isenha" placeholder="••••••••" required>
+        </div>
+
+        <button type="submit" class="btn-entrar">Entrar no Sistema</button>
+        
+        <div class="form-footer">
+            <a href="recsenha.html" class="link-esqueceu">Esqueceu a senha? Clique aqui!</a>
+        </div>
+    </form>
+</main>
+
+<footer>
+    <p>© 2026 - SevenSys</p>
+</footer>
+
+<script>
+    const usuariosPermitidos = [
+        { login: "acs1", senha: "acs1", nome: "Pedro Henrique" },
+        { login: "acs2", senha: "acs2", nome: "Ana Beatriz" },
+        { login: "acs3", senha: "acs3", nome: "Carlos Eduardo" },
+        { login: "acs4", senha: "acs4", nome: "Mariana Silva" },
+        { login: "acs5", senha: "acs5", nome: "Ricardo Souza" }
+    ];
+
+    const form = document.getElementById('loginForm');
+
+    form.addEventListener('submit', function(event) {
+        event.preventDefault(); 
+
+        const loginInput = document.getElementById('ilogin').value;
+        const senhaInput = document.getElementById('isenha').value;
+
+        const usuarioEncontrado = usuariosPermitidos.find(u => u.login === loginInput && u.senha === senhaInput);
+
+        if (usuarioEncontrado) {
+            // SALVANDO OS DADOS NA SESSÃO
+            sessionStorage.setItem('nomeUsuario', usuarioEncontrado.nome);
+            sessionStorage.setItem('loginUsuario', usuarioEncontrado.login); // Essencial para o dashboard individual
+            
+            console.log("Acesso autorizado para:", usuarioEncontrado.login);
+
+            alert("Bem-vindo, " + usuarioEncontrado.nome + "!");
+            
+            // REDIRECIONAMENTO ÚNICO
+            window.location.href = "acsarea.html"; 
+        } else {
+            alert("Usuário ou senha incorretos.");
+        }
+    });
+</script>
+
+</body>
+</html>

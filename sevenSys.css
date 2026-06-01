@@ -1,0 +1,547 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    background-image: url("img/trasno.png");
+}
+
+/* NAV - Ajustado para alinhar o botão voltar e o título */
+nav {
+    background-color: #109ea3;
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    gap: 20px; /* Espaço entre o botão e o título */
+}
+
+/* BOTÃO VOLTAR */
+.btn-voltar {
+    display: inline-block;
+    text-decoration: none;
+    background-color: rgb(16, 158, 163);
+    color: white;
+    padding: 12px 30px;
+    border-radius: 50px;
+    font-weight: bold;
+    transition: background 0.3s;
+}
+
+.btn-voltar:hover {
+    background-color: rgba(255, 255, 255, 0.4);
+    text-align: right;
+}
+
+/* CONTAINER */
+.container {
+    max-width: 1000px;
+    margin: 30px auto;
+    text-align: center;
+}
+
+/* GRID */
+.cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+/* CARD LINK - Reset para o link não estragar o visual do card */
+.card-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    transition: transform 0.2s;
+}
+
+.card-link:hover {
+    transform: scale(1.02);
+}
+
+/* CARD */
+.card {
+    background-color: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    cursor: pointer;
+}
+
+/* INPUTS E NÚMEROS */
+.numero-exibicao {
+    display: block;
+    font-size: 24px;
+    font-weight: bold;
+    color: #109ea3;
+    margin-top: 10px;
+}
+
+/* Estilo para botões tipo "sairmenu" (usados no dashboard) */
+input[type="sairmenu"] {
+    font-size: 16px;
+    padding: 10px 20px;
+    border: none;
+    background-color: #109ea3;
+    color: white;
+    cursor: pointer;
+    border-radius: 5px;
+    text-align: center;
+    margin: 5px;
+}
+
+/* LISTAGEM DE FAMÍLIAS */
+.container-listagem {
+    max-width: 900px;
+    margin: 20px auto;
+    padding: 0 15px;
+}
+
+.familia-card {
+    background-color: #fff;
+    border: 1px solid #d1d9e0;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.familia-header {
+    border-bottom: 2px solid #f0f4f8;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.familia-info h2 {
+    margin: 0;
+    font-size: 1.2rem;
+    color: #2c3e50;
+}
+
+.numero-familia {
+    color: #007bff;
+    font-weight: bold;
+    margin-right: 5px;
+}
+
+.endereco-tag {
+    font-size: 0.9rem;
+    color: #666;
+    display: block;
+    margin-top: 4px;
+}
+
+.btn-visita {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 0.85rem;
+    transition: background 0.3s;
+}
+
+.btn-visita:hover {
+    background-color: #0056b3;
+}
+
+.tabela-membros {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+    margin-top: 10px;
+}
+
+.tabela-membros th {
+    text-align: left;
+    background-color: #f8f9fa;
+    padding: 8px;
+    border-bottom: 1px solid #ddd;
+}
+
+.tabela-membros td {
+    padding: 8px;
+    border-bottom: 1px solid #eee;
+}
+
+.footer-card {
+    margin-top: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f8f9fa;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.ultima-visita {
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: #28a745;
+}
+/* Estilos para a Listagem de Famílias */
+.busca-container {
+    margin-bottom: 25px;
+}
+
+.busca-container input {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.familia-item {
+    background: white;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    border-left: 6px solid #109ea3;
+}
+
+.familia-resumo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.info-principal {
+    flex: 2;
+}
+
+.id-familia {
+    font-size: 0.8rem;
+    color: #888;
+    display: block;
+}
+
+.nome-familia {
+    font-size: 1.2rem;
+    color: #333;
+}
+
+.endereco-familia {
+    margin: 5px 0 0;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+/* Tags de Indicadores */
+.info-indicadores {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+}
+
+.tag {
+    padding: 4px 10px;
+    border-radius: 15px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    color: white;
+}
+
+.idoso { background: #6f42c1; }
+.crianca { background: #fd7e14; }
+.gestante { background: #e83e8c; }
+.alerta { background: #dc3545; }
+.saude { background: #17a2b8; }
+
+.btn-detalhes {
+    background: #f8f9fa;
+    border: 1px solid #ddd;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-detalhes:hover {
+    background: #e2e6ea;
+    border-color: #adb5bd;
+}
+/* Estilos para Visitas Pendentes */
+.alerta-topo {
+    background-color: #fff3cd;
+    color: #856404;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #ffeeba;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* Card com atraso crítico (mais de 30 dias) */
+.pendente-atrasada {
+    border-left: 6px solid #dc3545 !important; /* Vermelho */
+    background-color: #fff5f5;
+}
+
+/* Card em alerta (perto de 30 dias) */
+.pendente-alerta {
+    border-left: 6px solid #ffc107 !important; /* Amarelo/Laranja */
+}
+
+.status-visita {
+    font-size: 0.85rem;
+    margin-top: 8px;
+    color: #555;
+}
+
+.btn-visitar {
+    display: inline-block;
+    background-color: #109ea3;
+    color: white;
+    text-decoration: none;
+    padding: 10px 18px;
+    border-radius: 5px;
+    font-weight: bold;
+    font-size: 0.9rem;
+    transition: background 0.3s;
+}
+
+.btn-visitar:hover {
+    background-color: #0d8387;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+/* Ajuste no familia-item que você já tem */
+.familia-item {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    border-left: 6px solid #ccc; /* Padrão cinza */
+}
+
+/* header topo de pagina*/
+.topo-pagina {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 40px;
+    color: rgb(16, 158, 163);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.logo {
+    width: 100px;
+}
+.titulo {
+    font-size: 1.8rem;
+    flex-grow: 1;
+    text-align: center;
+}
+body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background-image: url("img/trasno.png");
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed; /* Mantém o fundo parado ao rolar */
+    background-repeat: no-repeat;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+   /* Estilização focada no formulário e rodapé */
+   .login-container {
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+}
+
+.login-form {
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 400px;
+}
+
+.input-group {
+    margin-bottom: 20px;
+}
+
+.input-group label {
+    display: block;
+    font-weight: bold;
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+    color: #444;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+    box-sizing: border-box; /* Evita que o input saia da caixa */
+    transition: border-color 0.3s;
+}
+
+.input-group input:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+.btn-entrar {
+    width: 100%;
+    padding: 14px;
+    background-color: #109ea3;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.btn-entrar:hover {
+    background-color: #109ea3;
+}
+
+.form-footer {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.link-esqueceu {
+    color: #007bff;
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.link-esqueceu:hover {
+    text-decoration: underline;
+}
+
+footer {
+    color: rgb(83, 83, 83);
+    text-align: center;
+    padding: 15px;
+    margin-top: auto;
+}
+
+.body-index {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background-image: url("img/trasno.png");
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed; /* Mantém o fundo parado ao rolar */
+    background-repeat: no-repeat;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+
+
+.espacador-index{ width: 100px; } /* Auxilia na centralização perfeita do título */
+
+/* CONTAINER PRINCIPAL */
+.container-index{
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 40px;
+    padding: 50px 20px;
+}
+
+.img-lateral-index {
+    width: 280px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    transition: transform 0.3s;
+}
+
+.img-lateral-index:hover {
+    transform: scale(1.05);
+}
+
+/* BLOCO DE TEXTO */
+.texto-index {
+    max-width: 500px;
+    background-color: rgba(255, 255, 255, 0.92);
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+}
+
+.h-index {
+    color: rgb(16, 158, 163);
+    margin-bottom: 12px;
+}
+.texto-index p {
+    line-height: 1.6;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+/* LISTA */
+.lista-index {
+    list-style: none;
+    margin-bottom: 30px;
+}
+
+.lista-index li {
+    margin-bottom: 8px;
+    padding-left: 20px;
+    position: relative;
+}
+
+.lista-index li::before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    color: rgb(16, 158, 163);
+    font-weight: bold;
+}
+
+/* BOTÃO CENTRALIZADO */
+.container-botao-index {
+    text-align: center; /* Centraliza o botão dentro da div de texto */
+}
+
+.botaoacs {
+    display: inline-block;
+    text-decoration: none;
+    background-color: rgb(16, 158, 163);
+    color: white;
+    padding: 12px 30px;
+    border-radius: 50px;
+    font-weight: bold;
+    transition: background 0.3s;
+}
+
+.botaoacs:hover {
+    background-color: rgb(12, 120, 124);
+}
+
+
+/* RESPONSIVO */
+@media (max-width: 1024px) {
+    .container-index {
+        flex-direction: column;
+    }
+    
+    .img-lateral-index{
+        width: 80%;
+        max-width: 300px;
+    }
+
+    .espacador-index { display: none; }
+}

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro SevenSys</title>
+    <link rel="stylesheet" href="sobre.css">
+</head>
+<body>
+    <form>
+        
+    
+    <a href="index.html"><img src="img/semfindo.png" alt="Logo"></a>
+    <h1>Cadastro de usuário</h1>
+    
+    <h2> Preencha seus dados para criar sua conta </h2>
+    <fieldset>
+   <legend><h2>Informações do cadastro</h2></legend>
+    
+    <label for="inom"></label>
+    Nome completo: <input type="text" name="nom" id="inom" placeholder="Nome completo" minlength="15" maxlength="60" required>
+
+    <label for="dat"></label> 
+    <p>Data de Nascimento: <input type="date" name="data" id="dat"></p>
+
+<label for="sexo"></label>
+    <label> Sexo: <input type="radio" name="sexo" id="M">Masculino</label>
+    <label><input type="radio" name="sexo" id="F">Feminino</label>
+    <label><input type="radio" name="sexo" id="O"> Outro</label>
+<p>
+    <label for="nomp"> </label>
+     Nome do pai:<input type="text" name="inomp" id="nomp" placeholder="Nome do pai">
+    <label for="nomm"> </label>
+    Nome da mãe:<input type="text" name="inomm" id="nomm" placeholder="Nome da mãe">
+</p>
+
+<p>
+    <label for="cpf"></label>
+    CPF:
+    <input type="text" maxlength="14"
+    oninput="this.value = this.value
+    .replace(/\D/g, '')
+    .replace(/(\d{3})(\d)/, '$1.$2')
+    .replace(/(\d{3})(\d)/, '$1.$2')
+    .replace(/(\d{3})(\d{1,2})$/, '$1-$2')"
+    pattern="\d{3}\.\d{3}\.\d{3}-\d{2}" placeholder="xxx.xxx.xxx.xx" required>
+</p>
+
+<label for="tel"></label>
+<p>Telefone:  <input type="tel" name="itel" id="tel" placeholder="(+55) xx-xxxxx-xxxx" ></p>
+
+<label for="end"></label>
+Endereço: <input type="text" name="iend" id="end" placeholder="Digite seu endereço">
+<p><div>
+    <label for="inom"></label>
+    Unidade de Saúde
+    <select id="unit" class="uni" required>
+      <option value="" class="unid">Selecione uma unidade</option>
+      
+      <optgroup label="Centros Municipais de Saúde (CMS)" class="text-black">
+        <option value="CMS Adão Pereira Nunes" class="text-black">CMS Adão Pereira Nunes</option>
+        <option value="CMS Alvimar de Carvalho" class="text-black">CMS Alvimar de Carvalho</option>
+        <option value="CMS Belizário Penna" class="text-black">CMS Belizário Penna</option>
+        <option value="CMS Dr. Woodrow Pimentel Pantoja" class="text-black">CMS Dr. Woodrow Pimentel Pantoja</option>
+        <option value="CMS Manoel de Abreu" class="text-black">CMS Manoel de Abreu</option>
+        <option value="CMS Pedro Nava" class="text-black">CMS Pedro Nava</option>
+        <option value="CMS Professor Edgard Magalhães Gomes" class="text-black">CMS Professor Edgard Magalhães Gomes</option>
+        <option value="CMS Vila do Céu" class="text-black">CMS Vila do Céu</option>
+      </optgroup>
+  
+      <optgroup label="Clínicas da Família (CF)" class="text-black">
+        <option value="CF Agenor de Miranda Araújo Neto" class="text-black">CF Agenor de Miranda Araújo Neto</option>
+        <option value="CF Alkindar Soares Pereira Filho" class="text-black">CF Alkindar Soares Pereira Filho</option>
+        <option value="CF Antônio Gonçalves Villa Sobrinho" class="text-black">CF Antônio Gonçalves Villa Sobrinho</option>
+        <option value="CF Dr. Rogério Rocco" class="text-black">CF Dr. Rogério Rocco</option>
+        <option value="CF Edgard Ferreira do Amaral" class="text-black">CF Edgard Ferreira do Amaral</option>
+        <option value="CF Everton de Souza Santos" class="text-black">CF Everton de Souza Santos</option>
+        <option value="CF Medalhista Olímpico Bruno Schmidt" class="text-black">CF Medalhista Olímpico Bruno Schmidt</option>
+        <option value="CF Valdecir Salustiano Cardozo" class="text-black">CF Valdecir Salustiano Cardozo</option>
+      </optgroup>
+    </select>
+  </div>
+  </p>
+</fieldset>
+
+
+
+<p>
+    <fieldset>
+    <legend>
+     <h2>Dados de acesso</h2>
+     </legend> 
+</p>
+<label for="login"> </label>
+   Usuário: <input type="text" name="ilogin" id="login" placeholder="Escolha nome de usuário" maxlength="6" minlength="6" required>
+
+  <p> <label for="sen"></label>
+   Senha: <input type="password" name="isen" id="sen" placeholder="Digite uma senha" minlength="8">
+    Confirme sua Senha: <input type="password" name="isen" id="sen" placeholder="Repita a senha"></p>
+    </fieldset>
+    <p><a href="loginjorge.html"><input type="submit" value="Enviar"></a>
+    <input type="reset" value="Limpar"></p>
+    </form>
+    <br>
+<footer>
+  © 2026 - SevenSys
+</footer>
+
+    
+</body>
+</html>
