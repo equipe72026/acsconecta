@@ -231,3 +231,49 @@ footer p {
     border-color: #007bff;
     outline: none;
 }
+/* ==========================================================================
+   ESTILIZAÇÃO DO BOTÃO ENTRAR NO SISTEMA (TELA DE LOGIN)
+   ========================================================================== */
+
+   .btn-entrar {
+    background-color: #109ea3;
+    color: white;
+    font-size: 1.1rem;
+    font-weight: bold;
+    padding: 14px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    width: 100%; /* Ocupa toda a largura do formulário */
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    display: block;
+    margin: 20px 0 10px 0;
+    box-sizing: border-box; /* Garante que o padding não mude o tamanho final */
+}
+
+.btn-entrar:hover {
+    background-color: #0b777a;
+    box-shadow: 0 5px 12px rgba(16, 158, 163, 0.3);
+    transform: translateY(-2px); /* Efeito de elevação suave */
+}
+
+.btn-entrar:active {
+    transform: translateY(0); /* Volta ao normal ao clicar */
+}
+
+/* Ajuste opcional para o link "Esqueceu a senha?" que fica abaixo do botão */
+
+
+.link-esqueceu {
+    color: #109ea3;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.link-esqueceu:hover {
+    color: #0b777a;
+    text-decoration: underline;
+}

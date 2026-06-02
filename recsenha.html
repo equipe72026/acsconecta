@@ -3,23 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recuperar a senha</title>
+    <title>Recuperar Senha - SevenSys</title>
+    <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="areacas.css">
+    <style>
+        .container-recuperacao {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+            min-height: calc(100vh - 200px); /* Centraliza verticalmente na tela */
+            box-sizing: border-box;
+        }
 
+        .card-recuperacao {
+            background: #ffffff;
+            padding: 35px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+            border-top: 6px solid #109ea3;
+            box-sizing: border-box;
+        }
+
+        .card-recuperacao h3 {
+            color: #2c3e50;
+            font-size: 1.1rem;
+            line-height: 1.5;
+            margin-bottom: 25px;
+            font-weight: normal;
+        }
+
+        .form-grupo {
+            text-align: left;
+            margin-bottom: 20px;
+        }
+
+        .form-grupo label {
+            display: block;
+            font-weight: bold;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            color: #444;
+        }
+
+        .form-grupo input[type="email"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 1rem;
+            box-sizing: border-box;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .form-grupo input[type="email"]:focus {
+            border-color: #109ea3;
+            box-shadow: 0 0 5px rgba(16, 158, 163, 0.3);
+            outline: none;
+        }
+
+        /* Botão estilizado no padrão dos outros menus */
+        .btn-enviar {
+            background-color: #109ea3;
+            color: white;
+            font-size: 1rem;
+            font-weight: bold;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        .btn-enviar:hover {
+            background-color: #0b777a;
+            box-shadow: 0 5px 12px rgba(16, 158, 163, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .btn-enviar:active {
+            transform: translateY(0);
+        }
+
+        .link-voltar-login {
+            display: inline-block;
+            margin-top: 20px;
+            color: #109ea3;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: bold;
+            transition: color 0.2s;
+        }
+
+        .link-voltar-login:hover {
+            color: #0b777a;
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
+
     <header class="topo-pagina">
-    <a href="index.html"><img src="img/semfindo.png" alt="Logo" class="logo"></a></header>
-    <h3>Para recuperar a sua senha, digite o endereço<br> de email cadastrado que nós enviaremos um link para recuperar a senha. </h3>
- <form>
-    <label for="mail"> Email
-    </label>
-    <input type="email">
-    <input type="submit" value="Enviar">
- </form>
- <footer>
-    <p>© 2026 - SevenSys</p>
-</footer>
+        <a href="index.html"><img src="img/semfindo.png" alt="Logo" class="logo"></a>
+        <h2 class="titulo">Recuperação de Acesso</h2>
+        <a href="index.html" class="btn-voltar">← Voltar</a>
+    </header>
+
+    <main class="container-recuperacao">
+        <div class="card-recuperacao">
+            <h3>Para recuperar a sua senha, digite o endereço de e-mail cadastrado que nós enviaremos um link para redefinir sua credencial.</h3>
+            
+            <form onsubmit="event.preventDefault(); alert('Link de recuperação enviado se o e-mail constar na base!'); window.location.href='index.html';">
+                <div class="form-grupo">
+                    <label for="mail">E-mail Cadastrado:</label>
+                    <input type="email" id="mail" placeholder="exemplo@email.com" required>
+                </div>
+                
+                <input type="submit" class="btn-enviar" value="ENVIAR LINK DE RECUPERAÇÃO">
+            </form>
+
+            <a href="index.html" class="link-voltar-login">Voltar para a tela de login</a>
+        </div>
+    </main>
     
 </body>
 </html>
