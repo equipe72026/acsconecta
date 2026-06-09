@@ -6,6 +6,7 @@
     <title>Recuperar Senha - SevenSys</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="areacas.css">
+    <link rel="stylesheet" href="ui.css">
     <style>
         .container-recuperacao {
             display: flex;
@@ -108,6 +109,7 @@
     </style>
 </head>
 <body>
+    <script src="ui.js"></script>
 
     <header class="topo-pagina">
         <a href="index.html"><img src="img/semfindo.png" alt="Logo" class="logo"></a>
@@ -119,7 +121,7 @@
         <div class="card-recuperacao">
             <h3>Para recuperar a sua senha, digite o endereço de e-mail cadastrado que nós enviaremos um link para redefinir sua credencial.</h3>
             
-            <form onsubmit="event.preventDefault(); alert('Link de recuperação enviado se o e-mail constar na base!'); window.location.href='index.html';">
+            <form onsubmit="event.preventDefault(); showToast('info', 'Recuperação enviada', 'Link de recuperação enviado se o e-mail constar na base!'); setTimeout(() => window.location.href='index.html', 800);">
                 <div class="form-grupo">
                     <label for="mail">E-mail Cadastrado:</label>
                     <input type="email" id="mail" placeholder="exemplo@email.com" required>

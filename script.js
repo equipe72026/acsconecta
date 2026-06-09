@@ -71,5 +71,9 @@ function finalizarCadastro() {
     document.getElementById("res-idosos").innerText = totalIdosos;
     document.getElementById("res-criancas").innerText = totalCriancas;
 
-    alert("Dados da família salvos e processados com sucesso!");
+    if (typeof showToast === 'function') {
+        showToast('success', 'Dados salvos', 'Dados da família salvos e processados com sucesso!');
+    } else {
+        console.log('Dados da família salvos e processados com sucesso!');
+    }
 }

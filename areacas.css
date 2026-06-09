@@ -28,7 +28,7 @@ nav {
 }
 
 .btn-voltar:hover {
-    background-color: rgba(255, 255, 255, 0.4);
+    background-color: rgba(120, 140, 217, 0.4);
     text-align: right;
 }
 
@@ -276,4 +276,42 @@ footer p {
 .link-esqueceu:hover {
     color: #0b777a;
     text-decoration: underline;
+}
+
+/* Manager Access Section */
+.manager-access {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+    text-align: center;
+}
+
+.manager-text {
+    color: #666;
+    font-size: 0.85rem;
+    margin: 0 0 15px 0;
+    font-weight: 500;
+}
+
+.btn-manager {
+    display: inline-block;
+    background-color: #6c757d;
+    color: white;
+    text-decoration: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+}
+
+.btn-manager:hover {
+    background-color: #5a6268;
+    box-shadow: 0 5px 12px rgba(108, 117, 125, 0.3);
+    transform: translateY(-2px);
+}
+
+.btn-manager:active {
+    transform: translateY(0);
 }

@@ -6,11 +6,13 @@
     <title>Painel do Usuário</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="areacas.css">
+    <link rel="stylesheet" href="ui.css">
 </head>
 <body>
 <header class="topo-pagina">
     <a href="index.html"><img src="img/semfindo.png" alt="Logo" class="logo"></a>
     <h2 class="titulo">Entre com suas credenciais</h2>
+    <a href="index.html" class="btn-voltar">← Voltar</a>
 </header>
 
 <main class="login-container">
@@ -30,8 +32,127 @@
         <div class="form-footer">
             <a href="recsenha.html" class="link-esqueceu">Esqueceu a senha? Clique aqui!</a>
         </div>
+        
+        <div class="manager-access">
+            <p class="manager-text">Área exclusiva para Gerentes</p>
+            <button type="button" class="btn-manager" onclick="abrirModalGerente()">Painel do Gerente</button>
+        </div>
     </form>
 </main>
+
+<!-- Modal de verificação do Gerente -->
+<div id="modalGerente" style="
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    z-index: 999;
+    align-items: center;
+    justify-content: center;
+">
+    <div style="
+        background: white;
+        padding: 40px 36px 32px;
+        border-radius: 12px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+        text-align: center;
+        max-width: 380px;
+        width: 90%;
+        position: relative;
+    ">
+        <button onclick="fecharModalGerente()" style="
+            position: absolute;
+            top: 14px;
+            right: 16px;
+            background: none;
+            border: none;
+            font-size: 1.3rem;
+            cursor: pointer;
+            color: #888;
+            line-height: 1;
+        ">✕</button>
+
+        <div style="font-size: 2rem; margin-bottom: 10px;"></div>
+        <h2 style="color: #109ea3; margin-bottom: 8px; font-family: Arial, sans-serif; font-size: 1.2rem;">Verificação de Gerente</h2>
+        <p style="color: #666; margin-bottom: 24px; font-family: Arial, sans-serif; font-size: 0.9rem;">Por favor, identifique-se para continuar</p>
+
+        <div style="text-align: left; margin-bottom: 18px;">
+            <label for="senha_gerente_modal" style="display: block; margin-bottom: 6px; font-family: Arial, sans-serif; font-size: 0.9rem; color: #444; font-weight: 600;">Senha do Gerente:</label>
+            <input
+                type="password"
+                id="senha_gerente_modal"
+                placeholder="Digite a senha do gerente"
+                onkeypress="if(event.key==='Enter') verificarGerenteModal()"
+                style="
+                    width: 100%;
+                    padding: 11px 14px;
+                    border: 1.5px solid #ddd;
+                    border-radius: 7px;
+                    font-size: 0.95rem;
+                    font-family: Arial, sans-serif;
+                    outline: none;
+                    transition: border-color 0.2s;
+                "
+                onfocus="this.style.borderColor='#109ea3'"
+                onblur="this.style.borderColor='#ddd'"
+            >
+        </div>
+
+        <div id="erro_gerente_modal" style="color: #e74c3c; font-size: 0.85rem; margin-bottom: 12px; font-family: Arial, sans-serif; display: none;">
+            Senha incorreta! Acesso negado.
+        </div>
+
+        <button onclick="verificarGerenteModal()" style="
+            background: #109ea3;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 7px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            font-family: Arial, sans-serif;
+            width: 100%;
+            transition: background 0.2s;
+        "
+        onmouseover="this.style.background='#0d7a7e'"
+        onmouseout="this.style.background='#109ea3'"
+        >Verificar Acesso</button>
+    </div>
+</div>
+
+<script src="ui.js"></script>
+<script>
+    const SENHA_GERENTE = 'admin123';
+
+    function abrirModalGerente() {
+        document.getElementById('modalGerente').style.display = 'flex';
+        document.getElementById('senha_gerente_modal').value = '';
+        document.getElementById('erro_gerente_modal').style.display = 'none';
+        setTimeout(() => document.getElementById('senha_gerente_modal').focus(), 100);
+    }
+
+    function fecharModalGerente() {
+        document.getElementById('modalGerente').style.display = 'none';
+    }
+
+    function verificarGerenteModal() {
+        const senha = document.getElementById('senha_gerente_modal').value;
+        if (senha === SENHA_GERENTE) {
+            sessionStorage.setItem('gerenteAutenticado', 'true');
+            window.location.href = 'gerentedash.html';
+        } else {
+            document.getElementById('erro_gerente_modal').style.display = 'block';
+            document.getElementById('senha_gerente_modal').value = '';
+            document.getElementById('senha_gerente_modal').focus();
+        }
+    }
+
+    // Fechar modal ao clicar fora
+    document.getElementById('modalGerente').addEventListener('click', function(e) {
+        if (e.target === this) fecharModalGerente();
+    });
+</script>
 
 <script>
     const usuariosPermitidos = [
@@ -50,21 +171,30 @@
         const loginInput = document.getElementById('ilogin').value;
         const senhaInput = document.getElementById('isenha').value;
 
-        const usuarioEncontrado = usuariosPermitidos.find(u => u.login === loginInput && u.senha === senhaInput);
+        // Primeiro verificar se há usuários cadastrados no localStorage
+        const agentesCadastrados = JSON.parse(localStorage.getItem('agentesSaude') || '[]');
+        
+        let usuarioEncontrado = agentesCadastrados.find(u => u.usuario === loginInput && u.senha === senhaInput);
+
+        // Se não encontrar no localStorage, verificar na lista hardcoded
+        if (!usuarioEncontrado) {
+            usuarioEncontrado = usuariosPermitidos.find(u => u.login === loginInput && u.senha === senhaInput);
+        }
 
         if (usuarioEncontrado) {
             // SALVANDO OS DADOS NA SESSÃO
             sessionStorage.setItem('nomeUsuario', usuarioEncontrado.nome);
-            sessionStorage.setItem('loginUsuario', usuarioEncontrado.login); // Essencial para o dashboard individual
+            // Usar 'usuario' se for do localStorage, ou 'login' se for da lista hardcoded
+            sessionStorage.setItem('loginUsuario', usuarioEncontrado.usuario || usuarioEncontrado.login);
             
-            console.log("Acesso autorizado para:", usuarioEncontrado.login);
+            console.log("Acesso autorizado para:", usuarioEncontrado.usuario || usuarioEncontrado.login);
 
-            alert("Bem-vindo, " + usuarioEncontrado.nome + "!");
+            showToast('success', 'Bem-vindo', 'Olá, ' + usuarioEncontrado.nome + '!');
             
             // REDIRECIONAMENTO ÚNICO
-            window.location.href = "acsarea.html"; 
+            setTimeout(() => window.location.href = "acsarea.html", 700);
         } else {
-            alert("Usuário ou senha incorretos.");
+            showToast('error', 'Falha no login', 'Usuário ou senha incorretos.');
         }
     });
 </script>

@@ -30,8 +30,10 @@
         .modal-content { background: white; padding: 20px; border-radius: 8px; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto; }
         .fechar-modal { background: #7f8c8d; color: white; border: none; padding: 8px 12px; cursor: pointer; border-radius: 4px; margin-top: 15px; }
     </style>
+    <link rel="stylesheet" href="ui.css">
 </head>
 <body>
+    <script src="ui.js"></script>
 
 <header class="topo-pagina">
     <a href="index.html"><img src="img/semfindo.png" alt="Logo" class="logo"></a>
@@ -95,24 +97,31 @@
     }
 
     function excluirFamilia(index) {
-        if (confirm("Tem certeza que deseja excluir esta família? Esta ação não pode ser desfeita.")) {
-            let lista = JSON.parse(localStorage.getItem(loginAtivo + '_lista_familias') || "[]");
-            
-            lista.splice(index, 1);
-            localStorage.setItem(loginAtivo + '_lista_familias', JSON.stringify(lista));
+        ssConfirm({
+            titulo: 'Excluir família',
+            subtitulo: 'Esta ação não pode ser desfeita.',
+            mensagem: 'Deseja realmente excluir esta família do seu cadastro?',
+            tipo: 'danger',
+            textoBotao: 'Excluir',
+            onConfirm: function() {
+                let lista = JSON.parse(localStorage.getItem(loginAtivo + '_lista_familias') || "[]");
+                
+                lista.splice(index, 1);
+                localStorage.setItem(loginAtivo + '_lista_familias', JSON.stringify(lista));
 
-            let totalFamilias = parseInt(localStorage.getItem(loginAtivo + '_totalFamilias') || 0);
-            let totalPendentes = parseInt(localStorage.getItem(loginAtivo + '_totalPendentes') || 0);
+                let totalFamilias = parseInt(localStorage.getItem(loginAtivo + '_totalFamilias') || 0);
+                let totalPendentes = parseInt(localStorage.getItem(loginAtivo + '_totalPendentes') || 0);
 
-            if (totalFamilias > 0) totalFamilias--;
-            if (totalPendentes > 0) totalPendentes--;
+                if (totalFamilias > 0) totalFamilias--;
+                if (totalPendentes > 0) totalPendentes--;
 
-            localStorage.setItem(loginAtivo + '_totalFamilias', totalFamilias);
-            localStorage.setItem(loginAtivo + '_totalPendentes', totalPendentes);
+                localStorage.setItem(loginAtivo + '_totalFamilias', totalFamilias);
+                localStorage.setItem(loginAtivo + '_totalPendentes', totalPendentes);
 
-            renderizarLista();
-            alert("Família excluída e contadores atualizados!");
-        }
+                renderizarLista();
+                showToast('success', 'Exclusão concluída', 'Família excluída e contadores atualizados!');
+            }
+        });
     }
 
     function fazerVisita(id) {
@@ -124,7 +133,7 @@
         const familia = lista.find(f => f.id === id);
 
         if (!familia || !familia.membros) {
-            alert("Detalhes não encontrados.");
+            showToast('error', 'Detalhes não encontrados', 'Não foi possível localizar esta família.');
             return;
         }
 

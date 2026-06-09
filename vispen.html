@@ -6,6 +6,7 @@
     <title>Visitas Pendentes - Área ACS</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="areacas.css">
+    <link rel="stylesheet" href="ui.css">
     <style>
         .container-listagem { padding: 20px; max-width: 900px; margin: auto; }
         .alerta-topo {
@@ -78,11 +79,8 @@
         // 2. Filtra as famílias que NÃO possuem nenhuma visita registrada no histórico
         // Usamos o endereço ou o id para cruzar os dados. Como o histórico usa 'nomeFamilia' e 'endereco', cruzaremos por eles.
         const familiasPendentes = listaFamilias.filter(familia => {
-            // Verifica se existe alguma visita no histórico com o mesmo endereço ou primeiro membro correspondente
-            const jaFoiVisitada = historicoVisitas.some(visita => 
-                visita.endereco.trim().toLowerCase() === familia.endereco.trim().toLowerCase()
-            );
-            return !jaFoiVisitada; // Retorna true apenas se nunca tiver sido visitada
+            const jaFoiVisitada = historicoVisitas.some(visita => visita.idFamilia == familia.id);
+            return !jaFoiVisitada;
         });
 
         // 3. Atualiza a mensagem de alerta do topo com base no número real
@@ -123,6 +121,7 @@
         });
     });
 </script>
+<script src="ui.js"></script>
 
 </body>
 </html>

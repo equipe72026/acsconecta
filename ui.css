@@ -1,0 +1,239 @@
+/* ============================================================
+   SevenSys UI — Notificações e Modais
+   Inclua em todas as páginas: <link rel="stylesheet" href="ui.css">
+============================================================ */
+
+/* ---- TOAST CONTAINER ---- */
+#ss-toast-container {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none;
+}
+
+/* ---- TOAST INDIVIDUAL ---- */
+.ss-toast {
+    min-width: 280px;
+    max-width: 340px;
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.14);
+    border-left: 4px solid #109ea3;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px;
+    pointer-events: all;
+    position: relative;
+    overflow: hidden;
+    animation: ssToastIn 0.28s ease;
+}
+
+.ss-toast.ss-hiding {
+    animation: ssToastOut 0.28s ease forwards;
+}
+
+@keyframes ssToastIn {
+    from { opacity: 0; transform: translateX(40px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes ssToastOut {
+    from { opacity: 1; transform: translateX(0); max-height: 120px; }
+    to   { opacity: 0; transform: translateX(40px); max-height: 0; padding: 0; margin: 0; }
+}
+
+.ss-toast-icon {
+    font-size: 18px;
+    flex-shrink: 0;
+    margin-top: 1px;
+    font-style: normal;
+}
+
+.ss-toast-body {
+    flex: 1;
+}
+
+.ss-toast-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #2c3e50;
+    line-height: 1.3;
+    font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+.ss-toast-msg {
+    font-size: 12px;
+    color: #7f8c8d;
+    margin-top: 3px;
+    line-height: 1.4;
+    font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+.ss-toast-close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #aaa;
+    font-size: 18px;
+    padding: 0;
+    line-height: 1;
+    flex-shrink: 0;
+    transition: color 0.15s;
+    font-family: Arial, sans-serif;
+}
+
+.ss-toast-close:hover {
+    color: #2c3e50;
+}
+
+/* Barra de progresso */
+.ss-toast-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    width: 100%;
+    opacity: 0.3;
+    border-radius: 0 0 10px 10px;
+    animation: ssBarShrink linear forwards;
+}
+
+@keyframes ssBarShrink {
+    from { width: 100%; }
+    to   { width: 0; }
+}
+
+/* ---- MODAL OVERLAY ---- */
+#ss-modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 9000;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+#ss-modal-overlay.ss-open {
+    display: flex;
+}
+
+/* ---- MODAL BOX ---- */
+#ss-modal-box {
+    background: #ffffff;
+    border-radius: 14px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    transform: scale(0.95) translateY(12px);
+    opacity: 0;
+    transition: transform 0.22s ease, opacity 0.22s ease;
+    font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+#ss-modal-box.ss-open {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+}
+
+/* ---- MODAL HEADER ---- */
+#ss-modal-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 20px 20px 14px;
+    border-bottom: 1px solid #dde4e6;
+}
+
+#ss-modal-icon-wrap {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+}
+
+#ss-modal-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #2c3e50;
+    line-height: 1.3;
+}
+
+#ss-modal-subtitle {
+    font-size: 12px;
+    color: #7f8c8d;
+    margin-top: 2px;
+}
+
+/* ---- MODAL BODY ---- */
+#ss-modal-body {
+    padding: 16px 20px;
+    font-size: 13px;
+    color: #555;
+    line-height: 1.6;
+}
+
+/* ---- MODAL FOOTER ---- */
+#ss-modal-footer {
+    padding: 12px 20px 18px;
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+#ss-modal-cancel {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 9px 20px;
+    border-radius: 8px;
+    border: 1.5px solid #dde4e6;
+    background: transparent;
+    color: #2c3e50;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+#ss-modal-cancel:hover {
+    background: #f5f5f5;
+}
+
+#ss-modal-confirm {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 9px 20px;
+    border-radius: 8px;
+    border: none;
+    color: #ffffff;
+    cursor: pointer;
+    transition: opacity 0.15s, transform 0.1s;
+}
+
+#ss-modal-confirm:hover  { opacity: 0.88; }
+#ss-modal-confirm:active { transform: scale(0.97); }
+
+/* ---- RESPONSIVO ---- */
+@media (max-width: 480px) {
+    #ss-toast-container {
+        bottom: 12px;
+        right: 12px;
+        left: 12px;
+    }
+
+    .ss-toast {
+        min-width: unset;
+        max-width: 100%;
+    }
+}

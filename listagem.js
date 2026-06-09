@@ -17,6 +17,10 @@ function filtrarFamilias() {
  }
  
  function verDetalhes(id) {
-     alert("Redirecionando para os detalhes da família #" + id);
+     if (typeof showToast === 'function') {
+         showToast('info', 'Redirecionando', `Redirecionando para os detalhes da família #${id}`);
+     } else {
+         console.log("Redirecionando para os detalhes da família #" + id);
+     }
      // Aqui você poderia usar: window.location.href = 'detalhes.html?id=' + id;
  }

@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Histórico de Visitas - Área ACS</title>
+    <link rel="stylesheet" href="ui.css">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="areacas.css">
     <style>
@@ -50,33 +51,184 @@
             display: flex;
             gap: 10px;
             margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn-editar,
+        .btn-excluir {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 999px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: transform 150ms ease, box-shadow 150ms ease, background 150ms ease;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
         }
 
         .btn-editar {
-            background-color: #2980b9;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.85em;
+            background-color: #109ea3;
         }
 
         .btn-excluir {
             background-color: #e74c3c;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.85em;
         }
+
+        .btn-editar:hover,
+        .btn-excluir:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.12);
+        }
+
+        .btn-editar:hover { background-color: #0d7d82; }
+        .btn-excluir:hover { background-color: #c0392b; }
 
         .btn-editar:hover { background-color: #1f618d; }
         .btn-excluir:hover { background-color: #c0392b; }
+
+        /* Modal de edição de relatório */
+        .modal-edicao-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 18px;
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 180ms ease, visibility 180ms ease;
+        }
+
+        .modal-edicao-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-edicao-box {
+            width: 100%;
+            max-width: 560px;
+            background: #ffffff;
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 24px 70px rgba(0, 0, 0, 0.18);
+            transform: translateY(-8px);
+            opacity: 0;
+            transition: transform 220ms ease, opacity 220ms ease;
+        }
+
+        .modal-edicao-overlay.open .modal-edicao-box {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .modal-edicao-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 22px;
+            border-bottom: 1px solid #e9edf2;
+            background: #f8fbfc;
+        }
+
+        .modal-edicao-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .modal-edicao-close {
+            border: none;
+            background: transparent;
+            font-size: 1.6rem;
+            color: #667085;
+            cursor: pointer;
+            line-height: 1;
+            padding: 4px 8px;
+            border-radius: 999px;
+            transition: background 150ms ease, color 150ms ease;
+        }
+
+        .modal-edicao-close:hover {
+            background: rgba(16, 158, 163, 0.08);
+            color: #0b5e63;
+        }
+
+        .modal-edicao-body {
+            padding: 18px 22px 16px;
+            background: #f7fbfd;
+        }
+
+        .modal-edicao-body p {
+            margin: 0 0 12px;
+            color: #475569;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .modal-edicao-body textarea {
+            width: 100%;
+            min-height: 190px;
+            border: 1px solid #cbd5e1;
+            border-radius: 14px;
+            padding: 16px;
+            font-size: 0.96rem;
+            line-height: 1.7;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            resize: vertical;
+            background: #ffffff;
+            color: #1f2937;
+            box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.06);
+        }
+
+        .modal-edicao-body textarea:focus {
+            outline: none;
+            border-color: #109ea3;
+            box-shadow: 0 0 0 4px rgba(16, 158, 163, 0.12);
+            background: #ffffff;
+        }
+
+        .modal-edicao-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            padding: 16px 22px 22px;
+            background: #f8fbfc;
+        }
+
+        .modal-edicao-button {
+            border: none;
+            border-radius: 999px;
+            padding: 12px 20px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 140ms ease, opacity 140ms ease;
+        }
+
+        .modal-edicao-button:hover {
+            transform: translateY(-1px);
+            opacity: 0.98;
+        }
+
+        .modal-edicao-button.cancel {
+            background: #eef2f7;
+            color: #475569;
+        }
+
+        .modal-edicao-button.save {
+            background: #109ea3;
+            color: white;
+            box-shadow: 0 12px 24px rgba(16, 158, 163, 0.16);
+        }
     </style>
 </head>
 <body>
+    <script src="ui.js"></script>
 
 <header class="topo-pagina">
     <a href="index.html"><img src="img/semfindo.png" alt="Logo" class="logo"></a>
@@ -148,42 +300,70 @@
         });
     }
 
-    // Função para Editar o Relatório da Visita
+    let relatorioEditIndex = null;
+
     function editarRelatorio(index) {
-        let historico = JSON.parse(localStorage.getItem(chaveHistorico) || "[]");
-        const novoRelatorio = prompt("Edite o relatório da visita domiciliar:", historico[index].relatorio);
-        
-        if (novoRelatorio !== null && novoRelatorio.trim() !== "") {
-            historico[index].relatorio = novoRelatorio.trim();
-            localStorage.setItem(chaveHistorico, JSON.stringify(historico));
-            renderizarVisitas();
-            alert("Relatório atualizado com sucesso!");
-        }
+        const historico = JSON.parse(localStorage.getItem(chaveHistorico) || "[]");
+        relatorioEditIndex = index;
+        const textarea = document.getElementById('textareaRelatorio');
+        textarea.value = historico[index]?.relatorio || '';
+        document.getElementById('modalEditarRelatorio').classList.add('open');
+        textarea.focus();
     }
 
-    // Função para Excluir a Visita e devolver o status para "Pendente"
-    function excluirVisita(index) {
-        if (confirm("Deseja realmente excluir o registro desta visita? O painel de pendências e o somatório serão reajustados.")) {
-            let historico = JSON.parse(localStorage.getItem(chaveHistorico) || "[]");
-            
-            // Remove do array de histórico
-            historico.splice(index, 1);
-            localStorage.setItem(chaveHistorico, JSON.stringify(historico));
+    function fecharModalEdicao() {
+        const modal = document.getElementById('modalEditarRelatorio');
+        modal.classList.remove('open');
+        relatorioEditIndex = null;
+    }
 
-            // Atualiza os contadores globais do Dashboard do ACS logado
-            let visitasFeitas = parseInt(localStorage.getItem(loginAtivo + '_totalVisitas') || 0);
-            let visitasPendentes = parseInt(localStorage.getItem(loginAtivo + '_totalPendentes') || 0);
-
-            if (visitasFeitas > 0) visitasFeitas--;
-            visitasPendentes++; // Volta a constar como uma visita pendente no sistema
-
-            localStorage.setItem(loginAtivo + '_totalVisitas', visitasFeitas);
-            localStorage.setItem(loginAtivo + '_totalPendentes', visitasPendentes);
-
-            // Recarrega os dados na tela
-            renderizarVisitas();
-            alert("Registro de visita excluído! A visita retornou para a lista de Pendentes.");
+    function salvarEdicaoRelatorio() {
+        const novoTexto = document.getElementById('textareaRelatorio').value.trim();
+        if (novoTexto === '') {
+            showToast('warning', 'Relatório vazio', 'Por favor, escreva um relatório antes de salvar.');
+            return;
         }
+
+        const historico = JSON.parse(localStorage.getItem(chaveHistorico) || "[]");
+        if (relatorioEditIndex === null || !historico[relatorioEditIndex]) {
+            showToast('error', 'Erro interno', 'Não foi possível salvar a edição. Tente novamente.');
+            fecharModalEdicao();
+            return;
+        }
+
+        historico[relatorioEditIndex].relatorio = novoTexto;
+        localStorage.setItem(chaveHistorico, JSON.stringify(historico));
+        fecharModalEdicao();
+        renderizarVisitas();
+        showToast('success', 'Relatório atualizado', 'Relatório atualizado com sucesso!');
+    }
+
+    function excluirVisita(index) {
+        ssConfirm({
+            titulo: 'Excluir visita',
+            subtitulo: 'Registro será movido para pendentes.',
+            mensagem: 'Deseja realmente excluir este registro de visita? O painel será atualizado.',
+            tipo: 'danger',
+            textoBotao: 'Excluir',
+            onConfirm: function() {
+                let historico = JSON.parse(localStorage.getItem(chaveHistorico) || "[]");
+                
+                historico.splice(index, 1);
+                localStorage.setItem(chaveHistorico, JSON.stringify(historico));
+
+                let visitasFeitas = parseInt(localStorage.getItem(loginAtivo + '_totalVisitas') || 0);
+                let visitasPendentes = parseInt(localStorage.getItem(loginAtivo + '_totalPendentes') || 0);
+
+                if (visitasFeitas > 0) visitasFeitas--;
+                visitasPendentes++;
+
+                localStorage.setItem(loginAtivo + '_totalVisitas', visitasFeitas);
+                localStorage.setItem(loginAtivo + '_totalPendentes', visitasPendentes);
+
+                renderizarVisitas();
+                showToast('success', 'Visita atualizada', 'Registro de visita excluído! A visita retornou para a lista de Pendentes.');
+            }
+        });
     }
 
     // Função de filtro em tempo real
@@ -198,5 +378,26 @@
     }
 </script>
 
+<div id="modalEditarRelatorio" class="modal-edicao-overlay" onclick="if (event.target === this) fecharModalEdicao()">
+    <div class="modal-edicao-box" role="dialog" aria-modal="true" aria-labelledby="modalEditarRelatorioTitle">
+        <div class="modal-edicao-header">
+            <div>
+                <div class="modal-edicao-title" id="modalEditarRelatorioTitle">Editar Relatório</div>
+                <p style="margin:6px 0 0; font-size:0.92rem; color:#475569;">Revise o texto e toque em salvar para atualizar o registro.</p>
+            </div>
+            <button class="modal-edicao-close" type="button" onclick="fecharModalEdicao()" aria-label="Fechar">×</button>
+        </div>
+        <div class="modal-edicao-body">
+            <p>Digite o relatório da visita para manter o histórico atualizado.</p>
+            <textarea id="textareaRelatorio" placeholder="Atualize o relatório da visita aqui..."></textarea>
+        </div>
+        <div class="modal-edicao-footer">
+            <button class="modal-edicao-button cancel" type="button" onclick="fecharModalEdicao()">Cancelar</button>
+            <button class="modal-edicao-button save" type="button" onclick="salvarEdicaoRelatorio()">Salvar alterações</button>
+        </div>
+    </div>
+</div>
+
 </body>
+</html>
 </html>

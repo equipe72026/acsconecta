@@ -7,8 +7,10 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="areacas.css">
     <link rel="stylesheet" href="cadfam.css">
+    <link rel="stylesheet" href="ui.css">
 </head>
 <body>
+    <script src="ui.js"></script>
 
 <header class="topo-pagina">
     <a href="index.html"><img src="img/semfindo.png" alt="Logo" class="logo"></a>
@@ -58,6 +60,8 @@
                     <label class="check-item"><input type="checkbox" class="diabetico"> Diabético</label>
                     <label class="check-item"><input type="checkbox" class="prenatal"> Gestante</label>
                     <label class="check-item"><input type="checkbox" class="vacina"> Vacina Atrasada</label>
+                    <label class="check-item"><input type="checkbox" class="idoso"> Idoso</label>
+                    <label class="check-item"><input type="checkbox" class="deficiente"> Deficiente</label>
                 </div>
             </div>
         </div>
@@ -70,7 +74,7 @@
 
     <div class="relatorio">
         <h3>Resumo do Cadastro</h3>
-        <p>Membros: <span id="res-visitas">1</span> | Gestantes: <span id="res-gestantes">0</span> | Hipertensos: <span id="res-hipertensos">0</span> | Diabéticos: <span id="res-diabeticos">0</span> | Idosos: <span id="res-idosos">0</span> | Crianças: <span id="res-criancas">0</span></p>
+        <p>Membros: <span id="res-visitas">1</span> | Gestantes: <span id="res-gestantes">0</span> | Hipertensos: <span id="res-hipertensos">0</span> | Diabéticos: <span id="res-diabeticos">0</span> | Idosos: <span id="res-idosos">0</span> | Deficientes: <span id="res-deficientes">0</span></p>
         <ul id="alertas" class="lista-alertas"></ul>
     </div>
 </main>
@@ -120,7 +124,7 @@
         const blocosMembros = document.querySelectorAll('.membro-bloco');
 
         if (!loginAtivo) {
-            alert("Sessão expirada. Faça login novamente.");
+            showToast('error', 'Sessão expirada', 'Faça login novamente.');
             return;
         }
 
@@ -149,12 +153,14 @@
                 hipertenso: bloco.querySelector('.hipertenso').checked,
                 diabetico: bloco.querySelector('.diabetico').checked,
                 gestante: bloco.querySelector('.prenatal').checked,
-                vacina: bloco.querySelector('.vacina').checked
+                vacina: bloco.querySelector('.vacina').checked,
+                idoso: bloco.querySelector('.idoso').checked,
+                deficiente: bloco.querySelector('.deficiente').checked
             });
         });
 
         if (!camposValidos || endereco === "") {
-            alert("Por favor, preencha corretamente todos os campos obrigatórios e verifique as formatações.");
+            showToast('warning', 'Campos inválidos', 'Preencha todos os campos obrigatórios corretamente.');
             return;
         }
 
@@ -176,8 +182,8 @@
         localStorage.setItem(loginAtivo + '_totalFamilias', lista.length);
         localStorage.setItem(loginAtivo + '_totalPendentes', lista.length);
 
-        alert("Família completa cadastrada!");
-        window.location.href = "acsarea.html";
+        showToast('success', 'Cadastro concluído', 'Família completa cadastrada!');
+        setTimeout(() => window.location.href = "acsarea.html", 700);
     }
 
     function adicionarNovoCampo() {
@@ -194,6 +200,56 @@
         
         container.appendChild(novoMembro);
         document.getElementById('res-visitas').textContent = numMembros;
+        updateResumo();
+    }
+
+    function calcularIdade(dataNascimento) {
+        if (!dataNascimento) return -1;
+        const partes = dataNascimento.split('/');
+        if (partes.length !== 3) return -1;
+        const dia = parseInt(partes[0], 10);
+        const mes = parseInt(partes[1], 10) - 1;
+        const ano = parseInt(partes[2], 10);
+        if (Number.isNaN(dia) || Number.isNaN(mes) || Number.isNaN(ano)) return -1;
+
+        const hoje = new Date();
+        const nascimento = new Date(ano, mes, dia);
+        let idade = hoje.getFullYear() - nascimento.getFullYear();
+        const mesDiff = hoje.getMonth() - nascimento.getMonth();
+        if (mesDiff < 0 || (mesDiff === 0 && hoje.getDate() < nascimento.getDate())) {
+            idade--;
+        }
+        return idade;
+    }
+
+    function updateResumo() {
+        const blocos = document.querySelectorAll('.membro-bloco');
+        let totalGestantes = 0;
+        let totalHipertensos = 0;
+        let totalDiabeticos = 0;
+        let totalIdosos = 0;
+        let totalDeficientes = 0;
+
+        blocos.forEach((bloco) => {
+            if (bloco.querySelector('.hipertenso').checked) totalHipertensos++;
+            if (bloco.querySelector('.diabetico').checked) totalDiabeticos++;
+            if (bloco.querySelector('.prenatal').checked) totalGestantes++;
+            if (bloco.querySelector('.idoso').checked) totalIdosos++;
+            if (bloco.querySelector('.deficiente').checked) totalDeficientes++;
+        });
+
+        document.getElementById('res-gestantes').textContent = totalGestantes;
+        document.getElementById('res-hipertensos').textContent = totalHipertensos;
+        document.getElementById('res-diabeticos').textContent = totalDiabeticos;
+        document.getElementById('res-idosos').textContent = totalIdosos;
+        document.getElementById('res-deficientes').textContent = totalDeficientes;
+    }
+
+    const formVisita = document.getElementById('formVisita');
+    if (formVisita) {
+        formVisita.addEventListener('input', updateResumo);
+        formVisita.addEventListener('change', updateResumo);
+        updateResumo();
     }
 </script>
 </body>

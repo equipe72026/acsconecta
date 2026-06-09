@@ -6,6 +6,7 @@
     <title>Registrar Visita Domiciliar</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="areacas.css">
+    <link rel="stylesheet" href="ui.css">
     <style>
         .container-visita { padding: 20px; max-width: 600px; margin: auto; }
         .box-info { background: #f8f9fa; padding: 15px; border-radius: 6px; margin-bottom: 20px; border: 1px solid #ddd; }
@@ -17,6 +18,7 @@
     </style>
 </head>
 <body>
+    <script src="ui.js"></script>
 
 <header class="topo-pagina">
     <h2 class="titulo">Registrar Visita</h2>
@@ -49,14 +51,14 @@
 
     document.addEventListener('DOMContentLoaded', function() {
         if (!loginAtivo) { window.location.href = "login.html"; return; }
-        if (!familiaId) { alert("Nenhuma família especificada."); window.location.href = "vispen.html"; return; }
+        if (!familiaId) { showToast('warning', 'Família não especificada', 'Nenhuma família especificada.'); window.location.href = "vispen.html"; return; }
 
         // Carrega a lista de famílias para puxar os dados visuais
         const listaFamilias = JSON.parse(localStorage.getItem(loginAtivo + '_lista_familias') || "[]");
         familiaSelecionada = listaFamilias.find(f => f.id == familiaId);
 
         if (!familiaSelecionada) {
-            alert("Família não localizada.");
+            showToast('error', 'Família não localizada', 'Família não encontrada.');
             window.location.href = "vispen.html";
             return;
         }
@@ -106,8 +108,8 @@
         localStorage.setItem(loginAtivo + '_totalPendentes', totalVisitasPendentes);
 
         // 5. Retorno de confirmação e redirecionamento
-        alert("Visita registrada com sucesso! Indicadores atualizados no painel.");
-        window.location.href = "visfeita.html"; // Direciona para o Histórico de Realizadas
+        showToast('success', 'Visita registrada', 'Visita registrada com sucesso! Indicadores atualizados no painel.');
+        setTimeout(() => window.location.href = "visfeita.html", 700); // Direciona para o Histórico de Realizadas
     }
 </script>
 </body>

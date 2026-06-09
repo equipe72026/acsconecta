@@ -3,106 +3,229 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastro SevenSys</title>
-    <link rel="stylesheet" href="sobre.css">
+    <title>Cadastro de Agente de Saúde - Área do Gerente</title>
+    <link rel="stylesheet" href="cadastro.css">
+    <link rel="stylesheet" href="areacas.css">
+    <link rel="stylesheet" href="ui.css">
 </head>
 <body>
-    <form>
+    <div class="container-cadastro">
+        <header class="topo-pagina">
+            <a href="index.html"><img src="img/semfindo.png" alt="Logo" class="logo"></a>
+            <h2 class="titulo">Cadastro de Agente de Saúde</h2>
+            <a href="gerentedash.html" class="btn-voltar">← Voltar</a>
+        </header>
+
+        <div id="verificacao-gerente" class="verificacao-box">
+            <h2> Verificação de Gerente</h2>
+            <p>Por favor, identifique-se para continuar</p>
+            <div class="form-group">
+                <label for="senha_gerente">Senha do Gerente:</label>
+                <input type="password" id="senha_gerente" placeholder="Digite a senha do gerente">
+            </div>
+            <button type="button" class="btn-verificar" onclick="verificarGerente()">Verificar Acesso</button>
+        </div>
+
+        <form id="form-agente" class="form-agente" style="display: none;">
+            <fieldset class="fieldset-dados">
+                <legend><h2> Dados Pessoais do Agente</h2></legend>
+                
+                <div class="form-group">
+                    <label for="inom">Nome Completo:</label>
+                    <input type="text" name="nom" id="inom" placeholder="Nome completo do agente" minlength="15" maxlength="60" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="dat">Data de Nascimento:</label>
+                    <input type="date" name="data" id="dat" required>
+                </div>
+                <div class="form-group">
+                    <label>Sexo:</label>
+                    <div class="radio-group">
+                        <label><input type="radio" name="sexo" value="M" required> Masculino</label>
+                        <label><input type="radio" name="sexo" value="F"> Feminino</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="cpf">CPF:</label>
+                    <input type="text" name="cpf" id="cpf" maxlength="14"
+                    oninput="this.value = this.value
+                    .replace(/\D/g, '')
+                    .replace(/(\d{3})(\d)/, '$1.$2')
+                    .replace(/(\d{3})(\d)/, '$1.$2')
+                    .replace(/(\d{3})(\d{1,2})$/, '$1-$2')"
+                    pattern="\d{3}\.\d{3}\.\d{3}-\d{2}" placeholder="xxx.xxx.xxx-xx" required>
+                </div>
+                <div class="form-group">
+                    <label for="tel">Telefone:</label>
+                    <input type="tel" name="itel" id="tel" maxlength="15" placeholder="(XX) XXXXX-XXXX" oninput="mascaraTelefone(this)" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="end">Endereço Completo:</label>
+                    <input type="text" name="iend" id="end" placeholder="Rua, número, bairro, cidade" required>
+                </div>
+            </fieldset>
+
+            <fieldset class="fieldset-dados">
+                <legend><h2> Dados Profissionais</h2></legend>
+                
+                <div class="form-group">
+                    <label for="unit">Unidade de Saúde de Atuação:</label>
+                    <select id="unit" class="uni" required>
+                      <option value="" class="unid">Selecione uma unidade</option>
+                      
+                      <optgroup label="Centros Municipais de Saúde (CMS)" class="text-black">
+                        <option value="CMS Adão Pereira Nunes" class="text-black">CMS Adão Pereira Nunes</option>
+                        <option value="CMS Alvimar de Carvalho" class="text-black">CMS Alvimar de Carvalho</option>
+                        <option value="CMS Belizário Penna" class="text-black">CMS Belizário Penna</option>
+                        <option value="CMS Dr. Woodrow Pimentel Pantoja" class="text-black">CMS Dr. Woodrow Pimentel Pantoja</option>
+                        <option value="CMS Manoel de Abreu" class="text-black">CMS Manoel de Abreu</option>
+                        <option value="CMS Pedro Nava" class="text-black">CMS Pedro Nava</option>
+                        <option value="CMS Professor Edgard Magalhães Gomes" class="text-black">CMS Professor Edgard Magalhães Gomes</option>
+                        <option value="CMS Vila do Céu" class="text-black">CMS Vila do Céu</option>
+                      </optgroup>
+                  
+                      <optgroup label="Clínicas da Família (CF)" class="text-black">
+                        <option value="CF Agenor de Miranda Araújo Neto" class="text-black">CF Agenor de Miranda Araújo Neto</option>
+                        <option value="CF Alkindar Soares Pereira Filho" class="text-black">CF Alkindar Soares Pereira Filho</option>
+                        <option value="CF Antônio Gonçalves Villa Sobrinho" class="text-black">CF Antônio Gonçalves Villa Sobrinho</option>
+                        <option value="CF Dr. Rogério Rocco" class="text-black">CF Dr. Rogério Rocco</option>
+                        <option value="CF Edgard Ferreira do Amaral" class="text-black">CF Edgard Ferreira do Amaral</option>
+                        <option value="CF Everton de Souza Santos" class="text-black">CF Everton de Souza Santos</option>
+                        <option value="CF Medalhista Olímpico Bruno Schmidt" class="text-black">CF Medalhista Olímpico Bruno Schmidt</option>
+                        <option value="CF Valdecir Salustiano Cardozo" class="text-black">CF Valdecir Salustiano Cardozo</option>
+                      </optgroup>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="matricula">Matrícula:</label>
+                    <input type="text" name="matricula" id="matricula" placeholder="Número da matrícula" required>
+                </div>
+                <div class="form-group">
+                    <label for="area">Área de Atuação:</label>
+                    <input type="text" name="area" id="area" placeholder="Microárea ou território de atuação" required>
+                </div>
+            </fieldset>
+
+            <fieldset class="fieldset-dados">
+                <legend><h2> Dados de Acesso ao Sistema</h2></legend>
+                
+                <div class="form-group">
+                    <label for="login">Usuário do Sistema:</label>
+                    <input type="text" name="ilogin" id="login" placeholder="Escolha nome de usuário" minlength="6" maxlength="20" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="sen">Senha:</label>
+                    <input type="password" name="isen" id="sen" placeholder="Digite uma senha" minlength="8" required>
+                </div>
+                <div class="form-group">
+                    <label for="confirmar_senha">Confirmar Senha:</label>
+                    <input type="password" name="confirmar_senha" id="confirmar_senha" placeholder="Repita a senha" minlength="8" required>
+                </div>
+            </fieldset>
+
+            <div class="form-buttons">
+                <button type="submit" class="btn-submit">Cadastrar Agente</button>
+                <button type="reset" class="btn-reset">Limpar Formulário</button>
+                <a href="index.html" class="btn-cancel">Cancelar</a>
+            </div>
+        </form>
+    </div>
+    <script src="ui.js"></script>
+
+    <script>
+        // Senha do gerente (em produção, isso deve estar no servidor)
+        const SENHA_GERENTE = 'admin123';
         
-    
-    <a href="index.html"><img src="img/semfindo.png" alt="Logo"></a>
-    <h1>Cadastro de usuário</h1>
-    
-    <h2> Preencha seus dados para criar sua conta </h2>
-    <fieldset>
-   <legend><h2>Informações do cadastro</h2></legend>
-    
-    <label for="inom"></label>
-    Nome completo: <input type="text" name="nom" id="inom" placeholder="Nome completo" minlength="15" maxlength="60" required>
+        // Função de máscara para telefone
+        function mascaraTelefone(input) {
+            let v = input.value.replace(/\D/g, "");
+            if (v.length > 11) v = v.substring(0, 11);
+            
+            if (v.length >= 2) {
+                v = "(" + v.substring(0, 2) + ") " + v.substring(2);
+            }
+            if (v.length >= 10) {
+                v = v.substring(0, 10) + "-" + v.substring(10);
+            }
+            
+            input.value = v;
+        }
+        
+        function verificarGerente() {
+            const senhaDigitada = document.getElementById('senha_gerente').value;
+            
+            if (senhaDigitada === SENHA_GERENTE) {
+                document.getElementById('verificacao-gerente').style.display = 'none';
+                document.getElementById('form-agente').style.display = 'block';
+                sessionStorage.setItem('gerenteAutenticado', 'true');
+            } else {
+                showToast('error', 'Senha incorreta', 'Acesso negado.');
+                document.getElementById('senha_gerente').value = '';
+            }
+        }
 
-    <label for="dat"></label> 
-    <p>Data de Nascimento: <input type="date" name="data" id="dat"></p>
+        // Verificar se já está autenticado
+        window.onload = function() {
+            if (sessionStorage.getItem('gerenteAutenticado') === 'true') {
+                document.getElementById('verificacao-gerente').style.display = 'none';
+                document.getElementById('form-agente').style.display = 'block';
+            }
+        };
 
-<label for="sexo"></label>
-    <label> Sexo: <input type="radio" name="sexo" id="M">Masculino</label>
-    <label><input type="radio" name="sexo" id="F">Feminino</label>
-    <label><input type="radio" name="sexo" id="O"> Outro</label>
-<p>
-    <label for="nomp"> </label>
-     Nome do pai:<input type="text" name="inomp" id="nomp" placeholder="Nome do pai">
-    <label for="nomm"> </label>
-    Nome da mãe:<input type="text" name="inomm" id="nomm" placeholder="Nome da mãe">
-</p>
+        // Validação do formulário
+        document.getElementById('form-agente').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const senha = document.getElementById('sen').value;
+            const confirmarSenha = document.getElementById('confirmar_senha').value;
+            
+            if (senha !== confirmarSenha) {
+                showToast('warning', 'Senhas não coincidem', 'Verifique e tente novamente.');
+                return;
+            }
+            
+            if (senha.length < 8) {
+                showToast('warning', 'Senha muito curta', 'Use pelo menos 8 caracteres.');
+                return;
+            }
+            
+            // Coletar dados do formulário
+            const dadosAgente = {
+                nome: document.getElementById('inom').value,
+                dataNascimento: document.getElementById('dat').value,
+                sexo: document.querySelector('input[name="sexo"]:checked').value,
+                cpf: document.getElementById('cpf').value,
+                telefone: document.getElementById('tel').value,
+                endereco: document.getElementById('end').value,
+                unidadeSaude: document.getElementById('unit').value,
+                matricula: document.getElementById('matricula').value,
+                area: document.getElementById('area').value,
+                usuario: document.getElementById('login').value,
+                senha: senha,
+                dataCadastro: new Date().toLocaleDateString('pt-BR'),
+                cadastradoPor: 'Gerente'
+            };
+            
+            // Salvar no localStorage
+            let agentes = JSON.parse(localStorage.getItem('agentesSaude') || '[]');
+            agentes.push(dadosAgente);
+            localStorage.setItem('agentesSaude', JSON.stringify(agentes));
+            
+            showToast('success', 'Cadastro concluído', 'Agente de saúde cadastrado com sucesso!');
+            this.reset();
+            setTimeout(() => window.location.href = 'index.html', 700);
+        });
 
-<p>
-    <label for="cpf"></label>
-    CPF:
-    <input type="text" maxlength="14"
-    oninput="this.value = this.value
-    .replace(/\D/g, '')
-    .replace(/(\d{3})(\d)/, '$1.$2')
-    .replace(/(\d{3})(\d)/, '$1.$2')
-    .replace(/(\d{3})(\d{1,2})$/, '$1-$2')"
-    pattern="\d{3}\.\d{3}\.\d{3}-\d{2}" placeholder="xxx.xxx.xxx.xx" required>
-</p>
-
-<label for="tel"></label>
-<p>Telefone:  <input type="tel" name="itel" id="tel" placeholder="(+55) xx-xxxxx-xxxx" ></p>
-
-<label for="end"></label>
-Endereço: <input type="text" name="iend" id="end" placeholder="Digite seu endereço">
-<p><div>
-    <label for="inom"></label>
-    Unidade de Saúde
-    <select id="unit" class="uni" required>
-      <option value="" class="unid">Selecione uma unidade</option>
-      
-      <optgroup label="Centros Municipais de Saúde (CMS)" class="text-black">
-        <option value="CMS Adão Pereira Nunes" class="text-black">CMS Adão Pereira Nunes</option>
-        <option value="CMS Alvimar de Carvalho" class="text-black">CMS Alvimar de Carvalho</option>
-        <option value="CMS Belizário Penna" class="text-black">CMS Belizário Penna</option>
-        <option value="CMS Dr. Woodrow Pimentel Pantoja" class="text-black">CMS Dr. Woodrow Pimentel Pantoja</option>
-        <option value="CMS Manoel de Abreu" class="text-black">CMS Manoel de Abreu</option>
-        <option value="CMS Pedro Nava" class="text-black">CMS Pedro Nava</option>
-        <option value="CMS Professor Edgard Magalhães Gomes" class="text-black">CMS Professor Edgard Magalhães Gomes</option>
-        <option value="CMS Vila do Céu" class="text-black">CMS Vila do Céu</option>
-      </optgroup>
-  
-      <optgroup label="Clínicas da Família (CF)" class="text-black">
-        <option value="CF Agenor de Miranda Araújo Neto" class="text-black">CF Agenor de Miranda Araújo Neto</option>
-        <option value="CF Alkindar Soares Pereira Filho" class="text-black">CF Alkindar Soares Pereira Filho</option>
-        <option value="CF Antônio Gonçalves Villa Sobrinho" class="text-black">CF Antônio Gonçalves Villa Sobrinho</option>
-        <option value="CF Dr. Rogério Rocco" class="text-black">CF Dr. Rogério Rocco</option>
-        <option value="CF Edgard Ferreira do Amaral" class="text-black">CF Edgard Ferreira do Amaral</option>
-        <option value="CF Everton de Souza Santos" class="text-black">CF Everton de Souza Santos</option>
-        <option value="CF Medalhista Olímpico Bruno Schmidt" class="text-black">CF Medalhista Olímpico Bruno Schmidt</option>
-        <option value="CF Valdecir Salustiano Cardozo" class="text-black">CF Valdecir Salustiano Cardozo</option>
-      </optgroup>
-    </select>
-  </div>
-  </p>
-</fieldset>
-
-
-
-<p>
-    <fieldset>
-    <legend>
-     <h2>Dados de acesso</h2>
-     </legend> 
-</p>
-<label for="login"> </label>
-   Usuário: <input type="text" name="ilogin" id="login" placeholder="Escolha nome de usuário" maxlength="6" minlength="6" required>
-
-  <p> <label for="sen"></label>
-   Senha: <input type="password" name="isen" id="sen" placeholder="Digite uma senha" minlength="8">
-    Confirme sua Senha: <input type="password" name="isen" id="sen" placeholder="Repita a senha"></p>
-    </fieldset>
-    <p><a href="loginjorge.html"><input type="submit" value="Enviar"></a>
-    <input type="reset" value="Limpar"></p>
-    </form>
-    <br>
-
-    
+        // Permitir Enter para verificar senha
+        document.getElementById('senha_gerente').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                verificarGerente();
+            }
+        });
+    </script>
 </body>
 </html>

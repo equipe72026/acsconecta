@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel do Gerente - SevenSys</title>
+    <style>
+        /* =============================================
+           RESET & BASE
+        ============================================= */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --teal:       #109ea3;
+            --teal-dark:  #0b777a;
+            --teal-light: #e6f7f7;
+            --slate:      #2c3e50;
+            --slate-mid:  #4a6275;
+            --red:        #e74c3c;
+            --red-dark:   #c0392b;
+            --green:      #27ae60;
+            --green-dark: #1e8449;
+            --amber:      #f39c12;
+            --purple:     #8e44ad;
+            --white:      #ffffff;
+            --bg:         #f0f4f5;
+            --card:       #ffffff;
+            --border:     #dde4e6;
+            --text:       #2c3e50;
+            --muted:      #7f8c8d;
+            --radius:     10px;
+            --shadow:     0 2px 12px rgba(0,0,0,0.08);
+            --shadow-hover: 0 6px 20px rgba(0,0,0,0.13);
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: var(--bg);
+            background-image: url("img/trasno.png");
+            background-size: cover;
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: var(--text);
+        }
+
+        /* =============================================
+           HEADER
+        ============================================= */
+        .header {
+            background: var(--white);
+            border-bottom: 3px solid var(--teal);
+            padding: 0 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 72px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-logo {
+            height: 52px;
+            width: auto;
+        }
+
+        .header-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--teal);
+            letter-spacing: -0.3px;
+        }
+
+        .header-title span {
+            font-weight: 400;
+            color: var(--muted);
+            font-size: 1rem;
+        }
+
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+            background: var(--teal);
+            color: white;
+            padding: 9px 20px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: background 0.2s, transform 0.2s;
+        }
+        .btn-back:hover { background: var(--teal-dark); transform: translateY(-1px); }
+
+        /* =============================================
+           LAYOUT
+        ============================================= */
+        .page {
+            max-width: 1100px;
+            margin: 32px auto;
+            padding: 0 20px 60px;
+        }
+
+        /* =============================================
+           STATS BAR
+        ============================================= */
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 20px 24px;
+            box-shadow: var(--shadow);
+            border-top: 4px solid var(--teal);
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .stat-card.red   { border-top-color: var(--red); }
+        .stat-card.green { border-top-color: var(--green); }
+        .stat-card.amber { border-top-color: var(--amber); }
+        .stat-card.purple{ border-top-color: var(--purple); }
+
+        .stat-label { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.8px; color: var(--muted); font-weight: 600; }
+        .stat-value { font-size: 2rem; font-weight: 700; color: var(--teal); line-height: 1; }
+        .stat-card.red   .stat-value { color: var(--red); }
+        .stat-card.green .stat-value { color: var(--green); }
+        .stat-card.amber .stat-value { color: var(--amber); }
+        .stat-card.purple .stat-value { color: var(--purple); }
+
+        /* =============================================
+           SECTION HEADER
+        ============================================= */
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .section-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--slate);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-title::before {
+            content: '';
+            display: inline-block;
+            width: 4px;
+            height: 20px;
+            background: var(--teal);
+            border-radius: 4px;
+        }
+
+        /* =============================================
+           BUTTONS
+        ============================================= */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 9px 18px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.88rem;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .btn-primary   { background: var(--teal);   color: white; }
+        .btn-primary:hover { background: var(--teal-dark); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(16,158,163,0.3); }
+
+        .btn-danger    { background: var(--red);    color: white; }
+        .btn-danger:hover  { background: var(--red-dark);  transform: translateY(-1px); }
+
+        .btn-info      { background: #2980b9;        color: white; }
+        .btn-info:hover    { background: #1f618d;        transform: translateY(-1px); }
+
+        .btn-success   { background: var(--green);  color: white; }
+        .btn-success:hover { background: var(--green-dark);  transform: translateY(-1px); }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--teal);
+            color: var(--teal);
+        }
+        .btn-outline:hover { background: var(--teal-light); }
+
+        /* =============================================
+           SEARCH INPUT
+        ============================================= */
+        .search-input {
+            padding: 9px 14px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            width: 240px;
+            transition: border-color 0.2s;
+        }
+        .search-input:focus { border-color: var(--teal); outline: none; box-shadow: 0 0 0 3px rgba(16,158,163,0.12); }
+
+        /* =============================================
+           AGENT TABLE
+        ============================================= */
+        .table-wrap {
+            background: var(--card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        thead tr {
+            background: var(--teal);
+            color: white;
+        }
+
+        thead th {
+            padding: 13px 16px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            white-space: nowrap;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid var(--border);
+            transition: background 0.15s;
+        }
+
+        tbody tr:last-child { border-bottom: none; }
+        tbody tr:hover { background: var(--teal-light); }
+
+        tbody td {
+            padding: 13px 16px;
+            vertical-align: middle;
+        }
+
+        .agent-name { font-weight: 600; color: var(--slate); }
+        .agent-login { font-family: monospace; background: var(--bg); padding: 2px 8px; border-radius: 4px; font-size: 0.82rem; }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+        .badge-unit { background: #eaf4fb; color: #1a6fa8; }
+
+        .action-group { display: flex; gap: 8px; flex-wrap: wrap; }
+
+        .empty-state {
+            text-align: center;
+            padding: 50px 20px;
+            color: var(--muted);
+        }
+        .empty-state p { margin-top: 10px; font-size: 0.95rem; }
+
+        /* =============================================
+           MODAL BASE
+        ============================================= */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.55);
+            backdrop-filter: blur(3px);
+            z-index: 200;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 40px 16px;
+            overflow-y: auto;
+        }
+
+        .modal-overlay.open { display: flex; }
+
+        .modal-box {
+            background: var(--card);
+            border-radius: 14px;
+            width: 100%;
+            max-width: 720px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+            overflow: hidden;
+            animation: slideUp 0.22s ease;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(24px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .modal-header {
+            background: var(--teal);
+            color: white;
+            padding: 18px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 { font-size: 1.05rem; font-weight: 700; }
+
+        .modal-close {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+        .modal-close:hover { background: rgba(255,255,255,0.35); }
+
+        .modal-body { padding: 24px; }
+
+        /* =============================================
+           MODAL: AGENT DETAILS
+        ============================================= */
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 560px) { .detail-grid { grid-template-columns: 1fr; } }
+
+        .detail-item { }
+        .detail-item .d-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.7px; color: var(--muted); font-weight: 600; margin-bottom: 3px; }
+        .detail-item .d-value { font-size: 0.95rem; color: var(--text); }
+
+        /* =============================================
+           MODAL: REPORTS
+        ============================================= */
+        .report-filter {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+        }
+
+        .report-search {
+            flex: 1;
+            min-width: 180px;
+            padding: 9px 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.88rem;
+        }
+        .report-search:focus { border-color: var(--teal); outline: none; }
+
+        .report-count {
+            font-size: 0.85rem;
+            color: var(--muted);
+            margin-bottom: 14px;
+        }
+
+        .visit-card {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 12px;
+            overflow: hidden;
+        }
+
+        .visit-card-header {
+            background: var(--teal-light);
+            padding: 11px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .visit-family { font-weight: 700; color: var(--teal-dark); font-size: 0.95rem; }
+        .visit-address { font-size: 0.8rem; color: var(--muted); margin-top: 2px; }
+        .visit-date { background: var(--teal); color: white; padding: 3px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 700; white-space: nowrap; }
+
+        .visit-card-body {
+            padding: 12px 16px;
+            font-size: 0.88rem;
+            color: #444;
+            line-height: 1.6;
+        }
+
+        .visit-card-body strong { color: var(--slate); }
+
+        .no-reports {
+            text-align: center;
+            padding: 40px;
+            color: var(--muted);
+            font-size: 0.95rem;
+        }
+
+        /* =============================================
+           TABS
+        ============================================= */
+        .modal-tabs {
+            display: flex;
+            border-bottom: 2px solid var(--border);
+            margin-bottom: 20px;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 10px 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--muted);
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+            transition: color 0.2s, border-color 0.2s;
+        }
+
+        .tab-btn.active { color: var(--teal); border-bottom-color: var(--teal); }
+        .tab-btn:hover:not(.active) { color: var(--slate); }
+
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+
+        /* =============================================
+           FAMILIES INSIDE REPORTS MODAL
+        ============================================= */
+        .family-report-block {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 16px;
+            overflow: hidden;
+        }
+
+        .family-report-header {
+            background: #f0f4f5;
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.15s;
+        }
+        .family-report-header:hover { background: var(--teal-light); }
+
+        .family-report-title { font-weight: 700; color: var(--slate); font-size: 0.95rem; }
+        .family-report-meta { font-size: 0.8rem; color: var(--muted); margin-top: 2px; }
+        .chevron { transition: transform 0.2s; font-size: 0.8rem; color: var(--muted); }
+        .family-report-header.expanded .chevron { transform: rotate(180deg); }
+
+        .family-report-visits { display: none; padding: 0 16px 14px; }
+        .family-report-visits.open { display: block; }
+
+        /* =============================================
+           RESPONSIVE
+        ============================================= */
+        @media (max-width: 700px) {
+            .header { padding: 0 16px; }
+            .header-title { font-size: 1rem; }
+            .page { margin: 16px auto; }
+            .stats-bar { grid-template-columns: 1fr 1fr; }
+            table { font-size: 0.8rem; }
+            thead th, tbody td { padding: 10px 10px; }
+        }
+
+        @media (max-width: 500px) {
+            .stats-bar { grid-template-columns: 1fr; }
+        }
+    </style>
+    <link rel="stylesheet" href="ui.css">
+    <script src="ui.js"></script>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+    <a href="index.html"><img src="img/semfindo.png" alt="Logo" class="header-logo"></a>
+    <div class="header-title">Painel do Gerente <span>/ SevenSys</span></div>
+    <a href="index.html" class="btn-back">← Sair</a>
+</header>
+
+<!-- PAGE CONTENT -->
+<div class="page">
+
+    <!-- STATS BAR -->
+    <div class="stats-bar" id="statsBar">
+        <div class="stat-card">
+            <div class="stat-label">Agentes cadastrados</div>
+            <div class="stat-value" id="st-agentes">—</div>
+        </div>
+        <div class="stat-card green">
+            <div class="stat-label">Total de famílias</div>
+            <div class="stat-value" id="st-familias">—</div>
+        </div>
+        <div class="stat-card amber">
+            <div class="stat-label">Visitas realizadas</div>
+            <div class="stat-value" id="st-visitas">—</div>
+        </div>
+        <div class="stat-card purple">
+            <div class="stat-label">Visitas pendentes</div>
+            <div class="stat-value" id="st-pendentes">—</div>
+        </div>
+    </div>
+
+    <!-- AGENTS SECTION -->
+    <div class="section-header">
+        <div class="section-title">Agentes de Saúde</div>
+        <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+            <input type="text" class="search-input" id="searchAgents" placeholder="🔍 Buscar agente..." oninput="filtrarAgentes()">
+            <a href="cadastros.html" class="btn btn-primary">+ Cadastrar Agente</a>
+        </div>
+    </div>
+
+    <div class="table-wrap">
+        <table id="agentsTable">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Nome</th>
+                    <th>Usuário</th>
+                    <th>Unidade de Saúde</th>
+                    <th>Matrícula</th>
+                    <th>Cadastro</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody id="agentsBody">
+            </tbody>
+        </table>
+    </div>
+
+    <!-- EMPTY STATE (shown via JS) -->
+    <div id="emptyAgents" class="empty-state" style="display:none;">
+        <div style="font-size:3rem;">👤</div>
+        <p>Nenhum agente cadastrado ainda.</p>
+        <a href="cadastros.html" class="btn btn-primary" style="margin-top:14px; display:inline-flex;">+ Cadastrar primeiro agente</a>
+    </div>
+
+</div>
+
+
+<!-- ============================================================
+     MODAL: DETALHES E RELATÓRIOS DO AGENTE
+============================================================ -->
+<div class="modal-overlay" id="modalAgente">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h3 id="modalAgenteName">Detalhes do Agente</h3>
+            <button class="modal-close" onclick="fecharModal('modalAgente')">✕</button>
+        </div>
+        <div class="modal-body">
+            <div class="modal-tabs">
+                <button class="tab-btn active" onclick="switchTab(0)">📋 Dados Pessoais</button>
+                <button class="tab-btn" onclick="switchTab(1)">🏠 Famílias Cadastradas</button>
+                <button class="tab-btn" onclick="switchTab(2)">📊 Relatórios de Visitas</button>
+            </div>
+
+            <!-- TAB 0: DADOS PESSOAIS -->
+            <div class="tab-panel active" id="tab0">
+                <div class="detail-grid" id="agenteDetalheGrid"></div>
+            </div>
+
+            <!-- TAB 1: FAMÍLIAS -->
+            <div class="tab-panel" id="tab1">
+                <div id="familiasList"></div>
+            </div>
+
+            <!-- TAB 2: RELATÓRIOS -->
+            <div class="tab-panel" id="tab2">
+                <div class="report-filter">
+                    <input type="text" class="report-search" id="reportSearch" placeholder="🔍 Buscar por família, endereço ou relatório..." oninput="filtrarRelatorios()">
+                </div>
+                <div class="report-count" id="reportCount"></div>
+                <div id="visitsList"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- ============================================================
+     MODAL: CONFIRMAR EXCLUSÃO
+============================================================ -->
+<div class="modal-overlay" id="modalConfirm">
+    <div class="modal-box" style="max-width:420px;">
+        <div class="modal-header" style="background: var(--red);">
+            <h3>Confirmar Exclusão</h3>
+            <button class="modal-close" onclick="fecharModal('modalConfirm')">✕</button>
+        </div>
+        <div class="modal-body">
+            <p style="margin-bottom:16px; font-size:0.95rem; color:#444;" id="confirmMsg"></p>
+            <p style="font-size:0.85rem; color:var(--muted); margin-bottom:24px;">
+                ⚠️ Todos os dados deste agente — incluindo famílias cadastradas, histórico de visitas e indicadores — serão <strong>permanentemente removidos</strong>.
+            </p>
+            <div style="display:flex; gap:12px; justify-content:flex-end;">
+                <button class="btn btn-outline" onclick="fecharModal('modalConfirm')">Cancelar</button>
+                <button class="btn btn-danger" id="confirmDeleteBtn">Confirmar Exclusão</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    // ============================================================
+    // DADOS & ESTADO
+    // ============================================================
+    let agentes = [];
+    let agenteAtivo = null;
+
+    const AGENTES_PADRÃO = [
+        { nome: "Pedro Henrique",  dataNascimento: "", sexo: "M", cpf: "", telefone: "", endereco: "", unidadeSaude: "—", matricula: "001", area: "—", usuario: "acs1", senha: "acs1", dataCadastro: "Sistema", cadastradoPor: "Sistema" },
+        { nome: "Ana Beatriz",     dataNascimento: "", sexo: "F", cpf: "", telefone: "", endereco: "", unidadeSaude: "—", matricula: "002", area: "—", usuario: "acs2", senha: "acs2", dataCadastro: "Sistema", cadastradoPor: "Sistema" },
+        { nome: "Carlos Eduardo",  dataNascimento: "", sexo: "M", cpf: "", telefone: "", endereco: "", unidadeSaude: "—", matricula: "003", area: "—", usuario: "acs3", senha: "acs3", dataCadastro: "Sistema", cadastradoPor: "Sistema" },
+        { nome: "Mariana Silva",   dataNascimento: "", sexo: "F", cpf: "", telefone: "", endereco: "", unidadeSaude: "—", matricula: "004", area: "—", usuario: "acs4", senha: "acs4", dataCadastro: "Sistema", cadastradoPor: "Sistema" },
+        { nome: "Ricardo Souza",   dataNascimento: "", sexo: "M", cpf: "", telefone: "", endereco: "", unidadeSaude: "—", matricula: "005", area: "—", usuario: "acs5", senha: "acs5", dataCadastro: "Sistema", cadastradoPor: "Sistema" }
+    ];
+
+    // ============================================================
+    // INICIALIZAÇÃO
+    // ============================================================
+    document.addEventListener('DOMContentLoaded', function () {
+        carregarAgentes();
+        atualizarStats();
+        renderizarTabela();
+    });
+
+    function carregarAgentes() {
+        const salvos = JSON.parse(localStorage.getItem('agentesSaude') || '[]');
+        // Mescla padrão + cadastrados, evitando duplicatas por 'usuario'
+        const usuariosSalvos = new Set(salvos.map(a => a.usuario));
+        const padraoFiltrado = AGENTES_PADRÃO.filter(a => !usuariosSalvos.has(a.usuario));
+        agentes = [...padraoFiltrado, ...salvos];
+    }
+
+    // ============================================================
+    // STATS BAR
+    // ============================================================
+    function atualizarStats() {
+        document.getElementById('st-agentes').textContent = agentes.length;
+
+        let totalFamilias = 0, totalVisitas = 0, totalPendentes = 0;
+        agentes.forEach(ag => {
+            const login = ag.usuario || ag.login;
+            const familias = JSON.parse(localStorage.getItem(login + '_lista_familias') || '[]');
+            const historico = JSON.parse(localStorage.getItem(login + '_historico_visitas') || '[]');
+            totalFamilias  += familias.length;
+            totalVisitas   += historico.length;
+            // Pendentes = famílias sem nenhuma visita no histórico
+            const pendentes = familias.filter(f =>
+                !historico.some(v => v.endereco && f.endereco &&
+                    v.endereco.trim().toLowerCase() === f.endereco.trim().toLowerCase())
+            ).length;
+            totalPendentes += pendentes;
+        });
+
+        document.getElementById('st-familias').textContent  = totalFamilias;
+        document.getElementById('st-visitas').textContent   = totalVisitas;
+        document.getElementById('st-pendentes').textContent = totalPendentes;
+    }
+
+    // ============================================================
+    // TABELA DE AGENTES
+    // ============================================================
+    function renderizarTabela(filtro = '') {
+        const tbody = document.getElementById('agentsBody');
+        tbody.innerHTML = '';
+
+        const lista = agentes.filter(ag =>
+            !filtro || ag.nome.toLowerCase().includes(filtro) ||
+            (ag.usuario || '').toLowerCase().includes(filtro) ||
+            (ag.unidadeSaude || '').toLowerCase().includes(filtro)
+        );
+
+        if (lista.length === 0) {
+            document.getElementById('emptyAgents').style.display = 'block';
+            document.querySelector('.table-wrap').style.display = 'none';
+            return;
+        }
+
+        document.getElementById('emptyAgents').style.display = 'none';
+        document.querySelector('.table-wrap').style.display = '';
+
+        lista.forEach((ag, idx) => {
+            const login = ag.usuario || ag.login;
+            const tr = document.createElement('tr');
+            tr.setAttribute('data-search', `${ag.nome} ${login} ${ag.unidadeSaude || ''} ${ag.matricula || ''}`);
+            tr.innerHTML = `
+                <td style="color:var(--muted); font-size:0.8rem;">${String(idx + 1).padStart(2,'0')}</td>
+                <td><div class="agent-name">${ag.nome}</div></td>
+                <td><span class="agent-login">${login}</span></td>
+                <td><span class="badge badge-unit">${ag.unidadeSaude || '—'}</span></td>
+                <td style="color:var(--muted);">${ag.matricula || '—'}</td>
+                <td style="font-size:0.82rem; color:var(--muted);">${ag.dataCadastro || '—'}</td>
+                <td>
+                    <div class="action-group">
+                        <button class="btn btn-info" style="padding:6px 12px; font-size:0.8rem;" onclick="abrirDetalhes('${login}')">Ver Detalhes</button>
+                        <button class="btn btn-danger" style="padding:6px 12px; font-size:0.8rem;" onclick="confirmarExclusao('${login}')">Excluir</button>
+                    </div>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function filtrarAgentes() {
+        const v = document.getElementById('searchAgents').value.toLowerCase();
+        renderizarTabela(v);
+    }
+
+    // ============================================================
+    // MODAL: DETALHES DO AGENTE
+    // ============================================================
+    function abrirDetalhes(login) {
+        agenteAtivo = agentes.find(a => (a.usuario || a.login) === login);
+        if (!agenteAtivo) return;
+
+        document.getElementById('modalAgenteName').textContent = agenteAtivo.nome;
+
+        // Tab 0: Dados pessoais
+        const grid = document.getElementById('agenteDetalheGrid');
+        const campos = [
+            ['Nome Completo',    agenteAtivo.nome],
+            ['Usuário do Sistema', `<span class="agent-login">${agenteAtivo.usuario || agenteAtivo.login}</span>`],
+            ['Data de Nascimento', agenteAtivo.dataNascimento || '—'],
+            ['Sexo',             agenteAtivo.sexo === 'M' ? 'Masculino' : agenteAtivo.sexo === 'F' ? 'Feminino' : '—'],
+            ['CPF',              agenteAtivo.cpf || '—'],
+            ['Telefone',         agenteAtivo.telefone || '—'],
+            ['Endereço',         agenteAtivo.endereco || '—'],
+            ['Unidade de Saúde', agenteAtivo.unidadeSaude || '—'],
+            ['Matrícula',        agenteAtivo.matricula || '—'],
+            ['Área de Atuação',  agenteAtivo.area || '—'],
+            ['Data de Cadastro', agenteAtivo.dataCadastro || '—'],
+            ['Cadastrado por',   agenteAtivo.cadastradoPor || '—'],
+        ];
+        grid.innerHTML = campos.map(([label, val]) => `
+            <div class="detail-item">
+                <div class="d-label">${label}</div>
+                <div class="d-value">${val}</div>
+            </div>
+        `).join('');
+
+        // Tab 1: Famílias
+        carregarFamilias(login);
+
+        // Tab 2: Relatórios
+        carregarRelatorios(login);
+
+        // Reseta pra tab 0
+        switchTab(0);
+        abrirModal('modalAgente');
+    }
+
+    function carregarFamilias(login) {
+        const familias = JSON.parse(localStorage.getItem(login + '_lista_familias') || '[]');
+        const historico = JSON.parse(localStorage.getItem(login + '_historico_visitas') || '[]');
+        const container = document.getElementById('familiasList');
+
+        if (familias.length === 0) {
+            container.innerHTML = '<div class="no-reports">Nenhuma família cadastrada por este agente.</div>';
+            return;
+        }
+
+        container.innerHTML = `<p style="font-size:0.85rem; color:var(--muted); margin-bottom:14px;">${familias.length} família(s) cadastrada(s)</p>`;
+
+        familias.forEach(fam => {
+            const visitasFam = historico.filter(v =>
+                v.endereco && fam.endereco &&
+                v.endereco.trim().toLowerCase() === fam.endereco.trim().toLowerCase()
+            );
+            const statusColor = visitasFam.length > 0 ? 'var(--green)' : 'var(--red)';
+            const statusText  = visitasFam.length > 0 ? `${visitasFam.length} visita(s)` : 'Nenhuma visita';
+
+            container.innerHTML += `
+                <div class="family-report-block">
+                    <div class="family-report-header" onclick="toggleFamily(this)">
+                        <div>
+                            <div class="family-report-title">👤 ${fam.primeiroMembro}</div>
+                            <div class="family-report-meta">📍 ${fam.endereco} &nbsp;|&nbsp; 👥 ${fam.membros ? fam.membros.length : 1} membro(s) &nbsp;|&nbsp; 📅 Cadastro: ${fam.data}</div>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:12px;">
+                            <span style="font-size:0.78rem; font-weight:700; color:${statusColor};">${statusText}</span>
+                            <span class="chevron">▼</span>
+                        </div>
+                    </div>
+                    <div class="family-report-visits">
+                        ${fam.membros && fam.membros.length > 0 ? `
+                            <div style="padding: 12px 0 4px; font-size:0.82rem; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:0.5px;">Membros</div>
+                            ${fam.membros.map(m => `
+                                <div style="padding:6px 0; border-bottom:1px solid var(--border); font-size:0.87rem;">
+                                    <strong>${m.nome}</strong> &nbsp;·&nbsp; ${m.nascimento || '—'} &nbsp;·&nbsp; ${m.sexo === 'M' ? 'Masc.' : m.sexo === 'F' ? 'Fem.' : m.sexo}
+                                    ${m.hipertenso ? '<span style="color:var(--amber); font-size:0.78rem; margin-left:6px;">Hipertenso</span>' : ''}
+                                    ${m.diabetico  ? '<span style="color:var(--red);   font-size:0.78rem; margin-left:6px;">Diabético</span>'  : ''}
+                                    ${m.gestante   ? '<span style="color:var(--purple);font-size:0.78rem; margin-left:6px;">Gestante</span>'    : ''}
+                                    ${m.vacina     ? '<span style="color:var(--slate); font-size:0.78rem; margin-left:6px;">Vacina Atrasada</span>' : ''}
+                                </div>
+                            `).join('')}
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+        });
+    }
+
+    function toggleFamily(header) {
+        header.classList.toggle('expanded');
+        const body = header.nextElementSibling;
+        body.classList.toggle('open');
+    }
+
+    function carregarRelatorios(login) {
+        const historico = JSON.parse(localStorage.getItem(login + '_historico_visitas') || '[]');
+        const container = document.getElementById('visitsList');
+        container.dataset.login = login;
+
+        renderizarRelatorios(historico);
+    }
+
+    function renderizarRelatorios(historico) {
+        const container = document.getElementById('visitsList');
+        document.getElementById('reportCount').textContent =
+            `${historico.length} visita(s) registrada(s)`;
+
+        if (historico.length === 0) {
+            container.innerHTML = '<div class="no-reports">Nenhuma visita registrada por este agente.</div>';
+            return;
+        }
+
+        // Ordena: mais recente primeiro
+        const sorted = [...historico].reverse();
+
+        container.innerHTML = sorted.map((v, idx) => `
+            <div class="visit-card">
+                <div class="visit-card-header">
+                    <div>
+                        <div class="visit-family">🏠 ${v.nomeFamilia || 'Família'}</div>
+                        <div class="visit-address">📍 ${v.endereco || '—'}</div>
+                    </div>
+                    <span class="visit-date">📅 ${v.dataVisita}</span>
+                </div>
+                <div class="visit-card-body">
+                    <strong>Relatório:</strong> ${v.relatorio || '—'}
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function filtrarRelatorios() {
+        const login = document.getElementById('visitsList').dataset.login;
+        const historico = JSON.parse(localStorage.getItem(login + '_historico_visitas') || '[]');
+        const busca = document.getElementById('reportSearch').value.toLowerCase();
+
+        const filtrado = historico.filter(v =>
+            (v.nomeFamilia || '').toLowerCase().includes(busca) ||
+            (v.endereco    || '').toLowerCase().includes(busca) ||
+            (v.relatorio   || '').toLowerCase().includes(busca)
+        );
+
+        renderizarRelatorios(filtrado);
+    }
+
+    // ============================================================
+    // TABS
+    // ============================================================
+    function switchTab(index) {
+        document.querySelectorAll('.tab-btn').forEach((btn, i) => {
+            btn.classList.toggle('active', i === index);
+        });
+        document.querySelectorAll('.tab-panel').forEach((panel, i) => {
+            panel.classList.toggle('active', i === index);
+        });
+    }
+
+    // ============================================================
+    // EXCLUSÃO
+    // ============================================================
+    function confirmarExclusao(login) {
+        const ag = agentes.find(a => (a.usuario || a.login) === login);
+        if (!ag) return;
+
+        document.getElementById('confirmMsg').textContent =
+            `Você está prestes a excluir o agente "${ag.nome}" (usuário: ${login}).`;
+
+        document.getElementById('confirmDeleteBtn').onclick = function () {
+            excluirAgente(login);
+            fecharModal('modalConfirm');
+        };
+
+        abrirModal('modalConfirm');
+    }
+
+    function excluirAgente(login) {
+        // Remove do localStorage (apenas os salvos pelo gerente)
+        let salvos = JSON.parse(localStorage.getItem('agentesSaude') || '[]');
+        salvos = salvos.filter(a => a.usuario !== login);
+        localStorage.setItem('agentesSaude', JSON.stringify(salvos));
+
+        // Remove os dados do agente
+        const keysParaRemover = [
+            '_lista_familias', '_historico_visitas',
+            '_totalFamilias',  '_totalVisitas', '_totalPendentes'
+        ];
+        keysParaRemover.forEach(k => localStorage.removeItem(login + k));
+
+        // Atualiza estado local e re-renderiza
+        carregarAgentes();
+        atualizarStats();
+        renderizarTabela(document.getElementById('searchAgents').value.toLowerCase());
+
+        showToast('success', 'Agente removido', `Agente "${login}" removido com sucesso.`);
+    }
+
+    // ============================================================
+    // HELPERS: MODAL
+    // ============================================================
+    function abrirModal(id) {
+        document.getElementById(id).classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function fecharModal(id) {
+        document.getElementById(id).classList.remove('open');
+        document.body.style.overflow = '';
+    }
+
+    // Fechar modal clicando fora
+    document.querySelectorAll('.modal-overlay').forEach(overlay => {
+        overlay.addEventListener('click', function (e) {
+            if (e.target === overlay) fecharModal(overlay.id);
+        });
+    });
+
+    // ESC para fechar
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+            document.querySelectorAll('.modal-overlay.open').forEach(m => fecharModal(m.id));
+        }
+    });
+</script>
+
+</body>
+</html>
