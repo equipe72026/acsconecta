@@ -121,7 +121,7 @@
         <div class="card-recuperacao">
             <h3>Para recuperar a sua senha, digite o endereço de e-mail cadastrado que nós enviaremos um link para redefinir sua credencial.</h3>
             
-            <form onsubmit="event.preventDefault(); showToast('info', 'Recuperação enviada', 'Link de recuperação enviado se o e-mail constar na base!'); setTimeout(() => window.location.href='index.html', 800);">
+            <form id="recoveryForm">
                 <div class="form-grupo">
                     <label for="mail">E-mail Cadastrado:</label>
                     <input type="email" id="mail" placeholder="exemplo@email.com" required>
@@ -132,7 +132,21 @@
 
             <a href="index.html" class="link-voltar-login">Voltar para a tela de login</a>
         </div>
-    </main>
-    
+        </main>
+    <script>
+        document.getElementById('recoveryForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const email = document.getElementById('mail').value.trim().toLowerCase();
+            const agentes = JSON.parse(localStorage.getItem('agentesSaude') || '[]');
+            const agente = agentes.find(a => a.email && a.email.toLowerCase() === email);
+
+            if (agente) {
+                showToast('success', 'Recuperação enviada', `Link de recuperação enviado para ${email}. Verifique sua caixa de entrada.`);
+                setTimeout(() => window.location.href = 'index.html', 3200);
+            } else {
+                showToast('error', 'E-mail não encontrado', 'Verifique o e-mail cadastrado e tente novamente.');
+            }
+        });
+    </script>
 </body>
 </html>

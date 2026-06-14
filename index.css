@@ -18,11 +18,14 @@ body {
 
 .titulo {
     font-size: 1.8rem;
-    flex-grow: 1;
+    flex: 1;
     text-align: center;
+    margin: 0 20px;
 }
 
-.espacador { width: 100px; } /* Auxilia na centralização perfeita do título */
+.header-toggle {
+    margin-left: auto;
+}
 
 /* CONTAINER PRINCIPAL */
 .container {

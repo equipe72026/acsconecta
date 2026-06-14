@@ -50,9 +50,6 @@ input[type="reset"] {
     padding: 18px 20px;
     background: rgba(255,255,255,0.95);
     box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-    position: sticky;
-    top: 0;
-    z-index: 50;
 }
 
 .logo {
@@ -228,16 +225,103 @@ input[type="reset"] {
     margin-top: 16px;
 }
 
-table {
+.filtro-mes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    align-items: flex-end;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 18px;
+    padding: 18px;
+    box-shadow: 0 16px 40px rgba(15, 23, 42, 0.06);
+    margin-bottom: 24px;
+}
+
+.filtro-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 220px;
+    flex: 1 1 220px;
+}
+
+.filtro-mes label {
+    font-weight: 700;
+    color: #334155;
+}
+
+.filtro-mes select,
+.filtro-mes input {
+    width: 100%;
+    border-radius: 12px;
+    border: 1px solid #cbd5e1;
+    padding: 12px 14px;
+    background: #ffffff;
+    color: #0f172a;
+}
+
+@media (max-width: 940px) {
+    .filtro-mes {
+        align-items: stretch;
+    }
+
+    .filtro-item {
+        flex: 1 1 100%;
+    }
+}
+
+.resumo-relatorio {
+    display: grid;
+    gap: 18px;
+    margin-bottom: 24px;
+}
+
+.resumo-cards {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.card-resumo {
+    background: white;
+    border-radius: 18px;
+    padding: 22px;
+    box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
+}
+
+.card-resumo h3 {
+    font-size: 0.98rem;
+    color: #475569;
+    margin-bottom: 12px;
+}
+
+.resumo-relatorio h2,
+.detalhes-relatorio h2 {
+    margin-bottom: 14px;
+    color: #0f172a;
+    font-size: 1.25rem;
+}
+
+.resumo-relatorio h2 {
+    text-align: center;
+    width: 100%;
+}
+
+#tabela-visitas {
     width: 100%;
     border-collapse: collapse;
     min-width: 600px;
+    background: white;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 14px 30px rgba(15, 23, 42, 0.07);
 }
 
 th,
 td {
     text-align: left;
-    padding: 14px 12px;
+    padding: 14px 16px;
     border-bottom: 1px solid #e5e7eb;
     vertical-align: top;
 }
@@ -246,6 +330,33 @@ th {
     background: #f8fafc;
     font-weight: 700;
     color: #334155;
+}
+
+tbody tr:hover {
+    background: #f8fafc;
+}
+
+#sem-dados {
+    margin-top: 20px;
+    text-align: center;
+    padding: 24px;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 18px;
+    box-shadow: 0 16px 40px rgba(15, 23, 42, 0.05);
+}
+
+#sem-dados p {
+    margin: 0;
+    color: #475569;
+    font-size: 1rem;
+}
+
+.container h1 {
+    margin-bottom: 20px;
+    font-size: clamp(1.7rem, 2.4vw, 2.2rem);
+    color: #0f172a;
+    font-weight: 800;
 }
 
 @media (max-width: 860px) {

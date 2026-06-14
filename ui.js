@@ -4,6 +4,33 @@
 //  <script src="ui.js"></script>
 // ============================================================
 
+// --- Tema do SevenSys (modo claro/escuro) ---
+const SS_THEME_STORAGE_KEY = 'modoNoturno';
+
+function applyTheme(isDark) {
+    document.body.classList.toggle('dark-mode', isDark);
+    const toggle = document.getElementById('ss-dark-mode-toggle');
+    if (toggle) toggle.textContent = isDark ? 'Modo Claro' : 'Modo Noturno';
+}
+
+function setTheme(isDark) {
+    localStorage.setItem(SS_THEME_STORAGE_KEY, isDark ? 'true' : 'false');
+    applyTheme(isDark);
+}
+
+function toggleDarkMode() {
+    setTheme(localStorage.getItem(SS_THEME_STORAGE_KEY) !== 'true');
+}
+
+function initTheme() {
+    const savedTheme = localStorage.getItem(SS_THEME_STORAGE_KEY);
+    if (savedTheme === null) {
+        setTheme(true);
+        return;
+    }
+    applyTheme(savedTheme === 'true');
+}
+
 // --- Injeta o HTML base (toast container + modal container) ---
 document.addEventListener('DOMContentLoaded', function () {
     // Container dos toasts
@@ -49,6 +76,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
         document.getElementById('ss-modal-cancel').addEventListener('click', ssCloseModal);
     }
+
+    initTheme();
+    const themeToggle = document.getElementById('ss-dark-mode-toggle');
+    if (themeToggle) themeToggle.addEventListener('click', toggleDarkMode);
 });
 
 // ============================================================

@@ -237,3 +237,763 @@
         max-width: 100%;
     }
 }
+
+/* --- Modo Escuro Global --- */
+body.dark-mode {
+    background: #050814;
+    color: #ffffff;
+}
+
+body.dark-mode * {
+    color: #ffffff !important;
+}
+
+body.dark-mode a {
+    color: #82c7ff !important;
+}
+
+body.dark-mode header,
+body.dark-mode .topo-pagina,
+body.dark-mode .container,
+body.dark-mode .card,
+body.dark-mode .card-resumo,
+body.dark-mode .login-form,
+body.dark-mode .table-responsive,
+body.dark-mode .filtro-mes,
+body.dark-mode #ss-modal-box,
+body.dark-mode .ss-toast,
+body.dark-mode .btn-entrar,
+body.dark-mode .btn-manager,
+body.dark-mode .btn-visita,
+body.dark-mode .botaoacs,
+body.dark-mode input,
+body.dark-mode select,
+body.dark-mode textarea,
+body.dark-mode button,
+body.dark-mode .container-botao,
+body.dark-mode .texto,
+body.dark-mode .lista,
+body.dark-mode .lista li,
+body.dark-mode .card-link,
+body.dark-mode .btn-detalhes,
+body.dark-mode .btn-excluir,
+body.dark-mode .btn-salvar,
+body.dark-mode .btn-adicionar,
+body.dark-mode .btn-salvar-visita,
+body.dark-mode .sairmenu,
+body.dark-mode .input-group input,
+body.dark-mode .input-group label,
+body.dark-mode .input-group textarea,
+body.dark-mode .input-group select,
+body.dark-mode #tabela-visitas,
+body.dark-mode th,
+body.dark-mode td,
+body.dark-mode .resumo-relatorio,
+body.dark-mode #sem-dados,
+body.dark-mode footer {
+    background: #0b1220 !important;
+    border-color: #2b3961 !important;
+    color: #ffffff !important;
+}
+
+body.dark-mode .topo-pagina {
+    background: rgba(8, 14, 28, 0.96) !important;
+}
+
+body.dark-mode .container {
+    background: transparent !important;
+}
+
+body.dark-mode .card,
+body.dark-mode .card-resumo,
+body.dark-mode .login-form,
+body.dark-mode .filtro-mes,
+body.dark-mode .table-responsive,
+body.dark-mode #ss-modal-box,
+body.dark-mode #sem-dados,
+body.dark-mode .botaoacs,
+body.dark-mode .sairmenu,
+body.dark-mode .btn-entrar,
+body.dark-mode .btn-manager,
+body.dark-mode .btn-visita,
+body.dark-mode .btn-detalhes,
+body.dark-mode .btn-excluir,
+body.dark-mode .btn-salvar,
+body.dark-mode .btn-adicionar,
+body.dark-mode .btn-salvar-visita {
+    background: #0d1327 !important;
+}
+
+body.dark-mode .botaoacs,
+body.dark-mode .sairmenu,
+body.dark-mode .btn-entrar,
+body.dark-mode .btn-manager,
+body.dark-mode .btn-visita,
+body.dark-mode .btn-detalhes,
+body.dark-mode .btn-excluir,
+body.dark-mode .btn-salvar,
+body.dark-mode .btn-adicionar,
+body.dark-mode .btn-salvar-visita {
+    border: 1px solid #2f4a7a !important;
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.05) inset, 0 10px 20px rgba(0,0,0,0.25) !important;
+}
+
+body.dark-mode .botaoacs:hover,
+body.dark-mode .btn-entrar:hover,
+body.dark-mode .btn-manager:hover,
+body.dark-mode .btn-visita:hover,
+body.dark-mode .btn-detalhes:hover,
+body.dark-mode .btn-excluir:hover,
+body.dark-mode .btn-salvar:hover,
+body.dark-mode .btn-adicionar:hover,
+body.dark-mode .btn-salvar-visita:hover,
+body.dark-mode .sairmenu:hover {
+    background: #1c2947 !important;
+    border-color: #4c7dd2 !important;
+}
+
+body.dark-mode input,
+body.dark-mode select,
+body.dark-mode textarea,
+body.dark-mode button {
+    background: #111828 !important;
+    border-color: #334155 !important;
+    color: #ffffff !important;
+}
+
+body.dark-mode th {
+    background: #111827 !important;
+    color: #ffffff !important;
+}
+
+body.dark-mode td {
+    border-color: #2f3f5f !important;
+}
+
+body.dark-mode .ss-toast {
+    background: #111827 !important;
+    color: #ffffff !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5) !important;
+}
+
+body.dark-mode .ss-toast-close {
+    color: #dbeafe !important;
+}
+
+body.dark-mode .ss-toast-close:hover {
+    color: #ffffff !important;
+}
+
+body.dark-mode .logo {
+    filter: brightness(0.95) contrast(1.1) !important;
+}
+
+/* --- Overrides específicos para painel de gerente em modo escuro --- */
+body.dark-mode .header,
+body.dark-mode .page,
+body.dark-mode .stats-bar,
+body.dark-mode .stat-card,
+body.dark-mode .section-header,
+body.dark-mode .section-title,
+body.dark-mode .table-wrap,
+body.dark-mode table,
+body.dark-mode thead tr,
+body.dark-mode tbody tr,
+body.dark-mode .agent-login,
+body.dark-mode .badge,
+body.dark-mode .badge-unit,
+body.dark-mode .empty-state,
+body.dark-mode .modal-overlay,
+body.dark-mode .modal-box,
+body.dark-mode .modal-header,
+body.dark-mode .modal-body,
+body.dark-mode .detail-grid,
+body.dark-mode .detail-item,
+body.dark-mode .report-filter,
+body.dark-mode .report-search,
+body.dark-mode .report-count,
+body.dark-mode .visit-card,
+body.dark-mode .visit-card-header,
+body.dark-mode .visit-card-body,
+body.dark-mode .family-report-block,
+body.dark-mode .family-report-header,
+body.dark-mode .family-report-visits,
+body.dark-mode .tab-btn,
+body.dark-mode .family-report-title,
+body.dark-mode .family-report-meta,
+body.dark-mode .visit-family,
+body.dark-mode .visit-date,
+body.dark-mode .detail-item .d-value,
+body.dark-mode .search-input {
+    background: #0c1220 !important;
+    border-color: #24344f !important;
+    color: #ffffff !important;
+}
+
+body.dark-mode .modal-overlay {
+    background: rgba(0,0,0,0.9) !important;
+}
+
+body.dark-mode .modal-box,
+body.dark-mode #modalGerente > div {
+    background: #0b1220 !important;
+    border: 1px solid #334155 !important;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.55) !important;
+}
+
+body.dark-mode .modal-body,
+body.dark-mode .modal-header,
+body.dark-mode .modal-close,
+body.dark-mode #modalGerente > div {
+    background: transparent !important;
+    color: #ffffff !important;
+}
+
+body.dark-mode #modalGerente {
+    background: rgba(0,0,0,0.9) !important;
+}
+
+body.dark-mode #modalGerente button,
+body.dark-mode #modalGerente label,
+body.dark-mode #modalGerente p,
+body.dark-mode #modalGerente h2,
+body.dark-mode #modalGerente input {
+    color: #ffffff !important;
+}
+
+body.dark-mode #modalGerente input {
+    background: #111827 !important;
+    border-color: #334155 !important;
+}
+
+body.dark-mode #modalGerente button[onclick="verificarGerenteModal()"],
+body.dark-mode #modalGerente .btn-verificar,
+body.dark-mode #modalGerente button {
+    background: #16203b !important;
+    color: #ffffff !important;
+}
+
+body.dark-mode #modalGerente button:hover {
+    background: #1f3354 !important;
+}
+
+body.dark-mode .modal-header {
+    border-bottom: 1px solid #334155 !important;
+}
+
+body.dark-mode .modal-close:hover {
+    background: rgba(255,255,255,0.18) !important;
+}
+
+body.dark-mode .header {
+    box-shadow: 0 2px 14px rgba(0,0,0,0.45) !important;
+}
+
+body.dark-mode .stat-card {
+    box-shadow: 0 20px 40px rgba(0,0,0,0.25) !important;
+}
+
+body.dark-mode .section-title::before {
+    background: #109ea3 !important;
+}
+
+body.dark-mode .btn-primary,
+body.dark-mode .btn-danger,
+body.dark-mode .btn-info,
+body.dark-mode .btn-success,
+body.dark-mode .btn-outline,
+body.dark-mode .btn-back,
+body.dark-mode .botaoacs,
+body.dark-mode .sairmenu {
+    background: #0f1720 !important;
+    border-color: #2f4a7a !important;
+    color: #ffffff !important;
+}
+
+body.dark-mode .btn-primary:hover,
+body.dark-mode .btn-danger:hover,
+body.dark-mode .btn-info:hover,
+body.dark-mode .btn-success:hover,
+body.dark-mode .btn-outline:hover,
+body.dark-mode .btn-back:hover,
+body.dark-mode .botaoacs:hover,
+body.dark-mode .sairmenu:hover {
+    background: #16203b !important;
+}
+
+body.dark-mode .btn-outline {
+    background: rgba(16,158,163,0.08) !important;
+    color: #7dd3fc !important;
+}
+
+body.dark-mode .visit-card-header {
+    background: rgba(16,158,163,0.12) !important;
+}
+
+body.dark-mode .family-report-header {
+    background: #0f1720 !important;
+}
+
+body.dark-mode .family-report-header:hover {
+    background: #111b33 !important;
+}
+
+body.dark-mode .report-search:focus {
+    border-color: #109ea3 !important;
+    box-shadow: 0 0 0 3px rgba(16,158,163,0.2) !important;
+}
+
+body.dark-mode .modal-close {
+    background: rgba(255,255,255,0.12) !important;
+}
+
+body.dark-mode .detail-item .d-label,
+body.dark-mode .family-report-meta,
+body.dark-mode .visit-address,
+body.dark-mode .visit-card-body,
+body.dark-mode .empty-state,
+body.dark-mode .report-count,
+body.dark-mode .tab-btn {
+    color: #cbd5e1 !important;
+}
+
+body.dark-mode .tab-btn.active {
+    color: #7dd3fc !important;
+    border-bottom-color: #7dd3fc !important;
+}
+
+body.dark-mode .tab-btn:hover:not(.active) {
+    color: #e2e8f0 !important;
+}
+
+body.dark-mode .visit-date {
+    background: #109ea3 !important;
+}
+
+body.dark-mode .family-report-title {
+    color: #ffffff !important;
+}
+
+body.dark-mode .container-cadastro,
+body.dark-mode .verificacao-box,
+body.dark-mode .form-agente,
+body.dark-mode .fieldset-dados,
+body.dark-mode .form-group,
+body.dark-mode .radio-group,
+body.dark-mode .form-group label,
+body.dark-mode .radio-group label,
+body.dark-mode .btn-verificar,
+body.dark-mode .btn-submit,
+body.dark-mode .btn-reset,
+body.dark-mode .btn-cancel,
+body.dark-mode .btn-voltar,
+body.dark-mode .titulo,
+body.dark-mode .container-cadastro,
+body.dark-mode .form-buttons,
+body.dark-mode .form-group input,
+body.dark-mode .form-group select,
+body.dark-mode .form-group textarea,
+body.dark-mode .search-input {
+    background: #0c1220 !important;
+    border-color: #334155 !important;
+    color: #ffffff !important;
+}
+
+body.dark-mode .verificacao-box,
+body.dark-mode .form-agente {
+    box-shadow: 0 20px 40px rgba(0,0,0,0.35) !important;
+}
+
+body.dark-mode #verificacao-gerente,
+body.dark-mode .verificacao-box {
+    background: #0b1221 !important;
+    border: 1px solid #334155 !important;
+    color: #ffffff !important;
+}
+
+body.dark-mode #verificacao-gerente h2,
+body.dark-mode #verificacao-gerente p,
+body.dark-mode #verificacao-gerente .form-group label {
+    color: #ffffff !important;
+}
+
+body.dark-mode #verificacao-gerente input {
+    background: #111827 !important;
+    border: 1px solid #334155 !important;
+    color: #ffffff !important;
+}
+
+body.dark-mode #verificacao-gerente .btn-verificar {
+    background: #16203b !important;
+    border: 1px solid #4c7dd2 !important;
+    color: #ffffff !important;
+}
+
+body.dark-mode #verificacao-gerente .btn-verificar:hover {
+    background: #1f3354 !important;
+}
+
+body.dark-mode .fieldset-dados {
+    border-color: #2f4a7a !important;
+    background: #0f1720 !important;
+}
+
+body.dark-mode .form-group label,
+body.dark-mode .radio-group label,
+body.dark-mode .verificacao-box h2,
+body.dark-mode .fieldset-dados legend h2,
+body.dark-mode .btn-verificar,
+body.dark-mode .btn-submit,
+body.dark-mode .btn-reset,
+body.dark-mode .btn-cancel,
+body.dark-mode .btn-voltar,
+body.dark-mode .titulo {
+    color: #ffffff !important;
+}
+
+body.dark-mode .btn-verificar,
+body.dark-mode .btn-submit,
+body.dark-mode .btn-reset,
+body.dark-mode .btn-cancel,
+body.dark-mode .btn-voltar {
+    background: #16203b !important;
+    border: 1px solid #4c7dd2 !important;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25) !important;
+}
+
+body.dark-mode .btn-verificar:hover,
+body.dark-mode .btn-submit:hover,
+body.dark-mode .btn-reset:hover,
+body.dark-mode .btn-cancel:hover,
+body.dark-mode .btn-voltar:hover {
+    background: #1f3354 !important;
+}
+
+body.dark-mode input::placeholder,
+body.dark-mode select::placeholder {
+    color: rgba(255,255,255,0.7) !important;
+}
+
+body.dark-mode option,
+body.dark-mode optgroup,
+body.dark-mode optgroup option,
+body.dark-mode .text-black,
+body.dark-mode .unid {
+    color: #ffffff !important;
+    background: #0c1220 !important;
+}
+
+body.dark-mode .radio-group input[type="radio"] {
+    accent-color: #82c7ff !important;
+}
+
+body.dark-mode .form-group input,
+body.dark-mode .form-group select,
+body.dark-mode .form-group textarea,
+body.dark-mode .search-input {
+    border: 1px solid #334155 !important;
+    background: #0f1720 !important;
+    color: #ffffff !important;
+}
+
+body.dark-mode .form-group select {
+    color: #ffffff !important;
+}
+
+/* --- Overrides para páginas de famílias e visitas --- */
+body.dark-mode .container-listagem,
+body.dark-mode .container-familias,
+body.dark-mode .modal-content,
+body.dark-mode .modal-edicao-box,
+body.dark-mode .modal-edicao-header,
+body.dark-mode .modal-edicao-body,
+body.dark-mode .modal-edicao-footer,
+body.dark-mode .alerta-topo,
+body.dark-mode .familia-item,
+body.dark-mode .modal-edicao-button,
+body.dark-mode .btn-visitar,
+body.dark-mode .relatorio-box {
+    background: #0d1327 !important;
+    border-color: #334155 !important;
+    color: #ffffff !important;
+}
+
+body.dark-mode .container-listagem,
+body.dark-mode .container-familias {
+    box-shadow: none !important;
+}
+
+body.dark-mode .familia-item {
+    box-shadow: 0 12px 30px rgba(0,0,0,0.36) !important;
+}
+
+body.dark-mode .familia-item {
+    border-left-color: #38bdf8 !important;
+}
+
+body.dark-mode .info-principal,
+body.dark-mode .nome-familia,
+body.dark-mode .endereco-familia,
+body.dark-mode .status-visita,
+body.dark-mode .tag-data,
+body.dark-mode .relatorio-box,
+body.dark-mode .acoes-visita,
+body.dark-mode .acoes,
+body.dark-mode .detalhes {
+    color: #e2e8f0 !important;
+}
+
+body.dark-mode .nome-familia {
+    color: #ffffff !important;
+}
+
+body.dark-mode .endereco-familia,
+body.dark-mode .status-visita,
+body.dark-mode .info-principal {
+    color: #cbd5e1 !important;
+}
+
+body.dark-mode .alerta-topo {
+    background: #111827 !important;
+    border-color: #334155 !important;
+    color: #e2e8f0 !important;
+}
+
+body.dark-mode .modal-edicao-close {
+    color: #cbd5e1 !important;
+}
+
+body.dark-mode .modal-edicao-body p,
+body.dark-mode .modal-edicao-body textarea {
+    color: #e2e8f0 !important;
+}
+
+body.dark-mode .modal-edicao-body textarea {
+    background: #111827 !important;
+    border-color: #334155 !important;
+    box-shadow: inset 0 1px 2px rgba(255,255,255,0.06) !important;
+}
+
+body.dark-mode .modal-edicao-button {
+    background: #16203b !important;
+    color: #ffffff !important;
+    border: 1px solid #334155 !important;
+}
+
+body.dark-mode .modal-edicao-button.cancel {
+    background: #0f1720 !important;
+}
+
+body.dark-mode .modal-edicao-button.save {
+    background: #109ea3 !important;
+}
+
+body.dark-mode .btn-visitar,
+body.dark-mode .btn-visita,
+body.dark-mode .btn-detalhes,
+body.dark-mode .btn-excluir,
+body.dark-mode .btn-editar,
+body.dark-mode .btn-salvar,
+body.dark-mode .btn-adicionar,
+body.dark-mode .btn-salvar-visita,
+body.dark-mode .btn-voltar {
+    background: #16203b !important;
+    border-color: #334155 !important;
+    color: #ffffff !important;
+}
+
+body.dark-mode .btn-visitar:hover,
+body.dark-mode .btn-editar:hover,
+body.dark-mode .btn-excluir:hover,
+body.dark-mode .btn-salvar:hover,
+body.dark-mode .btn-adicionar:hover,
+body.dark-mode .btn-salvar-visita:hover,
+body.dark-mode .btn-voltar:hover {
+    background: #1f3354 !important;
+}
+
+body.dark-mode .modal-edicao-header,
+body.dark-mode .modal-edicao-body,
+body.dark-mode .modal-edicao-footer {
+    background: #0c1220 !important;
+}
+
+/* --- Overrides para página de recuperação de senha --- */
+body.dark-mode .container-recuperacao {
+    background: transparent !important;
+    color: #ffffff !important;
+}
+
+body.dark-mode .card-recuperacao {
+    background: #0d1327 !important;
+    border-color: #334155 !important;
+    color: #ffffff !important;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.45) !important;
+    border-top-color: #109ea3 !important;
+}
+
+body.dark-mode .card-recuperacao h3,
+body.dark-mode .form-grupo label,
+body.dark-mode .link-voltar-login,
+body.dark-mode .form-grupo input[type="email"] {
+    color: #e2e8f0 !important;
+}
+
+body.dark-mode .form-grupo input[type="email"] {
+    background: #111827 !important;
+    border-color: #334155 !important;
+}
+
+body.dark-mode .form-grupo input[type="email"]:focus {
+    box-shadow: 0 0 5px rgba(16, 158, 163, 0.35) !important;
+}
+
+body.dark-mode .btn-enviar {
+    background: #109ea3 !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4) !important;
+}
+
+body.dark-mode .btn-enviar:hover {
+    background: #0d7a7e !important;
+}
+
+body.dark-mode .link-voltar-login:hover {
+    color: #7dd3fc !important;
+}
+
+body.dark-mode .membro-bloco {
+    background: #0b1220 !important;
+    border-color: #334155 !important;
+}
+
+body.dark-mode .checkbox-group {
+    background: #0d1424 !important;
+    border-color: #334155 !important;
+}
+
+body.dark-mode .check-item,
+body.dark-mode .campo-item label,
+body.dark-mode .titulo,
+body.dark-mode .relatorio p,
+body.dark-mode .relatorio h3,
+body.dark-mode .lista-alertas {
+    color: #e2e8f0 !important;
+}
+
+body.dark-mode .relatorio {
+    background: #0b1221 !important;
+    border-top-color: #109ea3 !important;
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.35) !important;
+}
+
+body.dark-mode .lista-alertas {
+    color: #fda4af !important;
+}
+
+body.dark-mode .campo-item input,
+body.dark-mode .campo-item select,
+body.dark-mode .campo-item textarea {
+    background: #111827 !important;
+    border-color: #334155 !important;
+    color: #ffffff !important;
+}
+
+body.dark-mode .filtro-mes {
+    background: #0b1220 !important;
+    border-color: #334155 !important;
+    box-shadow: 0 16px 40px rgba(0,0,0,0.25) !important;
+}
+
+body.dark-mode .filtro-mes label {
+    color: #cbd5e1 !important;
+}
+
+body.dark-mode .filtro-mes select,
+body.dark-mode .filtro-mes input {
+    background: #111827 !important;
+    border-color: #334155 !important;
+    color: #ffffff !important;
+}
+
+body.dark-mode .resumo-relatorio,
+body.dark-mode .card-resumo,
+body.dark-mode .detalhes-relatorio,
+body.dark-mode #tabela-visitas,
+body.dark-mode #sem-dados,
+body.dark-mode #tabela-visitas th,
+body.dark-mode #tabela-visitas td {
+    background: #0d1327 !important;
+    border-color: #334155 !important;
+    color: #ffffff !important;
+}
+
+body.dark-mode .card-resumo {
+    box-shadow: 0 16px 40px rgba(0,0,0,0.35) !important;
+}
+
+body.dark-mode #tabela-visitas {
+    box-shadow: 0 14px 30px rgba(0,0,0,0.25) !important;
+}
+
+body.dark-mode #tabela-visitas th {
+    background: #111827 !important;
+}
+
+body.dark-mode tbody tr:hover {
+    background: rgba(255,255,255,0.04) !important;
+}
+
+body.dark-mode #sem-dados {
+    background: #0c1220 !important;
+}
+
+body.dark-mode .resumo-relatorio h2,
+body.dark-mode .detalhes-relatorio h2,
+body.dark-mode .container h1 {
+    color: #ffffff !important;
+}
+
+body.dark-mode .numero-exibicao {
+    color: #7dd3fc !important;
+}
+
+body.dark-mode .modal-edicao-box {
+    box-shadow: 0 24px 80px rgba(0,0,0,0.45) !important;
+}
+
+body.dark-mode .modal { background: rgba(0,0,0,0.82) !important; }
+
+body.dark-mode .modal-content {
+    background: #0f1725 !important;
+    border: 1px solid #334155 !important;
+}
+
+body.dark-mode .modal .fechar-modal {
+    background: #16203b !important;
+    color: #ffffff !important;
+}
+
+body.dark-mode .modal .fechar-modal:hover {
+    background: #1f3354 !important;
+}
+
+
+body.dark-mode .form-group option {
+    background: #0c1220 !important;
+}
+
+body.dark-mode .form-group optgroup {
+    color: #ffffff !important;
+}
+
+body.dark-mode .form-group optgroup option {
+    color: #ffffff !important;
+}
+
+body.dark-mode .family-report-meta,
+body.dark-mode .visit-address,
+body.dark-mode .detail-item .d-value {
+    color: #cbd5e1 !important;
+}
+

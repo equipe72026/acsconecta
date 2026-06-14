@@ -6,6 +6,7 @@
     <title>Relatório Mensal - Área ACS</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="areacas.css">
+    <link rel="stylesheet" href="ui.css">
 </head>
 <body>
     <header class="topo-pagina">
@@ -18,42 +19,48 @@
         <h1>Relatório de Visitas Mensais</h1>
         
         <div class="filtro-mes">
-            <label for="mes-selecionado">Selecione o mês:</label>
-            <select id="mes-selecionado" onchange="carregarRelatorio()">
-                <option value="">Selecione...</option>
-                <option value="0">Janeiro</option>
-                <option value="1">Fevereiro</option>
-                <option value="2">Março</option>
-                <option value="3">Abril</option>
-                <option value="4">Maio</option>
-                <option value="5">Junho</option>
-                <option value="6">Julho</option>
-                <option value="7">Agosto</option>
-                <option value="8">Setembro</option>
-                <option value="9">Outubro</option>
-                <option value="10">Novembro</option>
-                <option value="11">Dezembro</option>
-            </select>
-            <label for="ano-selecionado">Ano:</label>
-            <select id="ano-selecionado" onchange="carregarRelatorio()">
-                <option value="">Selecione...</option>
-            </select>
+            <div class="filtro-item">
+                <label for="mes-selecionado">Selecione o mês:</label>
+                <select id="mes-selecionado" onchange="carregarRelatorio()">
+                    <option value="">Selecione...</option>
+                    <option value="0">Janeiro</option>
+                    <option value="1">Fevereiro</option>
+                    <option value="2">Março</option>
+                    <option value="3">Abril</option>
+                    <option value="4">Maio</option>
+                    <option value="5">Junho</option>
+                    <option value="6">Julho</option>
+                    <option value="7">Agosto</option>
+                    <option value="8">Setembro</option>
+                    <option value="9">Outubro</option>
+                    <option value="10">Novembro</option>
+                    <option value="11">Dezembro</option>
+                </select>
+            </div>
+            <div class="filtro-item">
+                <label for="ano-selecionado">Ano:</label>
+                <select id="ano-selecionado" onchange="carregarRelatorio()">
+                    <option value="">Selecione...</option>
+                </select>
+            </div>
+            <div class="filtro-item">
+                <label for="pesquisa-familia">Buscar família:</label>
+                <input id="pesquisa-familia" type="text" placeholder="Nome da família" oninput="carregarRelatorio()">
+            </div>
         </div>
 
-        <div id="relatorio-conteudo" style="display: none;">
+        <div id="relatorio-conteudo" class="relatorio-conteudo" style="display: none;">
             <div class="resumo-relatorio">
                 <h2>Resumo do Mês</h2>
-                <div class="card-resumo">
-                    <h3>Total de Visitas</h3>
-                    <span id="total-visitas" class="numero-exibicao">0</span>
-                </div>
-                <div class="card-resumo">
-                    <h3>Famílias Visitadas</h3>
-                    <span id="familias-visitadas" class="numero-exibicao">0</span>
-                </div>
-                <div class="card-resumo">
-                    <h3>Visitas Realizadas</h3>
-                    <span id="visitas-realizadas" class="numero-exibicao">0</span>
+                <div class="resumo-cards">
+                    <div class="card-resumo">
+                        <h3>Total de Visitas</h3>
+                        <span id="total-visitas" class="numero-exibicao">0</span>
+                    </div>
+                    <div class="card-resumo">
+                        <h3>Famílias Visitadas</h3>
+                        <span id="familias-visitadas" class="numero-exibicao">0</span>
+                    </div>
                 </div>
             </div>
 
@@ -76,7 +83,7 @@
             </div>
         </div>
 
-        <div id="sem-dados" style="display: none; text-align: center; padding: 20px;">
+        <div id="sem-dados" class="sem-dados" style="display: none;">
             <p>Nenhuma visita encontrada para o período selecionado.</p>
         </div>
     </div>
@@ -108,9 +115,25 @@
             carregarRelatorio();
         });
 
+        function parseDataVisita(dataString) {
+            if (!dataString) return null;
+            // Suporta texto no formato pt-BR (dd/mm/yyyy) e ISO (yyyy-mm-dd)
+            const partes = dataString.split('/');
+            if (partes.length === 3) {
+                const dia = parseInt(partes[0], 10);
+                const mes = parseInt(partes[1], 10) - 1;
+                const ano = parseInt(partes[2], 10);
+                const data = new Date(ano, mes, dia);
+                return isNaN(data.getTime()) ? null : data;
+            }
+            const dataIso = new Date(dataString);
+            return isNaN(dataIso.getTime()) ? null : dataIso;
+        }
+
         function carregarRelatorio() {
             const mes = document.getElementById('mes-selecionado').value;
             const ano = document.getElementById('ano-selecionado').value;
+            const filtroFamilia = document.getElementById('pesquisa-familia').value.trim().toLowerCase();
             const loginSalvo = sessionStorage.getItem('loginUsuario');
 
             if (mes === '' || ano === '') {
@@ -125,8 +148,14 @@
             
             // Filtrar visitas pelo mês e ano selecionados
             const visitasFiltradas = visitas.filter(visita => {
-                const dataVisita = new Date(visita.dataVisita);
-                return dataVisita.getMonth() === parseInt(mes) && dataVisita.getFullYear() === parseInt(ano);
+                const dataVisita = parseDataVisita(visita.dataVisita);
+                if (!dataVisita || dataVisita.getMonth() !== parseInt(mes, 10) || dataVisita.getFullYear() !== parseInt(ano, 10)) {
+                    return false;
+                }
+                if (filtroFamilia) {
+                    return visita.nomeFamilia && visita.nomeFamilia.toLowerCase().includes(filtroFamilia);
+                }
+                return true;
             });
 
             if (visitasFiltradas.length === 0) {
@@ -143,17 +172,16 @@
             
             const familiasUnicas = new Set(visitasFiltradas.map(v => v.nomeFamilia));
             document.getElementById('familias-visitadas').textContent = familiasUnicas.size;
-            
-            document.getElementById('visitas-realizadas').textContent = visitasFiltradas.length;
 
             // Preencher tabela
             const corpoTabela = document.getElementById('corpo-tabela');
             corpoTabela.innerHTML = '';
 
-            visitasFiltradas.sort((a, b) => new Date(a.dataVisita) - new Date(b.dataVisita)).forEach(visita => {
+            visitasFiltradas.sort((a, b) => parseDataVisita(a.dataVisita) - parseDataVisita(b.dataVisita)).forEach(visita => {
+                const dataFormatada = parseDataVisita(visita.dataVisita);
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                    <td>${new Date(visita.dataVisita).toLocaleDateString('pt-BR')}</td>
+                    <td>${dataFormatada ? dataFormatada.toLocaleDateString('pt-BR') : visita.dataVisita}</td>
                     <td>${visita.nomeFamilia || 'N/A'}</td>
                     <td>Visita Domiciliar</td>
                     <td>${visita.relatorio || '-'}</td>
@@ -162,5 +190,6 @@
             });
         }
     </script>
+    <script src="ui.js"></script>
 </body>
 </html>

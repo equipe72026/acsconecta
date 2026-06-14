@@ -221,11 +221,13 @@
             background: var(--card);
             border-radius: var(--radius);
             box-shadow: var(--shadow);
-            overflow: hidden;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
         table {
             width: 100%;
+            min-width: 760px;
             border-collapse: collapse;
             font-size: 0.9rem;
         }
@@ -753,6 +755,7 @@
             ['Sexo',             agenteAtivo.sexo === 'M' ? 'Masculino' : agenteAtivo.sexo === 'F' ? 'Feminino' : '—'],
             ['CPF',              agenteAtivo.cpf || '—'],
             ['Telefone',         agenteAtivo.telefone || '—'],
+            ['E-mail',           agenteAtivo.email || '—'],
             ['Endereço',         agenteAtivo.endereco || '—'],
             ['Unidade de Saúde', agenteAtivo.unidadeSaude || '—'],
             ['Matrícula',        agenteAtivo.matricula || '—'],

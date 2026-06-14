@@ -86,8 +86,14 @@ nav {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 10px 40px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    gap: 12px;
+    padding: 18px 20px;
+    background: rgba(255,255,255,0.95);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+
+body {
+    padding-top: 0;
 }
 
 .logo {

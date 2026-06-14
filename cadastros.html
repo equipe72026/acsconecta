@@ -9,13 +9,13 @@
     <link rel="stylesheet" href="ui.css">
 </head>
 <body>
-    <div class="container-cadastro">
-        <header class="topo-pagina">
-            <a href="index.html"><img src="img/semfindo.png" alt="Logo" class="logo"></a>
-            <h2 class="titulo">Cadastro de Agente de Saúde</h2>
-            <a href="gerentedash.html" class="btn-voltar">← Voltar</a>
-        </header>
+    <header class="topo-pagina">
+        <a href="index.html"><img src="img/semfindo.png" alt="Logo" class="logo"></a>
+        <h2 class="titulo">Cadastro de Agente de Saúde</h2>
+        <a href="gerentedash.html" class="btn-voltar">← Voltar</a>
+    </header>
 
+    <div class="container-cadastro">
         <div id="verificacao-gerente" class="verificacao-box">
             <h2> Verificação de Gerente</h2>
             <p>Por favor, identifique-se para continuar</p>
@@ -59,6 +59,11 @@
                 <div class="form-group">
                     <label for="tel">Telefone:</label>
                     <input type="tel" name="itel" id="tel" maxlength="15" placeholder="(XX) XXXXX-XXXX" oninput="mascaraTelefone(this)" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">E-mail:</label>
+                    <input type="email" name="iemail" id="email" placeholder="email@exemplo.com" required>
                 </div>
 
                 <div class="form-group">
@@ -130,7 +135,6 @@
             <div class="form-buttons">
                 <button type="submit" class="btn-submit">Cadastrar Agente</button>
                 <button type="reset" class="btn-reset">Limpar Formulário</button>
-                <a href="index.html" class="btn-cancel">Cancelar</a>
             </div>
         </form>
     </div>
@@ -200,6 +204,7 @@
                 sexo: document.querySelector('input[name="sexo"]:checked').value,
                 cpf: document.getElementById('cpf').value,
                 telefone: document.getElementById('tel').value,
+                email: document.getElementById('email').value,
                 endereco: document.getElementById('end').value,
                 unidadeSaude: document.getElementById('unit').value,
                 matricula: document.getElementById('matricula').value,
