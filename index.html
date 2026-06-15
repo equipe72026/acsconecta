@@ -9,9 +9,9 @@
     <link rel="stylesheet" href="ui.css">
 </head>
 <body>
-    <header class="topo-pagina">
-        <img src="img/semfindo.png" alt="Logo" class="logo">
-        <h1 class="titulo">Sejam Bem-Vindos!</h1>
+    <header class="topo-pagina" style="padding: 10px 20px; min-height: auto; height: auto; flex-wrap: wrap; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.95); display: flex;">
+        <img src="img/semfindo.png" alt="Logo" class="logo" style="max-height: 38px; width: auto;">
+        <h1 class="titulo" style="font-family: 'Segoe UI', Arial, sans-serif; font-size: 1.25rem; font-weight: 700; color: #109ea3; letter-spacing: -0.3px; margin: 0; padding: 4px 0; text-align: center; flex: 1;">Sejam Bem-Vindos!</h1>
         <button id="ss-dark-mode-toggle" class="botaoacs header-toggle" type="button">Modo Noturno</button>
     </header>
 
@@ -27,7 +27,7 @@
 
             <h2>Transformando a Gestão da Saúde</h2>
             <p>
-                Unimos tecnologia com a realidade das comunidades para oferecer uma solução com inteligência e cuidado.
+                Unimos tecnologia com a realidade das comunidades para offercer uma solução com inteligência e cuidado.
             </p>
 
             <h3>Destaques da Plataforma</h3>
@@ -46,8 +46,32 @@
         <img src="img/acsmulher600.png" alt="ACS Mulher" class="img-lateral">
     </main>
 
-    <a style="text-align: center;">
-        <p>©SevenSys - 2026</p></a>
-<script src="ui.js"></script>
-    </body>
+    <a style="display: none;" href="sobre.html"></a>
+
+    <script src="ui.js"></script>
+    <script>
+        // Gerenciamento simples do Modo Noturno para a Index
+        const toggleBtn = document.getElementById('ss-dark-mode-toggle');
+        
+        // Verifica se já tinha uma preferência salva
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.classList.add('dark-mode');
+            if(toggleBtn) toggleBtn.textContent = 'Modo Claro';
+        }
+
+        if(toggleBtn) {
+            toggleBtn.addEventListener('click', () => {
+                document.body.classList.toggle('dark-mode');
+                
+                if (document.body.classList.contains('dark-mode')) {
+                    localStorage.setItem('theme', 'dark');
+                    toggleBtn.textContent = 'Modo Claro';
+                } else {
+                    localStorage.setItem('theme', 'light');
+                    toggleBtn.textContent = 'Modo Noturno';
+                }
+            });
+        }
+    </script>
+</body>
 </html>
