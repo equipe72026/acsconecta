@@ -495,6 +495,37 @@
         @media (max-width: 500px) {
             .stats-bar { grid-template-columns: 1fr; }
         }
+
+        /* ── Barra de cobertura ── */
+        .coverage-bar-wrap {
+            background: #e8ecee;
+            border-radius: 20px;
+            height: 10px;
+            min-width: 80px;
+            overflow: hidden;
+        }
+        .coverage-bar-fill {
+            height: 100%;
+            border-radius: 20px;
+            background: var(--green);
+            transition: width 0.4s;
+        }
+        .coverage-bar-fill.mid  { background: var(--amber); }
+        .coverage-bar-fill.low  { background: var(--red); }
+
+        .coverage-label {
+            font-size: 0.78rem;
+            font-weight: 700;
+            margin-bottom: 3px;
+        }
+
+        /* ── Print ── */
+        @media print {
+            .header, .section-header .btn, .btn-back,
+            #relFiltroAgente, #relFiltroPeriodo { display: none !important; }
+            .page { margin: 0; padding: 0; }
+            body { background: white !important; }
+        }
     </style>
     <link rel="stylesheet" href="ui.css">
     <script src="ui.js"></script>
@@ -536,6 +567,7 @@
         <div class="section-title">Agentes de Saúde</div>
         <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
             <input type="text" class="search-input" id="searchAgents" placeholder="🔍 Buscar agente..." oninput="filtrarAgentes()">
+            <button class="btn btn-success" onclick="abrirRelatorioGeral()">📊 Relatórios Gerais</button>
             <a href="cadastros.html" class="btn btn-primary">+ Cadastrar Agente</a>
         </div>
     </div>
@@ -565,6 +597,81 @@
         <a href="cadastros.html" class="btn btn-primary" style="margin-top:14px; display:inline-flex;">+ Cadastrar primeiro agente</a>
     </div>
 
+</div>
+
+
+<!-- ============================================================
+     MODAL: RELATÓRIOS GERAIS
+============================================================ -->
+<div class="modal-overlay" id="modalRelatorio">
+    <div class="modal-box" style="max-width:900px;">
+        <div class="modal-header" style="background: var(--green);">
+            <h3>📊 Relatórios Gerais</h3>
+            <button class="modal-close" onclick="fecharModal('modalRelatorio')">✕</button>
+        </div>
+        <div class="modal-body">
+
+            <!-- Filtros -->
+            <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:20px;">
+                <select id="relFiltroAgente" class="report-search" style="flex:none; width:auto;" onchange="gerarRelatorio()">
+                    <option value="">Todos os agentes</option>
+                </select>
+                <select id="relFiltroPeriodo" class="report-search" style="flex:none; width:auto;" onchange="gerarRelatorio()">
+                    <option value="">Todo o período</option>
+                    <option value="7">Últimos 7 dias</option>
+                    <option value="30">Últimos 30 dias</option>
+                    <option value="90">Últimos 90 dias</option>
+                </select>
+                <div style="margin-left:auto; display:flex; gap:8px; flex-wrap:wrap;">
+                    <button class="btn btn-success" onclick="exportarCSV()">⬇ Exportar CSV</button>
+                    <button class="btn btn-info" onclick="imprimirRelatorio()">🖨 Imprimir</button>
+                </div>
+            </div>
+
+            <!-- Cards de resumo -->
+            <div class="stats-bar" style="margin-bottom:20px;">
+                <div class="stat-card">
+                    <div class="stat-label">Agentes no filtro</div>
+                    <div class="stat-value" id="rel-agentes" style="color:var(--teal);">—</div>
+                </div>
+                <div class="stat-card green">
+                    <div class="stat-label">Famílias cadastradas</div>
+                    <div class="stat-value" id="rel-familias" style="color:var(--green);">—</div>
+                </div>
+                <div class="stat-card amber">
+                    <div class="stat-label">Visitas realizadas</div>
+                    <div class="stat-value" id="rel-visitas" style="color:var(--amber);">—</div>
+                </div>
+                <div class="stat-card purple">
+                    <div class="stat-label">Média visitas/agente</div>
+                    <div class="stat-value" id="rel-media" style="color:var(--purple);">—</div>
+                </div>
+            </div>
+
+            <!-- Tabela -->
+            <div class="table-wrap" id="relatorioWrap" style="overflow-x:auto;">
+                <table id="relatorioTable" style="min-width:640px;">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Agente</th>
+                            <th>Usuário</th>
+                            <th>Unidade de Saúde</th>
+                            <th>Famílias</th>
+                            <th>Visitas</th>
+                            <th>Pendentes</th>
+                            <th>Cobertura</th>
+                        </tr>
+                    </thead>
+                    <tbody id="relatorioBody"></tbody>
+                </table>
+            </div>
+            <div id="relatorioEmpty" class="no-reports" style="display:none;">
+                📋 Nenhum dado disponível para o filtro selecionado.
+            </div>
+
+        </div>
+    </div>
 </div>
 
 
@@ -652,7 +759,13 @@
         carregarAgentes();
         atualizarStats();
         renderizarTabela();
+        popularFiltroAgentes();
     });
+
+    function abrirRelatorioGeral() {
+        gerarRelatorio();
+        abrirModal('modalRelatorio');
+    }
 
     function carregarAgentes() {
         const salvos = JSON.parse(localStorage.getItem('agentesSaude') || '[]');
@@ -938,6 +1051,167 @@
         renderizarTabela(document.getElementById('searchAgents').value.toLowerCase());
 
         showToast('success', 'Agente removido', `Agente "${login}" removido com sucesso.`);
+    }
+
+    // ============================================================
+    // RELATÓRIOS GERAIS
+    // ============================================================
+
+    function popularFiltroAgentes() {
+        const sel = document.getElementById('relFiltroAgente');
+        // Mantém a opção "Todos"
+        sel.innerHTML = '<option value="">Todos os agentes</option>';
+        agentes.forEach(ag => {
+            const login = ag.usuario || ag.login;
+            const opt = document.createElement('option');
+            opt.value = login;
+            opt.textContent = ag.nome + ' (' + login + ')';
+            sel.appendChild(opt);
+        });
+    }
+
+    function gerarRelatorio() {
+        const filtroAgente  = document.getElementById('relFiltroAgente').value;
+        const filtroDias    = parseInt(document.getElementById('relFiltroPeriodo').value) || 0;
+        const agora         = new Date();
+
+        const lista = filtroAgente
+            ? agentes.filter(ag => (ag.usuario || ag.login) === filtroAgente)
+            : agentes;
+
+        const tbody = document.getElementById('relatorioBody');
+        tbody.innerHTML = '';
+
+        let totalFamilias = 0, totalVisitas = 0;
+
+        const linhas = lista.map((ag, idx) => {
+            const login    = ag.usuario || ag.login;
+            const familias = JSON.parse(localStorage.getItem(login + '_lista_familias') || '[]');
+            let historico  = JSON.parse(localStorage.getItem(login + '_historico_visitas') || '[]');
+
+            // Filtro por período
+            if (filtroDias > 0) {
+                historico = historico.filter(v => {
+                    if (!v.dataVisita) return false;
+                    // Suporta dd/mm/aaaa e aaaa-mm-dd
+                    const partes = v.dataVisita.includes('/')
+                        ? v.dataVisita.split('/').reverse().join('-')
+                        : v.dataVisita;
+                    const diff = (agora - new Date(partes)) / 86400000;
+                    return diff >= 0 && diff <= filtroDias;
+                });
+            }
+
+            const nVisitas  = historico.length;
+            const nFamilias = familias.length;
+            const pendentes = familias.filter(f =>
+                !historico.some(v => v.endereco && f.endereco &&
+                    v.endereco.trim().toLowerCase() === f.endereco.trim().toLowerCase())
+            ).length;
+            const cobertura = nFamilias > 0 ? Math.round((nFamilias - pendentes) / nFamilias * 100) : 0;
+            const corClass  = cobertura >= 75 ? '' : cobertura >= 40 ? 'mid' : 'low';
+
+            totalFamilias += nFamilias;
+            totalVisitas  += nVisitas;
+
+            return { ag, login, nFamilias, nVisitas, pendentes, cobertura, corClass, idx };
+        });
+
+        // Ordena por visitas (maior primeiro)
+        linhas.sort((a, b) => b.nVisitas - a.nVisitas);
+
+        if (linhas.length === 0 || (totalFamilias === 0 && totalVisitas === 0)) {
+            document.getElementById('relatorioWrap').style.display  = 'none';
+            document.getElementById('relatorioEmpty').style.display = 'block';
+        } else {
+            document.getElementById('relatorioWrap').style.display  = '';
+            document.getElementById('relatorioEmpty').style.display = 'none';
+        }
+
+        linhas.forEach((r, rank) => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td style="color:var(--muted); font-size:0.8rem;">${String(rank + 1).padStart(2,'0')}</td>
+                <td><div class="agent-name">${r.ag.nome}</div></td>
+                <td><span class="agent-login">${r.login}</span></td>
+                <td><span class="badge badge-unit">${r.ag.unidadeSaude || '—'}</span></td>
+                <td style="font-weight:700; color:var(--teal);">${r.nFamilias}</td>
+                <td style="font-weight:700; color:var(--green);">${r.nVisitas}</td>
+                <td style="font-weight:700; color:var(--red);">${r.pendentes}</td>
+                <td>
+                    <div class="coverage-label" style="color:${r.corClass === '' ? 'var(--green)' : r.corClass === 'mid' ? 'var(--amber)' : 'var(--red)'};">${r.cobertura}%</div>
+                    <div class="coverage-bar-wrap">
+                        <div class="coverage-bar-fill ${r.corClass}" style="width:${r.cobertura}%"></div>
+                    </div>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+        // Atualiza cards de resumo
+        const nAgentes = linhas.length;
+        document.getElementById('rel-agentes').textContent  = nAgentes;
+        document.getElementById('rel-familias').textContent = totalFamilias;
+        document.getElementById('rel-visitas').textContent  = totalVisitas;
+        document.getElementById('rel-media').textContent    = nAgentes > 0
+            ? (totalVisitas / nAgentes).toFixed(1)
+            : '0';
+    }
+
+    function exportarCSV() {
+        const filtroAgente = document.getElementById('relFiltroAgente').value;
+        const lista = filtroAgente
+            ? agentes.filter(ag => (ag.usuario || ag.login) === filtroAgente)
+            : agentes;
+
+        const filtroDias = parseInt(document.getElementById('relFiltroPeriodo').value) || 0;
+        const agora      = new Date();
+
+        let csv = '\uFEFF'; // BOM para Excel reconhecer UTF-8
+        csv += 'Nome,Usuário,Unidade de Saúde,Matrícula,Famílias Cadastradas,Visitas Realizadas,Visitas Pendentes,Cobertura (%)\n';
+
+        lista.forEach(ag => {
+            const login    = ag.usuario || ag.login;
+            const familias = JSON.parse(localStorage.getItem(login + '_lista_familias') || '[]');
+            let historico  = JSON.parse(localStorage.getItem(login + '_historico_visitas') || '[]');
+
+            if (filtroDias > 0) {
+                historico = historico.filter(v => {
+                    if (!v.dataVisita) return false;
+                    const partes = v.dataVisita.includes('/')
+                        ? v.dataVisita.split('/').reverse().join('-')
+                        : v.dataVisita;
+                    const diff = (agora - new Date(partes)) / 86400000;
+                    return diff >= 0 && diff <= filtroDias;
+                });
+            }
+
+            const nFamilias = familias.length;
+            const nVisitas  = historico.length;
+            const pendentes = familias.filter(f =>
+                !historico.some(v => v.endereco && f.endereco &&
+                    v.endereco.trim().toLowerCase() === f.endereco.trim().toLowerCase())
+            ).length;
+            const cobertura = nFamilias > 0 ? Math.round((nFamilias - pendentes) / nFamilias * 100) : 0;
+
+            const esc = v => '"' + String(v || '').replace(/"/g, '""') + '"';
+            csv += [esc(ag.nome), esc(login), esc(ag.unidadeSaude), esc(ag.matricula),
+                    nFamilias, nVisitas, pendentes, cobertura].join(',') + '\n';
+        });
+
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const url  = URL.createObjectURL(blob);
+        const a    = document.createElement('a');
+        const data = new Date().toLocaleDateString('pt-BR').replace(/\//g,'-');
+        a.href     = url;
+        a.download = 'relatorio-acs-' + data + '.csv';
+        a.click();
+        URL.revokeObjectURL(url);
+        showToast('success', 'Exportado!', 'Relatório CSV gerado com sucesso.');
+    }
+
+    function imprimirRelatorio() {
+        window.print();
     }
 
     // ============================================================
