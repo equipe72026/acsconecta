@@ -62,6 +62,9 @@
                     <label class="check-item"><input type="checkbox" class="vacina"> Vacina Atrasada</label>
                     <label class="check-item"><input type="checkbox" class="idoso"> Idoso</label>
                     <label class="check-item"><input type="checkbox" class="deficiente"> Deficiente</label>
+                    <label class="check-item"><input type="checkbox" class="crianca"> Criança</label>
+                    <label class="check-item"><input type="checkbox" class="tuberculoso"> Tuberculoso</label>
+                    <label class="check-item"><input type="checkbox" class="hanseniase"> Hanseníase</label>
                 </div>
             </div>
         </div>
@@ -74,7 +77,7 @@
 
     <div class="relatorio">
         <h3>Resumo do Cadastro</h3>
-        <p>Membros: <span id="res-visitas">1</span> | Gestantes: <span id="res-gestantes">0</span> | Hipertensos: <span id="res-hipertensos">0</span> | Diabéticos: <span id="res-diabeticos">0</span> | Idosos: <span id="res-idosos">0</span> | Deficientes: <span id="res-deficientes">0</span></p>
+        <p>Membros: <span id="res-visitas">1</span> | Gestantes: <span id="res-gestantes">0</span> | Hipertensos: <span id="res-hipertensos">0</span> | Diabéticos: <span id="res-diabeticos">0</span> | Idosos: <span id="res-idosos">0</span> | Deficientes: <span id="res-deficientes">0</span> | Crianças: <span id="res-criancas">0</span> | Tuberculosos: <span id="res-tuberculosos">0</span> | Hanseníase: <span id="res-hanseniase">0</span></p>
         <ul id="alertas" class="lista-alertas"></ul>
     </div>
 </main>
@@ -155,7 +158,10 @@
                 gestante: bloco.querySelector('.prenatal').checked,
                 vacina: bloco.querySelector('.vacina').checked,
                 idoso: bloco.querySelector('.idoso').checked,
-                deficiente: bloco.querySelector('.deficiente').checked
+                deficiente: bloco.querySelector('.deficiente').checked,
+                crianca: bloco.querySelector('.crianca').checked,
+                tuberculoso: bloco.querySelector('.tuberculoso').checked,
+                hanseniase: bloco.querySelector('.hanseniase').checked
             });
         });
 
@@ -229,6 +235,9 @@
         let totalDiabeticos = 0;
         let totalIdosos = 0;
         let totalDeficientes = 0;
+        let totalCriancas = 0;
+        let totalTuberculosos = 0;
+        let totalHanseniase = 0;
 
         blocos.forEach((bloco) => {
             if (bloco.querySelector('.hipertenso').checked) totalHipertensos++;
@@ -236,6 +245,9 @@
             if (bloco.querySelector('.prenatal').checked) totalGestantes++;
             if (bloco.querySelector('.idoso').checked) totalIdosos++;
             if (bloco.querySelector('.deficiente').checked) totalDeficientes++;
+            if (bloco.querySelector('.crianca').checked) totalCriancas++;
+            if (bloco.querySelector('.tuberculoso').checked) totalTuberculosos++;
+            if (bloco.querySelector('.hanseniase').checked) totalHanseniase++;
         });
 
         document.getElementById('res-gestantes').textContent = totalGestantes;
@@ -243,6 +255,9 @@
         document.getElementById('res-diabeticos').textContent = totalDiabeticos;
         document.getElementById('res-idosos').textContent = totalIdosos;
         document.getElementById('res-deficientes').textContent = totalDeficientes;
+        document.getElementById('res-criancas').textContent = totalCriancas;
+        document.getElementById('res-tuberculosos').textContent = totalTuberculosos;
+        document.getElementById('res-hanseniase').textContent = totalHanseniase;
     }
 
     const formVisita = document.getElementById('formVisita');
