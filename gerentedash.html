@@ -745,14 +745,6 @@
     let agentes = [];
     let agenteAtivo = null;
 
-    const AGENTES_PADRÃO = [
-        { nome: "Pedro Henrique",  dataNascimento: "", sexo: "M", cpf: "", telefone: "", endereco: "", unidadeSaude: "—", matricula: "001", area: "—", usuario: "acs1", senha: "acs1", dataCadastro: "Sistema", cadastradoPor: "Sistema" },
-        { nome: "Ana Beatriz",     dataNascimento: "", sexo: "F", cpf: "", telefone: "", endereco: "", unidadeSaude: "—", matricula: "002", area: "—", usuario: "acs2", senha: "acs2", dataCadastro: "Sistema", cadastradoPor: "Sistema" },
-        { nome: "Carlos Eduardo",  dataNascimento: "", sexo: "M", cpf: "", telefone: "", endereco: "", unidadeSaude: "—", matricula: "003", area: "—", usuario: "acs3", senha: "acs3", dataCadastro: "Sistema", cadastradoPor: "Sistema" },
-        { nome: "Mariana Silva",   dataNascimento: "", sexo: "F", cpf: "", telefone: "", endereco: "", unidadeSaude: "—", matricula: "004", area: "—", usuario: "acs4", senha: "acs4", dataCadastro: "Sistema", cadastradoPor: "Sistema" },
-        { nome: "Ricardo Souza",   dataNascimento: "", sexo: "M", cpf: "", telefone: "", endereco: "", unidadeSaude: "—", matricula: "005", area: "—", usuario: "acs5", senha: "acs5", dataCadastro: "Sistema", cadastradoPor: "Sistema" }
-    ];
-
     // ============================================================
     // INICIALIZAÇÃO
     // ============================================================
@@ -770,10 +762,7 @@
 
     function carregarAgentes() {
         const salvos = JSON.parse(localStorage.getItem('agentesSaude') || '[]');
-        // Mescla padrão + cadastrados, evitando duplicatas por 'usuario'
-        const usuariosSalvos = new Set(salvos.map(a => a.usuario));
-        const padraoFiltrado = AGENTES_PADRÃO.filter(a => !usuariosSalvos.has(a.usuario));
-        agentes = [...padraoFiltrado, ...salvos];
+        agentes = [...salvos];
     }
 
     // ============================================================
@@ -837,7 +826,7 @@
                 <td style="font-size:0.82rem; color:var(--muted);">${ag.dataCadastro || '—'}</td>
                 <td>
                     <div class="action-group">
-                        <button class="btn btn-info" style="padding:6px 12px; font-size:0.8rem;" onclick="abrirDetalhes('${login}')">Ver Detalhes</button>
+                        <button class="btn btn-success" style="padding:6px 12px; font-size:0.8rem;" onclick="editarAgente('${login}')">Editar</button>
                         <button class="btn btn-danger" style="padding:6px 12px; font-size:0.8rem;" onclick="confirmarExclusao('${login}')">Excluir</button>
                     </div>
                 </td>
@@ -854,6 +843,10 @@
     // ============================================================
     // MODAL: DETALHES DO AGENTE
     // ============================================================
+    function editarAgente(login) {
+        window.location.href = `cadastros.html?editar=${encodeURIComponent(login)}`;
+    }
+
     function abrirDetalhes(login) {
         agenteAtivo = agentes.find(a => (a.usuario || a.login) === login);
         if (!agenteAtivo) return;

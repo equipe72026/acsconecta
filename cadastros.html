@@ -287,7 +287,6 @@
 </head>
 <body>
 
-<!-- HEADER — idêntico ao gerentedash -->
 <header class="header">
     <a href="index.html"><img src="img/semfindo.png" alt="Logo" class="header-logo"></a>
     <div class="header-title">Cadastro de Agente <span>/ SevenSys</span></div>
@@ -296,7 +295,6 @@
 
 <div class="page">
 
-    <!-- VERIFICAÇÃO -->
     <div id="verificacao-gerente" class="verificacao-box">
         <span class="icon">🔐</span>
         <h2>Verificação de Gerente</h2>
@@ -304,17 +302,14 @@
         <div class="field">
             <label for="senha_gerente">Senha do Gerente</label>
             <div class="pwd-wrap">
-                <input type="password" id="senha_gerente" placeholder="Digite sua senha">
-                <button class="pwd-toggle" type="button" onclick="toggleSenha('senha_gerente', this)">👁</button>
+                <input type="password" id="senha_gerente" placeholder="Digite sua senha" required>
             </div>
         </div>
         <button type="button" class="btn btn-verify" style="margin-top:20px;" onclick="verificarGerente()">Verificar Acesso</button>
     </div>
 
-    <!-- FORMULÁRIO -->
     <form id="form-agente" style="display:none;" novalidate>
 
-        <!-- DADOS PESSOAIS -->
         <div class="form-card">
             <div class="form-card-header">
                 <span class="card-icon">👤</span>
@@ -333,7 +328,7 @@
                     <label>Sexo</label>
                     <div class="radio-row">
                         <label><input type="radio" name="sexo" value="M" required> Masculino</label>
-                        <label><input type="radio" name="sexo" value="F"> Feminino</label>
+                        <label><input type="radio" name="sexo" value="F" required> Feminino</label>
                     </div>
                 </div>
                 <div class="field">
@@ -357,7 +352,6 @@
             </div>
         </div>
 
-        <!-- DADOS PROFISSIONAIS -->
         <div class="form-card">
             <div class="form-card-header">
                 <span class="card-icon">🏥</span>
@@ -401,7 +395,6 @@
             </div>
         </div>
 
-        <!-- DADOS DE ACESSO -->
         <div class="form-card">
             <div class="form-card-header">
                 <span class="card-icon">🔑</span>
@@ -430,7 +423,6 @@
             </div>
         </div>
 
-        <!-- AÇÕES -->
         <div class="form-actions">
             <button type="reset" class="btn btn-ghost">🗑 Limpar Formulário</button>
             <button type="submit" class="btn btn-primary">✓ Cadastrar Agente</button>
@@ -442,6 +434,50 @@
 <script src="ui.js"></script>
 <script>
     const SENHA_GERENTE = 'admin123';
+
+    // ============================================================
+    // MODO EDIÇÃO
+    // ============================================================
+    let modoEdicao = false;
+    let loginOriginal = null;
+
+    function carregarParaEdicao() {
+        const params = new URLSearchParams(window.location.search);
+        const loginEditar = params.get('editar');
+        if (!loginEditar) return;
+
+        const agentes = JSON.parse(localStorage.getItem('agentesSaude') || '[]');
+        const agente = agentes.find(a => (a.usuario || a.login) === loginEditar);
+        if (!agente) {
+            showToast('warning', 'Agente não encontrado', 'Não foi possível carregar os dados para edição.');
+            return;
+        }
+
+        modoEdicao = true;
+        loginOriginal = loginEditar;
+
+        document.getElementById('inom').value = agente.nome || '';
+        document.getElementById('dat').value = agente.dataNascimento || '';
+        if (agente.sexo) {
+            const radio = document.querySelector(`input[name="sexo"][value="${agente.sexo}"]`);
+            if (radio) radio.checked = true;
+        }
+        document.getElementById('cpf').value = agente.cpf || '';
+        document.getElementById('tel').value = agente.telefone || '';
+        document.getElementById('email').value = agente.email || '';
+        document.getElementById('end').value = agente.endereco || '';
+        document.getElementById('unit').value = agente.unidadeSaude || '';
+        document.getElementById('matricula').value = agente.matricula || '';
+        document.getElementById('area').value = agente.area || '';
+        document.getElementById('login').value = agente.usuario || agente.login || '';
+        document.getElementById('sen').value = agente.senha || '';
+        document.getElementById('confirmar_senha').value = agente.senha || '';
+
+        // Ajusta textos da página para refletir o modo de edição
+        document.querySelector('.header-title').innerHTML = 'Editar Agente <span>/ SevenSys</span>';
+        const btnSubmit = document.querySelector('#form-agente button[type="submit"]');
+        if (btnSubmit) btnSubmit.textContent = '✓ Salvar Alterações';
+    }
 
     function mascaraTelefone(input) {
         let v = input.value.replace(/\D/g, "");
@@ -468,6 +504,7 @@
             document.getElementById('verificacao-gerente').style.display = 'none';
             document.getElementById('form-agente').style.display = 'block';
             sessionStorage.setItem('gerenteAutenticado', 'true');
+            carregarParaEdicao();
         } else {
             showToast('error', 'Senha incorreta', 'Acesso negado.');
             document.getElementById('senha_gerente').value = '';
@@ -478,10 +515,18 @@
         if (sessionStorage.getItem('gerenteAutenticado') === 'true') {
             document.getElementById('verificacao-gerente').style.display = 'none';
             document.getElementById('form-agente').style.display = 'block';
+            carregarParaEdicao();
         }
     };
 
     document.getElementById('form-agente').addEventListener('submit', function(e) {
+        // Validação HTML nativa habilitada temporariamente removendo o preventDefault se inválido
+        if (!this.checkValidity()) {
+            e.preventDefault();
+            this.reportValidity();
+            return;
+        }
+        
         e.preventDefault();
 
         const senha = document.getElementById('sen').value;
@@ -515,10 +560,24 @@
         };
 
         let agentes = JSON.parse(localStorage.getItem('agentesSaude') || '[]');
-        agentes.push(dadosAgente);
+
+        if (modoEdicao) {
+            const idx = agentes.findIndex(a => (a.usuario || a.login) === loginOriginal);
+            if (idx !== -1) {
+                dadosAgente.dataCadastro  = agentes[idx].dataCadastro || dadosAgente.dataCadastro;
+                dadosAgente.cadastradoPor = agentes[idx].cadastradoPor || dadosAgente.cadastradoPor;
+                agentes[idx] = dadosAgente;
+            } else {
+                agentes.push(dadosAgente);
+            }
+        } else {
+            agentes.push(dadosAgente);
+        }
+
         localStorage.setItem('agentesSaude', JSON.stringify(agentes));
 
-        showToast('success', 'Cadastro concluído', 'Agente de saúde cadastrado com sucesso!');
+        showToast('success', modoEdicao ? 'Alterações salvas' : 'Cadastro concluído',
+            modoEdicao ? 'Agente de saúde atualizado com sucesso!' : 'Agente de saúde cadastrado com sucesso!');
         this.reset();
         setTimeout(() => window.location.href = 'gerentedash.html', 700);
     });
