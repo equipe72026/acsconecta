@@ -529,6 +529,8 @@
     </style>
     <link rel="stylesheet" href="ui.css">
     <script src="ui.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 </head>
 <body>
 
@@ -623,8 +625,7 @@
                     <option value="90">Últimos 90 dias</option>
                 </select>
                 <div style="margin-left:auto; display:flex; gap:8px; flex-wrap:wrap;">
-                    <button class="btn btn-success" onclick="exportarCSV()">⬇ Exportar CSV</button>
-                    <button class="btn btn-info" onclick="imprimirRelatorio()">🖨 Imprimir</button>
+                    <button class="btn btn-danger" onclick="exportarPDF()">📄 Exportar PDF</button>
                 </div>
             </div>
 
@@ -936,6 +937,11 @@
                                     ${m.diabetico  ? '<span style="color:var(--red);   font-size:0.78rem; margin-left:6px;">Diabético</span>'  : ''}
                                     ${m.gestante   ? '<span style="color:var(--purple);font-size:0.78rem; margin-left:6px;">Gestante</span>'    : ''}
                                     ${m.vacina     ? '<span style="color:var(--slate); font-size:0.78rem; margin-left:6px;">Vacina Atrasada</span>' : ''}
+                                    ${m.idoso      ? '<span style="color:#16a085;      font-size:0.78rem; margin-left:6px;">Idoso</span>'        : ''}
+                                    ${m.deficiente ? '<span style="color:#2980b9;      font-size:0.78rem; margin-left:6px;">Deficiente</span>'   : ''}
+                                    ${m.crianca    ? '<span style="color:#f39c12;      font-size:0.78rem; margin-left:6px;">Criança</span>'      : ''}
+                                    ${m.tuberculoso? '<span style="color:#8e44ad;      font-size:0.78rem; margin-left:6px;">Tuberculoso</span>'  : ''}
+                                    ${m.hanseniase ? '<span style="color:#c0392b;      font-size:0.78rem; margin-left:6px;">Hanseníase</span>'   : ''}
                                 </div>
                             `).join('')}
                         ` : ''}
@@ -1158,17 +1164,22 @@
             : '0';
     }
 
-    function exportarCSV() {
+    function exportarPDF() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+
         const filtroAgente = document.getElementById('relFiltroAgente').value;
+        const filtroDias   = parseInt(document.getElementById('relFiltroPeriodo').value) || 0;
+        const agora        = new Date();
+        const dataAtual    = agora.toLocaleDateString('pt-BR');
+
         const lista = filtroAgente
             ? agentes.filter(ag => (ag.usuario || ag.login) === filtroAgente)
             : agentes;
 
-        const filtroDias = parseInt(document.getElementById('relFiltroPeriodo').value) || 0;
-        const agora      = new Date();
-
-        let csv = '\uFEFF'; // BOM para Excel reconhecer UTF-8
-        csv += 'Nome,Usuário,Unidade de Saúde,Matrícula,Famílias Cadastradas,Visitas Realizadas,Visitas Pendentes,Cobertura (%)\n';
+        // Coleta dados
+        const linhas = [];
+        let totalFamilias = 0, totalVisitas = 0;
 
         lista.forEach(ag => {
             const login    = ag.usuario || ag.login;
@@ -1194,24 +1205,74 @@
             ).length;
             const cobertura = nFamilias > 0 ? Math.round((nFamilias - pendentes) / nFamilias * 100) : 0;
 
-            const esc = v => '"' + String(v || '').replace(/"/g, '""') + '"';
-            csv += [esc(ag.nome), esc(login), esc(ag.unidadeSaude), esc(ag.matricula),
-                    nFamilias, nVisitas, pendentes, cobertura].join(',') + '\n';
+            totalFamilias += nFamilias;
+            totalVisitas  += nVisitas;
+            linhas.push([ag.nome, login, ag.unidadeSaude || '—', ag.matricula || '—',
+                         nFamilias, nVisitas, pendentes, cobertura + '%']);
         });
 
-        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-        const url  = URL.createObjectURL(blob);
-        const a    = document.createElement('a');
-        const data = new Date().toLocaleDateString('pt-BR').replace(/\//g,'-');
-        a.href     = url;
-        a.download = 'relatorio-acs-' + data + '.csv';
-        a.click();
-        URL.revokeObjectURL(url);
-        showToast('success', 'Exportado!', 'Relatório CSV gerado com sucesso.');
-    }
+        // Ordenar por visitas (maior primeiro)
+        linhas.sort((a, b) => b[5] - a[5]);
 
-    function imprimirRelatorio() {
-        window.print();
+        // Cabeçalho do PDF
+        doc.setFillColor(39, 174, 96);
+        doc.rect(0, 0, 297, 22, 'F');
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(14);
+        doc.setFont('helvetica', 'bold');
+        doc.text('Relatório Geral — Agentes de Saúde', 14, 14);
+        doc.setFontSize(9);
+        doc.setFont('helvetica', 'normal');
+        doc.text('SevenSys  |  Gerado em: ' + dataAtual, 230, 14);
+
+        // Sub-cabeçalho com resumo
+        doc.setTextColor(50, 50, 50);
+        doc.setFontSize(9);
+        const periodo = filtroDias > 0 ? 'Últimos ' + filtroDias + ' dias' : 'Todo o período';
+        const agenteFiltro = filtroAgente || 'Todos';
+        doc.text('Agente: ' + agenteFiltro + '   |   Período: ' + periodo +
+                 '   |   Total famílias: ' + totalFamilias + '   |   Total visitas: ' + totalVisitas,
+                 14, 30);
+
+        // Tabela
+        doc.autoTable({
+            startY: 35,
+            head: [['#', 'Agente', 'Usuário', 'Unidade de Saúde', 'Matrícula', 'Famílias', 'Visitas', 'Pendentes', 'Cobertura']],
+            body: linhas.map((r, i) => [String(i + 1).padStart(2, '0'), ...r]),
+            styles: { fontSize: 8, cellPadding: 3, overflow: 'linebreak' },
+            headStyles: { fillColor: [39, 174, 96], textColor: 255, fontStyle: 'bold' },
+            alternateRowStyles: { fillColor: [240, 249, 244] },
+            columnStyles: {
+                0: { cellWidth: 10, halign: 'center' },
+                5: { halign: 'center' },
+                6: { halign: 'center' },
+                7: { halign: 'center' },
+                8: { halign: 'center' }
+            },
+            didParseCell: function(data) {
+                if (data.column.index === 8 && data.section === 'body') {
+                    const val = parseInt(data.cell.raw);
+                    if (val >= 75)      data.cell.styles.textColor = [39, 174, 96];
+                    else if (val >= 40) data.cell.styles.textColor = [243, 156, 18];
+                    else                data.cell.styles.textColor = [231, 76, 60];
+                }
+            },
+            margin: { left: 14, right: 14 }
+        });
+
+        // Rodapé
+        const pageCount = doc.internal.getNumberOfPages();
+        for (let i = 1; i <= pageCount; i++) {
+            doc.setPage(i);
+            doc.setFontSize(7);
+            doc.setTextColor(150);
+            doc.text('SevenSys — Relatório de Agentes de Saúde  |  Página ' + i + ' de ' + pageCount,
+                     14, doc.internal.pageSize.getHeight() - 6);
+        }
+
+        const nomeArquivo = 'relatorio-acs-' + dataAtual.replace(/\//g, '-') + '.pdf';
+        doc.save(nomeArquivo);
+        showToast('success', 'PDF gerado!', 'Relatório exportado em PDF com sucesso.');
     }
 
     // ============================================================

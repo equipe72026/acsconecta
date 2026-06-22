@@ -4,86 +4,346 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cadastro de Família - Área ACS</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="areacas.css">
-    <link rel="stylesheet" href="cadfam.css">
     <link rel="stylesheet" href="ui.css">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --teal:       #109ea3;
+            --teal-dark:  #0b777a;
+            --teal-light: #e6f7f7;
+            --slate:      #2c3e50;
+            --red:        #e74c3c;
+            --red-dark:   #c0392b;
+            --green:      #27ae60;
+            --green-dark: #1e8449;
+            --amber:      #f39c12;
+            --white:      #ffffff;
+            --bg:         #f0f4f5;
+            --border:     #dde4e6;
+            --text:       #2c3e50;
+            --muted:      #7f8c8d;
+            --radius:     10px;
+            --shadow:     0 2px 12px rgba(0,0,0,0.08);
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: var(--bg);
+            background-image: url("img/trasno.png");
+            background-size: cover;
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: var(--text);
+        }
+
+        /* ── HEADER ── */
+        .header {
+            background: var(--white);
+            border-bottom: 3px solid var(--teal);
+            padding: 0 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 72px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-logo  { height: 52px; width: auto; }
+        .header-title { font-size: 1.4rem; font-weight: 700; color: var(--teal); letter-spacing: -0.3px; }
+        .header-title span { font-weight: 400; color: var(--muted); font-size: 1rem; }
+        .btn-back {
+            display: inline-flex; align-items: center; gap: 6px;
+            text-decoration: none; background: var(--teal); color: white;
+            padding: 9px 20px; border-radius: 50px; font-weight: 600;
+            font-size: 0.9rem; transition: background 0.2s, transform 0.2s;
+        }
+        .btn-back:hover { background: var(--teal-dark); transform: translateY(-1px); }
+
+        /* ── PAGE ── */
+        .page {
+            max-width: 820px;
+            margin: 32px auto;
+            padding: 0 20px 60px;
+        }
+
+        /* ── CARD ── */
+        .form-card {
+            background: var(--white);
+            border-radius: 14px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        .form-card-header {
+            background: var(--teal);
+            padding: 13px 22px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+        .form-card-header-left { display: flex; align-items: center; gap: 10px; }
+        .form-card-header h2 { font-size: 0.98rem; font-weight: 700; color: white; }
+        .form-card-body { padding: 22px 24px; }
+
+        /* ── GRID ── */
+        .grid { display: grid; gap: 16px 20px; }
+        .g2 { grid-template-columns: 1fr 1fr; }
+        .g3 { grid-template-columns: 1fr 1fr 1fr; }
+        .g4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+        .full { grid-column: 1 / -1; }
+        .col2 { grid-column: span 2; }
+
+        /* ── FIELD ── */
+        .field { display: flex; flex-direction: column; gap: 5px; }
+        .field label {
+            font-size: 0.74rem; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.7px; color: var(--muted);
+        }
+        .field input, .field select {
+            height: 42px; padding: 0 12px;
+            border: 1.5px solid var(--border); border-radius: 8px;
+            font-size: 0.9rem; font-family: inherit; color: var(--text);
+            background: var(--white); transition: border-color 0.2s, box-shadow 0.2s;
+            width: 100%;
+        }
+        .field input::placeholder { color: #b0bec5; }
+        .field input:focus, .field select:focus {
+            outline: none; border-color: var(--teal);
+            box-shadow: 0 0 0 3px rgba(16,158,163,0.12);
+        }
+        .field input:disabled {
+            background: #f5f7f8; color: var(--muted); cursor: not-allowed;
+        }
+
+        /* ── CEP ROW ── */
+        .cep-row { display: flex; gap: 10px; align-items: flex-end; }
+        .cep-row .field { flex: 0 0 160px; }
+        .btn-cep {
+            height: 42px; padding: 0 16px; border-radius: 8px;
+            background: var(--teal); color: white; border: none;
+            font-weight: 700; font-size: 0.82rem; cursor: pointer;
+            white-space: nowrap; transition: background 0.2s;
+            display: flex; align-items: center; gap: 6px; flex-shrink: 0;
+        }
+        .btn-cep:hover { background: var(--teal-dark); }
+        .btn-cep:disabled { background: var(--muted); cursor: not-allowed; }
+        .cep-spinner { display: none; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.4); border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ── MEMBRO CARD ── */
+        .membro-card {
+            background: var(--white);
+            border-radius: 14px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            margin-bottom: 16px;
+            border: 1.5px solid var(--border);
+            transition: border-color 0.2s;
+        }
+        .membro-card:focus-within { border-color: var(--teal); }
+        .membro-header {
+            background: var(--teal-light);
+            border-bottom: 1.5px solid var(--border);
+            padding: 11px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .membro-header-title { font-weight: 700; color: var(--teal-dark); font-size: 0.92rem; display: flex; align-items: center; gap: 8px; }
+        .membro-num {
+            background: var(--teal); color: white;
+            border-radius: 50%; width: 24px; height: 24px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.78rem; font-weight: 700;
+        }
+        .btn-remover {
+            display: inline-flex; align-items: center; gap: 5px;
+            background: #fff0ef; border: 1.5px solid #fccbc7;
+            color: var(--red); padding: 5px 12px; border-radius: 6px;
+            font-size: 0.78rem; font-weight: 700; cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-remover:hover { background: var(--red); color: white; border-color: var(--red); }
+        .membro-body { padding: 18px 20px; }
+
+        /* ── CHECKBOXES ── */
+        .checks-label {
+            font-size: 0.74rem; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.7px;
+            color: var(--muted); margin-bottom: 10px; display: block;
+        }
+        .checks-grid {
+            display: flex; flex-wrap: wrap; gap: 8px;
+        }
+        .check-pill {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 6px 12px; border-radius: 20px;
+            border: 1.5px solid var(--border); background: #f8fafb;
+            font-size: 0.82rem; font-weight: 600; color: var(--slate);
+            cursor: pointer; transition: all 0.18s; user-select: none;
+        }
+        .check-pill input[type="checkbox"] { display: none; }
+        .check-pill:has(input:checked) {
+            border-color: var(--teal); background: var(--teal-light);
+            color: var(--teal-dark);
+        }
+        .check-dot {
+            width: 8px; height: 8px; border-radius: 50%;
+            background: var(--border); transition: background 0.18s; flex-shrink: 0;
+        }
+        .check-pill:has(input:checked) .check-dot { background: var(--teal); }
+
+        /* ── RESUMO ── */
+        .resumo-card {
+            background: var(--white);
+            border-radius: 14px;
+            box-shadow: var(--shadow);
+            padding: 18px 24px;
+            margin-bottom: 20px;
+        }
+        .resumo-title {
+            font-size: 0.78rem; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 0.7px; color: var(--muted); margin-bottom: 14px;
+        }
+        .resumo-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+        .resumo-chip {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 5px 12px; border-radius: 20px;
+            background: var(--teal-light); color: var(--teal-dark);
+            font-size: 0.8rem; font-weight: 700; border: 1px solid #b2e5e7;
+        }
+        .resumo-chip .chip-num {
+            background: var(--teal); color: white;
+            border-radius: 10px; padding: 1px 7px; font-size: 0.75rem;
+        }
+
+        /* ── ACTIONS ── */
+        .form-actions {
+            display: flex; gap: 12px; justify-content: space-between;
+            margin-top: 4px; flex-wrap: wrap;
+        }
+        .btn {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 12px 24px; border-radius: 8px; font-weight: 700;
+            font-size: 0.9rem; cursor: pointer; border: none;
+            transition: all 0.2s; font-family: inherit;
+        }
+        .btn-add { background: var(--teal-light); color: var(--teal-dark); border: 1.5px solid #b2e5e7; }
+        .btn-add:hover { background: #c8eef0; }
+        .btn-save { background: var(--green); color: white; }
+        .btn-save:hover { background: var(--green-dark); transform: translateY(-1px); box-shadow: 0 4px 14px rgba(39,174,96,0.3); }
+
+        /* ── ALERTS ── */
+        .lista-alertas { list-style: none; margin-top: 10px; display: flex; flex-direction: column; gap: 6px; }
+        .lista-alertas li { font-size: 0.82rem; color: var(--amber); font-weight: 600; }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 640px) {
+            .header { padding: 0 16px; }
+            .header-title { font-size: 1rem; }
+            .g2, .g3, .g4 { grid-template-columns: 1fr; }
+            .col2 { grid-column: 1; }
+            .full { grid-column: 1; }
+            .form-actions { flex-direction: column; }
+            .btn { width: 100%; justify-content: center; }
+            .cep-row { flex-wrap: wrap; }
+            .cep-row .field { flex: 1 1 120px; }
+        }
+    </style>
 </head>
 <body>
-    <script src="ui.js"></script>
+<script src="ui.js"></script>
 
-<header class="topo-pagina" style="padding: 10px 20px; min-height: auto; height: auto; flex-wrap: wrap; justify-content: space-between; align-items: center;">
-    <a href="index.html"><img src="img/semfindo.png" alt="Logo" class="logo" style="max-height: 38px; width: auto;"></a>
-    <h2 class="titulo" style="font-family: 'Segoe UI', Arial, sans-serif; font-size: 1.25rem; font-weight: 700; color: #109ea3; letter-spacing: -0.3px; margin: 0; padding: 4px 0; text-align: center;">Cadastrar Família</h2>
-    <a href="acsarea.html" class="btn-voltar" style="padding: 6px 14px; font-size: 0.85rem; line-height: 1.2; height: auto; display: inline-flex; align-items: center; justify-content: center;">← Voltar</a>
+<!-- HEADER -->
+<header class="header">
+    <a href="index.html"><img src="img/semfindo.png" alt="Logo" class="header-logo"></a>
+    <div class="header-title">Cadastrar Família <span>/ ACS</span></div>
+    <a href="acsarea.html" class="btn-back">← Voltar</a>
 </header>
 
-<main class="container-listagem">
-    <form id="formVisita" onsubmit="event.preventDefault(); salvarFamilia();">
-        <div class="endereco-familia">
-            <div class="campo-item full-width">
-                <label>Endereço da Família:</label>
-                <input type="text" id="endereco" placeholder="Rua, Número, Bairro" required>
+<div class="page">
+<form id="formFamilia" onsubmit="event.preventDefault(); salvarFamilia();">
+
+    <!-- ENDEREÇO -->
+    <div class="form-card">
+        <div class="form-card-header">
+            <div class="form-card-header-left">
+                <span>📍</span>
+                <h2>Endereço da Família</h2>
             </div>
         </div>
+        <div class="form-card-body">
 
-        <div id="containerMembros">
-            <div class="membro-bloco">
-                <h3>Membro 1</h3>
-                <div class="campo-item">
-                    <label>Nome Completo:</label>
-                    <input type="text" class="casa" required>
+            <!-- CEP + botão -->
+            <div class="cep-row" style="margin-bottom:16px;">
+                <div class="field">
+                    <label for="cep">CEP</label>
+                    <input type="text" id="cep" placeholder="00000-000" maxlength="9" oninput="mascaraCEP(this)" autocomplete="postal-code">
                 </div>
-                <div class="campo-item curto">
-                    <label>Nascimento:</label>
-                    <input type="text" class="nascimento" placeholder="DD/MM/AAAA" maxlength="10" oninput="mascaraData(this)" required>
+                <button type="button" class="btn-cep" id="btnBuscarCep" onclick="buscarCEP()">
+                    <span class="cep-spinner" id="cepSpinner"></span>
+                    🔍 Buscar CEP
+                </button>
+            </div>
+
+            <div class="grid g2" style="margin-bottom:16px;">
+                <div class="field col2">
+                    <label for="logradouro">Rua / Av / Estrada</label>
+                    <input type="text" id="logradouro" placeholder="Nome da rua ou avenida" required>
                 </div>
-                <div class="campo-item curto">
-                    <label>Sexo:</label>
-                    <select class="sexo" required>
-                        <option value="">Selecione</option>
-                        <option value="M">Masculino</option>
-                        <option value="F">Feminino</option>
-                        <option value="O">Outros</option>
-                    </select>
+                <div class="field">
+                    <label for="numero">Número</label>
+                    <input type="text" id="numero" placeholder="Ex: 123 ou S/N">
                 </div>
-                <div class="campo-item curto">
-                    <label>CPF:</label>
-                    <input type="text" class="cpf" placeholder="000.000.000-00" maxlength="14" oninput="mascaraCPF(this)" required>
-                </div>
-                <div class="campo-item curto">
-                    <label>Celular:</label>
-                    <input type="tel" class="celular" placeholder="(00) 00000-0000" maxlength="15" oninput="mascaraCelular(this)" required>
-                </div>
-                <div class="checkbox-group">
-                    <label class="check-item"><input type="checkbox" class="hipertenso"> Hipertenso</label>
-                    <label class="check-item"><input type="checkbox" class="diabetico"> Diabético</label>
-                    <label class="check-item"><input type="checkbox" class="prenatal"> Gestante</label>
-                    <label class="check-item"><input type="checkbox" class="vacina"> Vacina Atrasada</label>
-                    <label class="check-item"><input type="checkbox" class="idoso"> Idoso</label>
-                    <label class="check-item"><input type="checkbox" class="deficiente"> Deficiente</label>
-                    <label class="check-item"><input type="checkbox" class="crianca"> Criança</label>
-                    <label class="check-item"><input type="checkbox" class="tuberculoso"> Tuberculoso</label>
-                    <label class="check-item"><input type="checkbox" class="hanseniase"> Hanseníase</label>
+                <div class="field">
+                    <label for="complemento">Complemento</label>
+                    <input type="text" id="complemento" placeholder="Apto, bloco, casa...">
                 </div>
             </div>
-        </div>
 
-        <div class="botoes">
-            <button type="button" class="btn-adicionar" onclick="adicionarNovoCampo()">+ Adicionar Membro</button>
-            <button type="submit" class="btn-salvar">SALVAR FAMÍLIA</button>
-        </div>
-    </form>
+            <div class="grid g3">
+                <div class="field">
+                    <label for="bairro">Bairro</label>
+                    <input type="text" id="bairro" placeholder="Bairro" required>
+                </div>
+                <div class="field">
+                    <label for="cidade">Cidade</label>
+                    <input type="text" id="cidade" placeholder="Cidade" required>
+                </div>
+                <div class="field">
+                    <label for="uf">UF</label>
+                    <input type="text" id="uf" placeholder="RJ" maxlength="2" style="text-transform:uppercase;" required>
+                </div>
+            </div>
 
-    <div class="relatorio">
-        <h3>Resumo do Cadastro</h3>
-        <p>Membros: <span id="res-visitas">1</span> | Gestantes: <span id="res-gestantes">0</span> | Hipertensos: <span id="res-hipertensos">0</span> | Diabéticos: <span id="res-diabeticos">0</span> | Idosos: <span id="res-idosos">0</span> | Deficientes: <span id="res-deficientes">0</span> | Crianças: <span id="res-criancas">0</span> | Tuberculosos: <span id="res-tuberculosos">0</span> | Hanseníase: <span id="res-hanseniase">0</span></p>
+        </div>
+    </div>
+
+    <!-- MEMBROS -->
+    <div id="containerMembros"></div>
+
+    <!-- RESUMO -->
+    <div class="resumo-card">
+        <div class="resumo-title">Resumo do Cadastro</div>
+        <div class="resumo-chips" id="resumoChips"></div>
         <ul id="alertas" class="lista-alertas"></ul>
     </div>
-</main>
+
+    <!-- AÇÕES -->
+    <div class="form-actions">
+        <button type="button" class="btn btn-add" onclick="adicionarMembro()">＋ Adicionar Membro</button>
+        <button type="submit" class="btn btn-save">✓ Salvar Família</button>
+    </div>
+
+</form>
+</div>
 
 <script>
-    // --- MÁSCARAS DE VALIDAÇÃO ---
+    // ── MÁSCARAS ──
     function mascaraData(input) {
         let v = input.value.replace(/\D/g, "");
         if (v.length > 8) v = v.substring(0, 8);
@@ -101,171 +361,277 @@
     }
 
     function mascaraCelular(input) {
-        // Remove tudo o que não for número
         let v = input.value.replace(/\D/g, "");
-        
-        // Limita estritamente a digitação em no máximo 11 números puros
-        if (v.length > 11) {
-            v = v.substring(0, 11);
-        }
-
-        // Aplica a formatação em tempo real: (XX) XXXXX-XXXX
-        if (v.length >= 2) {
-            v = "(" + v.substring(0, 2) + ") " + v.substring(2);
-        }
-        if (v.length >= 10) { // Considera os caracteres da máscara já adicionados acima
-            v = v.substring(0, 10) + "-" + v.substring(10);
-        }
-        
+        if (v.length > 11) v = v.substring(0, 11);
+        if (v.length >= 2) v = "(" + v.substring(0, 2) + ") " + v.substring(2);
+        if (v.length >= 10) v = v.substring(0, 10) + "-" + v.substring(10);
         input.value = v;
     }
 
-    // --- LÓGICA DO SISTEMA ---
-    function salvarFamilia() {
-        const endereco = document.getElementById('endereco').value;
-        const loginAtivo = sessionStorage.getItem('loginUsuario');
-        const blocosMembros = document.querySelectorAll('.membro-bloco');
+    function mascaraCEP(input) {
+        let v = input.value.replace(/\D/g, "");
+        if (v.length > 8) v = v.substring(0, 8);
+        if (v.length >= 5) v = v.substring(0, 5) + "-" + v.substring(5);
+        input.value = v;
+        // Auto-busca ao completar 8 dígitos
+        if (v.replace('-','').length === 8) buscarCEP();
+    }
 
+    // ── BUSCA CEP (ViaCEP) ──
+    async function buscarCEP() {
+        const cepInput = document.getElementById('cep');
+        const cep = cepInput.value.replace(/\D/g, '');
+        if (cep.length !== 8) {
+            showToast('warning', 'CEP inválido', 'Digite os 8 dígitos do CEP.');
+            return;
+        }
+
+        const btn = document.getElementById('btnBuscarCep');
+        const spinner = document.getElementById('cepSpinner');
+        btn.disabled = true;
+        spinner.style.display = 'block';
+
+        try {
+            const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+            const data = await res.json();
+
+            if (data.erro) {
+                showToast('error', 'CEP não encontrado', 'Verifique o CEP digitado.');
+            } else {
+                document.getElementById('logradouro').value = data.logradouro || '';
+                document.getElementById('bairro').value     = data.bairro    || '';
+                document.getElementById('cidade').value     = data.localidade || '';
+                document.getElementById('uf').value         = data.uf        || '';
+                // Foca no número após preenchimento
+                document.getElementById('numero').focus();
+                showToast('success', 'CEP encontrado', data.logradouro + ', ' + data.localidade + ' - ' + data.uf);
+            }
+        } catch (err) {
+            showToast('error', 'Erro ao buscar CEP', 'Verifique sua conexão e tente novamente.');
+        } finally {
+            btn.disabled = false;
+            spinner.style.display = 'none';
+        }
+    }
+
+    // ── MEMBROS ──
+    let contadorMembro = 0;
+
+    function criarMembroHTML(num, id) {
+        return `
+        <div class="membro-card" id="membro-${id}">
+            <div class="membro-header">
+                <div class="membro-header-title">
+                    <span class="membro-num">${num}</span>
+                    Membro ${num}
+                </div>
+                ${num > 1 ? `<button type="button" class="btn-remover" onclick="removerMembro('${id}')">✕ Remover</button>` : '<span style="font-size:0.75rem;color:var(--teal-dark);font-weight:600;">Responsável</span>'}
+            </div>
+            <div class="membro-body">
+                <div class="grid g2" style="margin-bottom:14px;">
+                    <div class="field col2">
+                        <label>Nome Completo</label>
+                        <input type="text" class="casa" placeholder="Nome completo" required>
+                    </div>
+                    <div class="field">
+                        <label>Data de Nascimento</label>
+                        <input type="text" class="nascimento" placeholder="DD/MM/AAAA" maxlength="10" oninput="mascaraData(this); updateResumo();" required>
+                    </div>
+                    <div class="field">
+                        <label>Sexo</label>
+                        <select class="sexo" required>
+                            <option value="">Selecione</option>
+                            <option value="M">Masculino</option>
+                            <option value="F">Feminino</option>
+                            <option value="O">Outro</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label>CPF</label>
+                        <input type="text" class="cpf" placeholder="000.000.000-00" maxlength="14" oninput="mascaraCPF(this)" required>
+                    </div>
+                    <div class="field">
+                        <label>Celular</label>
+                        <input type="tel" class="celular" placeholder="(00) 00000-0000" maxlength="15" oninput="mascaraCelular(this)" required>
+                    </div>
+                </div>
+
+                <span class="checks-label">Condições de Saúde</span>
+                <div class="checks-grid">
+                    <label class="check-pill"><input type="checkbox" class="hipertenso" onchange="updateResumo()"><span class="check-dot"></span>Hipertenso</label>
+                    <label class="check-pill"><input type="checkbox" class="diabetico" onchange="updateResumo()"><span class="check-dot"></span>Diabético</label>
+                    <label class="check-pill"><input type="checkbox" class="prenatal" onchange="updateResumo()"><span class="check-dot"></span>Gestante</label>
+                    <label class="check-pill"><input type="checkbox" class="vacina" onchange="updateResumo()"><span class="check-dot"></span>Vacina Atrasada</label>
+                    <label class="check-pill"><input type="checkbox" class="idoso" onchange="updateResumo()"><span class="check-dot"></span>Idoso</label>
+                    <label class="check-pill"><input type="checkbox" class="deficiente" onchange="updateResumo()"><span class="check-dot"></span>Deficiente</label>
+                    <label class="check-pill"><input type="checkbox" class="crianca" onchange="updateResumo()"><span class="check-dot"></span>Criança</label>
+                    <label class="check-pill"><input type="checkbox" class="tuberculoso" onchange="updateResumo()"><span class="check-dot"></span>Tuberculoso</label>
+                    <label class="check-pill"><input type="checkbox" class="hanseniase" onchange="updateResumo()"><span class="check-dot"></span>Hanseníase</label>
+                </div>
+            </div>
+        </div>`;
+    }
+
+    function adicionarMembro() {
+        contadorMembro++;
+        const id = 'm' + Date.now();
+        const container = document.getElementById('containerMembros');
+        const totalAtual = container.querySelectorAll('.membro-card').length + 1;
+        container.insertAdjacentHTML('beforeend', criarMembroHTML(totalAtual, id));
+        updateResumo();
+        // Scroll suave até o novo membro
+        document.getElementById('membro-' + id).scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function removerMembro(id) {
+        const card = document.getElementById('membro-' + id);
+        if (!card) return;
+        card.style.opacity = '0';
+        card.style.transform = 'scale(0.97)';
+        card.style.transition = 'opacity 0.2s, transform 0.2s';
+        setTimeout(() => {
+            card.remove();
+            renumerarMembros();
+            updateResumo();
+        }, 200);
+    }
+
+    function renumerarMembros() {
+        const cards = document.querySelectorAll('.membro-card');
+        cards.forEach((card, idx) => {
+            const num = idx + 1;
+            card.querySelector('.membro-num').textContent = num;
+            card.querySelector('.membro-header-title').childNodes[1] && 
+                (card.querySelector('.membro-header-title').lastChild.textContent = ' Membro ' + num);
+        });
+    }
+
+    // ── RESUMO ──
+    function updateResumo() {
+        const blocos = document.querySelectorAll('.membro-card');
+        const total = blocos.length;
+        let g=0, h=0, d=0, id=0, def=0, cr=0, tb=0, han=0, vac=0;
+
+        blocos.forEach(b => {
+            if (b.querySelector('.hipertenso').checked)  h++;
+            if (b.querySelector('.diabetico').checked)   d++;
+            if (b.querySelector('.prenatal').checked)    g++;
+            if (b.querySelector('.idoso').checked)       id++;
+            if (b.querySelector('.deficiente').checked)  def++;
+            if (b.querySelector('.crianca').checked)     cr++;
+            if (b.querySelector('.tuberculoso').checked) tb++;
+            if (b.querySelector('.hanseniase').checked)  han++;
+            if (b.querySelector('.vacina').checked)      vac++;
+        });
+
+        const chips = [
+            { label: 'Membros',      val: total,  always: true },
+            { label: 'Gestantes',    val: g },
+            { label: 'Hipertensos',  val: h },
+            { label: 'Diabéticos',   val: d },
+            { label: 'Idosos',       val: id },
+            { label: 'Deficientes',  val: def },
+            { label: 'Crianças',     val: cr },
+            { label: 'Tuberculosos', val: tb },
+            { label: 'Hanseníase',   val: han },
+            { label: 'Vacina Atr.',  val: vac },
+        ];
+
+        document.getElementById('resumoChips').innerHTML = chips
+            .filter(c => c.always || c.val > 0)
+            .map(c => `<div class="resumo-chip">${c.label} <span class="chip-num">${c.val}</span></div>`)
+            .join('');
+    }
+
+    // ── SALVAR ──
+    function salvarFamilia() {
+        const loginAtivo = sessionStorage.getItem('loginUsuario');
         if (!loginAtivo) {
             showToast('error', 'Sessão expirada', 'Faça login novamente.');
             return;
         }
 
+        // Monta endereço completo
+        const logradouro  = document.getElementById('logradouro').value.trim();
+        const numero      = document.getElementById('numero').value.trim();
+        const complemento = document.getElementById('complemento').value.trim();
+        const bairro      = document.getElementById('bairro').value.trim();
+        const cidade      = document.getElementById('cidade').value.trim();
+        const uf          = document.getElementById('uf').value.trim();
+        const cep         = document.getElementById('cep').value.trim();
+
+        if (!logradouro || !bairro || !cidade || !uf) {
+            showToast('warning', 'Endereço incompleto', 'Preencha pelo menos rua, bairro, cidade e UF.');
+            return;
+        }
+
+        let enderecoCompleto = logradouro;
+        if (numero)      enderecoCompleto += ', ' + numero;
+        if (complemento) enderecoCompleto += ' ' + complemento;
+        enderecoCompleto += ' - ' + bairro + ', ' + cidade + ' - ' + uf;
+        if (cep)         enderecoCompleto += ' (CEP: ' + cep + ')';
+
+        const blocosMembros = document.querySelectorAll('.membro-card');
         let camposValidos = true;
         const listaMembros = [];
 
-        blocosMembros.forEach((bloco) => {
-            const nome = bloco.querySelector('.casa').value;
-            const nascimento = bloco.querySelector('.nascimento').value;
-            const sexo = bloco.querySelector('.sexo').value;
-            const cpf = bloco.querySelector('.cpf').value;
-            const celular = bloco.querySelector('.celular').value;
+        blocosMembros.forEach(bloco => {
+            const nome     = bloco.querySelector('.casa').value;
+            const nasc     = bloco.querySelector('.nascimento').value;
+            const sexo     = bloco.querySelector('.sexo').value;
+            const cpf      = bloco.querySelector('.cpf').value;
+            const celular  = bloco.querySelector('.celular').value;
 
-            // Valida o preenchimento e comprimentos mínimos (Celular formatado completo tem 15 caracteres)
-            if (!nome || nascimento.length < 10 || !sexo || cpf.length < 14 || celular.length < 15) {
+            if (!nome || nasc.length < 10 || !sexo || cpf.length < 14 || celular.length < 15) {
                 camposValidos = false;
                 return;
             }
 
             listaMembros.push({
-                nome: nome,
-                nascimento: nascimento,
-                sexo: sexo,
-                cpf: cpf,
-                celular: celular,
-                hipertenso: bloco.querySelector('.hipertenso').checked,
-                diabetico: bloco.querySelector('.diabetico').checked,
-                gestante: bloco.querySelector('.prenatal').checked,
-                vacina: bloco.querySelector('.vacina').checked,
-                idoso: bloco.querySelector('.idoso').checked,
-                deficiente: bloco.querySelector('.deficiente').checked,
-                crianca: bloco.querySelector('.crianca').checked,
+                nome, nascimento: nasc, sexo, cpf, celular,
+                hipertenso:  bloco.querySelector('.hipertenso').checked,
+                diabetico:   bloco.querySelector('.diabetico').checked,
+                gestante:    bloco.querySelector('.prenatal').checked,
+                vacina:      bloco.querySelector('.vacina').checked,
+                idoso:       bloco.querySelector('.idoso').checked,
+                deficiente:  bloco.querySelector('.deficiente').checked,
+                crianca:     bloco.querySelector('.crianca').checked,
                 tuberculoso: bloco.querySelector('.tuberculoso').checked,
-                hanseniase: bloco.querySelector('.hanseniase').checked
+                hanseniase:  bloco.querySelector('.hanseniase').checked,
             });
         });
 
-        if (!camposValidos || endereco === "") {
-            showToast('warning', 'Campos inválidos', 'Preencha todos os campos obrigatórios corretamente.');
+        if (!camposValidos) {
+            showToast('warning', 'Campos inválidos', 'Preencha todos os campos de cada membro corretamente.');
             return;
         }
 
         const chaveLista = loginAtivo + '_lista_familias';
-        let lista = JSON.parse(localStorage.getItem(chaveLista) || "[]");
+        let lista = JSON.parse(localStorage.getItem(chaveLista) || '[]');
 
-        const novaFamilia = {
+        lista.push({
             id: Date.now(),
             primeiroMembro: listaMembros[0].nome,
-            endereco: endereco,
+            endereco: enderecoCompleto,
             data: new Date().toLocaleDateString('pt-BR'),
-            membros: listaMembros
-        };
+            membros: listaMembros,
+            enderecoDetalhes: { logradouro, numero, complemento, bairro, cidade, uf, cep }
+        });
 
-        lista.push(novaFamilia);
         localStorage.setItem(chaveLista, JSON.stringify(lista));
-
-        // Atualiza contadores
         localStorage.setItem(loginAtivo + '_totalFamilias', lista.length);
         localStorage.setItem(loginAtivo + '_totalPendentes', lista.length);
 
-        showToast('success', 'Cadastro concluído', 'Família completa cadastrada!');
-        setTimeout(() => window.location.href = "acsarea.html", 700);
+        showToast('success', 'Cadastro concluído', 'Família cadastrada com sucesso!');
+        setTimeout(() => window.location.href = 'acsarea.html', 700);
     }
 
-    function adicionarNovoCampo() {
-        const container = document.getElementById('containerMembros');
-        const numMembros = container.querySelectorAll('.membro-bloco').length + 1;
-        
-        const novoMembro = document.querySelector('.membro-bloco').cloneNode(true);
-        novoMembro.querySelector('h3').textContent = "Membro " + numMembros;
-        
-        // Limpa valores clonados
-        novoMembro.querySelectorAll('input').forEach(input => input.value = "");
-        novoMembro.querySelectorAll('select').forEach(select => select.value = "");
-        novoMembro.querySelectorAll('input[type="checkbox"]').forEach(check => check.checked = false);
-        
-        container.appendChild(novoMembro);
-        document.getElementById('res-visitas').textContent = numMembros;
-        updateResumo();
-    }
+    // ── INIT: adiciona primeiro membro ──
+    adicionarMembro();
 
-    function calcularIdade(dataNascimento) {
-        if (!dataNascimento) return -1;
-        const partes = dataNascimento.split('/');
-        if (partes.length !== 3) return -1;
-        const dia = parseInt(partes[0], 10);
-        const mes = parseInt(partes[1], 10) - 1;
-        const ano = parseInt(partes[2], 10);
-        if (Number.isNaN(dia) || Number.isNaN(mes) || Number.isNaN(ano)) return -1;
-
-        const hoje = new Date();
-        const nascimento = new Date(ano, mes, dia);
-        let idade = hoje.getFullYear() - nascimento.getFullYear();
-        const mesDiff = hoje.getMonth() - nascimento.getMonth();
-        if (mesDiff < 0 || (mesDiff === 0 && hoje.getDate() < nascimento.getDate())) {
-            idade--;
-        }
-        return idade;
-    }
-
-    function updateResumo() {
-        const blocos = document.querySelectorAll('.membro-bloco');
-        let totalGestantes = 0;
-        let totalHipertensos = 0;
-        let totalDiabeticos = 0;
-        let totalIdosos = 0;
-        let totalDeficientes = 0;
-        let totalCriancas = 0;
-        let totalTuberculosos = 0;
-        let totalHanseniase = 0;
-
-        blocos.forEach((bloco) => {
-            if (bloco.querySelector('.hipertenso').checked) totalHipertensos++;
-            if (bloco.querySelector('.diabetico').checked) totalDiabeticos++;
-            if (bloco.querySelector('.prenatal').checked) totalGestantes++;
-            if (bloco.querySelector('.idoso').checked) totalIdosos++;
-            if (bloco.querySelector('.deficiente').checked) totalDeficientes++;
-            if (bloco.querySelector('.crianca').checked) totalCriancas++;
-            if (bloco.querySelector('.tuberculoso').checked) totalTuberculosos++;
-            if (bloco.querySelector('.hanseniase').checked) totalHanseniase++;
-        });
-
-        document.getElementById('res-gestantes').textContent = totalGestantes;
-        document.getElementById('res-hipertensos').textContent = totalHipertensos;
-        document.getElementById('res-diabeticos').textContent = totalDiabeticos;
-        document.getElementById('res-idosos').textContent = totalIdosos;
-        document.getElementById('res-deficientes').textContent = totalDeficientes;
-        document.getElementById('res-criancas').textContent = totalCriancas;
-        document.getElementById('res-tuberculosos').textContent = totalTuberculosos;
-        document.getElementById('res-hanseniase').textContent = totalHanseniase;
-    }
-
-    const formVisita = document.getElementById('formVisita');
-    if (formVisita) {
-        formVisita.addEventListener('input', updateResumo);
-        formVisita.addEventListener('change', updateResumo);
-        updateResumo();
-    }
+    // Sobrescreve o header do primeiro membro para marcar como Responsável (já feito no criarMembroHTML com num===1)
+    document.getElementById('formFamilia').addEventListener('input', updateResumo);
+    document.getElementById('formFamilia').addEventListener('change', updateResumo);
 </script>
 </body>
 </html>

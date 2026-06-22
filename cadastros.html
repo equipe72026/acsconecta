@@ -3,234 +3,534 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastro de Agente de Saúde - Área do Gerente</title>
-    <link rel="stylesheet" href="cadastro.css">
-    <link rel="stylesheet" href="areacas.css">
+    <title>Cadastro de Agente de Saúde - SevenSys</title>
     <link rel="stylesheet" href="ui.css">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --teal:       #109ea3;
+            --teal-dark:  #0b777a;
+            --teal-light: #e6f7f7;
+            --slate:      #2c3e50;
+            --red:        #e74c3c;
+            --red-dark:   #c0392b;
+            --green:      #27ae60;
+            --green-dark: #1e8449;
+            --amber:      #f39c12;
+            --white:      #ffffff;
+            --bg:         #f0f4f5;
+            --card:       #ffffff;
+            --border:     #dde4e6;
+            --text:       #2c3e50;
+            --muted:      #7f8c8d;
+            --radius:     10px;
+            --shadow:     0 2px 12px rgba(0,0,0,0.08);
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: var(--bg);
+            background-image: url("img/trasno.png");
+            background-size: cover;
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: var(--text);
+        }
+
+        /* ── HEADER (idêntico ao gerentedash) ── */
+        .header {
+            background: var(--white);
+            border-bottom: 3px solid var(--teal);
+            padding: 0 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 72px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-logo  { height: 52px; width: auto; }
+        .header-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--teal);
+            letter-spacing: -0.3px;
+        }
+        .header-title span { font-weight: 400; color: var(--muted); font-size: 1rem; }
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+            background: var(--teal);
+            color: white;
+            padding: 9px 20px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: background 0.2s, transform 0.2s;
+        }
+        .btn-back:hover { background: var(--teal-dark); transform: translateY(-1px); }
+
+        /* ── PAGE LAYOUT ── */
+        .page {
+            max-width: 780px;
+            margin: 36px auto;
+            padding: 0 20px 60px;
+        }
+
+        /* ── VERIFICATION BOX ── */
+        .verificacao-box {
+            background: var(--card);
+            border-radius: 14px;
+            box-shadow: var(--shadow);
+            padding: 40px 36px;
+            text-align: center;
+            max-width: 420px;
+            margin: 0 auto;
+        }
+        .verificacao-box .icon {
+            font-size: 2.8rem;
+            margin-bottom: 12px;
+            display: block;
+        }
+        .verificacao-box h2 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--slate);
+            margin-bottom: 6px;
+        }
+        .verificacao-box p {
+            font-size: 0.9rem;
+            color: var(--muted);
+            margin-bottom: 28px;
+        }
+
+        /* ── CARD FIELDSET ── */
+        .form-card {
+            background: var(--card);
+            border-radius: 14px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+        .form-card-header {
+            background: var(--teal);
+            padding: 14px 24px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .form-card-header .card-icon {
+            font-size: 1.2rem;
+        }
+        .form-card-header h2 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: white;
+            letter-spacing: 0.2px;
+        }
+        .form-card-body {
+            padding: 24px 28px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px 24px;
+        }
+        .form-card-body .full { grid-column: 1 / -1; }
+
+        /* ── FORM FIELDS ── */
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .field label {
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.7px;
+            color: var(--muted);
+        }
+        .field input,
+        .field select {
+            height: 44px;
+            padding: 0 14px;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.92rem;
+            font-family: inherit;
+            color: var(--text);
+            background: var(--white);
+            transition: border-color 0.2s, box-shadow 0.2s;
+            width: 100%;
+        }
+        .field input::placeholder { color: #b0bec5; }
+        .field input:focus,
+        .field select:focus {
+            outline: none;
+            border-color: var(--teal);
+            box-shadow: 0 0 0 3px rgba(16,158,163,0.12);
+        }
+        .field input.invalid {
+            border-color: var(--red);
+            box-shadow: 0 0 0 3px rgba(231,76,60,0.1);
+        }
+
+        /* ── RADIO GROUP ── */
+        .radio-row {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            height: 44px;
+        }
+        .radio-row label {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            font-size: 0.92rem;
+            font-weight: 600;
+            color: var(--text);
+            cursor: pointer;
+            text-transform: none;
+            letter-spacing: 0;
+        }
+        .radio-row input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--teal);
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        /* ── PASSWORD WRAPPER ── */
+        .pwd-wrap { position: relative; }
+        .pwd-wrap input { padding-right: 44px; }
+        .pwd-toggle {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--muted);
+            font-size: 1rem;
+            line-height: 1;
+            padding: 4px;
+        }
+        .pwd-toggle:hover { color: var(--teal); }
+
+        /* ── HINT TEXT ── */
+        .field-hint {
+            font-size: 0.75rem;
+            color: var(--muted);
+            margin-top: -2px;
+        }
+
+        /* ── BUTTONS ── */
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 8px;
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 28px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.92rem;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+        .btn-primary { background: var(--teal); color: white; }
+        .btn-primary:hover { background: var(--teal-dark); transform: translateY(-1px); box-shadow: 0 4px 14px rgba(16,158,163,0.3); }
+        .btn-ghost {
+            background: transparent;
+            border: 1.5px solid var(--border);
+            color: var(--muted);
+        }
+        .btn-ghost:hover { border-color: var(--red); color: var(--red); background: #fff5f5; }
+        .btn-verify {
+            background: var(--teal);
+            color: white;
+            width: 100%;
+            justify-content: center;
+            padding: 13px 28px;
+            font-size: 0.95rem;
+            border-radius: 8px;
+            margin-top: 4px;
+        }
+        .btn-verify:hover { background: var(--teal-dark); transform: translateY(-1px); box-shadow: 0 4px 14px rgba(16,158,163,0.3); }
+
+        /* ── VERIFY INPUT ── */
+        .verificacao-box .field { text-align: left; }
+        .verificacao-box .field label { color: var(--slate); }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 640px) {
+            .header { padding: 0 16px; }
+            .header-title { font-size: 1rem; }
+            .form-card-body { grid-template-columns: 1fr; padding: 18px; }
+            .form-card-body .full { grid-column: 1; }
+            .form-actions { flex-direction: column-reverse; }
+            .btn { width: 100%; justify-content: center; }
+        }
+    </style>
 </head>
 <body>
-    <header class="topo-pagina">
-        <a href="index.html"><img src="img/semfindo.png" alt="Logo" class="logo"></a>
-        <h2 class="titulo">Cadastro de Agente de Saúde</h2>
-        <a href="gerentedash.html" class="btn-voltar">← Voltar</a>
-    </header>
 
-    <div class="container-cadastro">
-        <div id="verificacao-gerente" class="verificacao-box">
-            <h2> Verificação de Gerente</h2>
-            <p>Por favor, identifique-se para continuar</p>
-            <div class="form-group">
-                <label for="senha_gerente">Senha do Gerente:</label>
-                <input type="password" id="senha_gerente" placeholder="Digite a senha do gerente">
+<!-- HEADER — idêntico ao gerentedash -->
+<header class="header">
+    <a href="index.html"><img src="img/semfindo.png" alt="Logo" class="header-logo"></a>
+    <div class="header-title">Cadastro de Agente <span>/ SevenSys</span></div>
+    <a href="gerentedash.html" class="btn-back">← Voltar</a>
+</header>
+
+<div class="page">
+
+    <!-- VERIFICAÇÃO -->
+    <div id="verificacao-gerente" class="verificacao-box">
+        <span class="icon">🔐</span>
+        <h2>Verificação de Gerente</h2>
+        <p>Identifique-se para liberar o formulário de cadastro</p>
+        <div class="field">
+            <label for="senha_gerente">Senha do Gerente</label>
+            <div class="pwd-wrap">
+                <input type="password" id="senha_gerente" placeholder="Digite sua senha">
+                <button class="pwd-toggle" type="button" onclick="toggleSenha('senha_gerente', this)">👁</button>
             </div>
-            <button type="button" class="btn-verificar" onclick="verificarGerente()">Verificar Acesso</button>
         </div>
+        <button type="button" class="btn btn-verify" style="margin-top:20px;" onclick="verificarGerente()">Verificar Acesso</button>
+    </div>
 
-        <form id="form-agente" class="form-agente" style="display: none;">
-            <fieldset class="fieldset-dados">
-                <legend><h2> Dados Pessoais do Agente</h2></legend>
-                
-                <div class="form-group">
-                    <label for="inom">Nome Completo:</label>
-                    <input type="text" name="nom" id="inom" placeholder="Nome completo do agente" minlength="15" maxlength="60" required>
-                </div>
+    <!-- FORMULÁRIO -->
+    <form id="form-agente" style="display:none;" novalidate>
 
-                <div class="form-group">
-                    <label for="dat">Data de Nascimento:</label>
-                    <input type="date" name="data" id="dat" required>
+        <!-- DADOS PESSOAIS -->
+        <div class="form-card">
+            <div class="form-card-header">
+                <span class="card-icon">👤</span>
+                <h2>Dados Pessoais do Agente</h2>
+            </div>
+            <div class="form-card-body">
+                <div class="field full">
+                    <label for="inom">Nome Completo</label>
+                    <input type="text" id="inom" placeholder="Nome completo do agente" minlength="15" maxlength="60" required>
                 </div>
-                <div class="form-group">
-                    <label>Sexo:</label>
-                    <div class="radio-group">
+                <div class="field">
+                    <label for="dat">Data de Nascimento</label>
+                    <input type="date" id="dat" required>
+                </div>
+                <div class="field">
+                    <label>Sexo</label>
+                    <div class="radio-row">
                         <label><input type="radio" name="sexo" value="M" required> Masculino</label>
                         <label><input type="radio" name="sexo" value="F"> Feminino</label>
                     </div>
                 </div>
-                <div class="form-group">
-                    <label for="cpf">CPF:</label>
-                    <input type="text" name="cpf" id="cpf" maxlength="14"
-                    oninput="this.value = this.value
-                    .replace(/\D/g, '')
-                    .replace(/(\d{3})(\d)/, '$1.$2')
-                    .replace(/(\d{3})(\d)/, '$1.$2')
-                    .replace(/(\d{3})(\d{1,2})$/, '$1-$2')"
-                    pattern="\d{3}\.\d{3}\.\d{3}-\d{2}" placeholder="xxx.xxx.xxx-xx" required>
+                <div class="field">
+                    <label for="cpf">CPF</label>
+                    <input type="text" id="cpf" maxlength="14"
+                        oninput="this.value=this.value.replace(/\D/g,'').replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d{1,2})$/,'$1-$2')"
+                        pattern="\d{3}\.\d{3}\.\d{3}-\d{2}" placeholder="xxx.xxx.xxx-xx" required>
                 </div>
-                <div class="form-group">
-                    <label for="tel">Telefone:</label>
-                    <input type="tel" name="itel" id="tel" maxlength="15" placeholder="(XX) XXXXX-XXXX" oninput="mascaraTelefone(this)" required>
+                <div class="field">
+                    <label for="tel">Telefone</label>
+                    <input type="tel" id="tel" maxlength="15" placeholder="(XX) XXXXX-XXXX" oninput="mascaraTelefone(this)" required>
                 </div>
+                <div class="field full">
+                    <label for="email">E-mail</label>
+                    <input type="email" id="email" placeholder="email@exemplo.com" required>
+                </div>
+                <div class="field full">
+                    <label for="end">Endereço Completo</label>
+                    <input type="text" id="end" placeholder="Rua, número, bairro, cidade" required>
+                </div>
+            </div>
+        </div>
 
-                <div class="form-group">
-                    <label for="email">E-mail:</label>
-                    <input type="email" name="iemail" id="email" placeholder="email@exemplo.com" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="end">Endereço Completo:</label>
-                    <input type="text" name="iend" id="end" placeholder="Rua, número, bairro, cidade" required>
-                </div>
-            </fieldset>
-
-            <fieldset class="fieldset-dados">
-                <legend><h2> Dados Profissionais</h2></legend>
-                
-                <div class="form-group">
-                    <label for="unit">Unidade de Saúde de Atuação:</label>
-                    <select id="unit" class="uni" required>
-                      <option value="" class="unid">Selecione uma unidade</option>
-                      
-                      <optgroup label="Centros Municipais de Saúde (CMS)" class="text-black">
-                        <option value="CMS Adão Pereira Nunes" class="text-black">CMS Adão Pereira Nunes</option>
-                        <option value="CMS Alvimar de Carvalho" class="text-black">CMS Alvimar de Carvalho</option>
-                        <option value="CMS Belizário Penna" class="text-black">CMS Belizário Penna</option>
-                        <option value="CMS Dr. Woodrow Pimentel Pantoja" class="text-black">CMS Dr. Woodrow Pimentel Pantoja</option>
-                        <option value="CMS Manoel de Abreu" class="text-black">CMS Manoel de Abreu</option>
-                        <option value="CMS Pedro Nava" class="text-black">CMS Pedro Nava</option>
-                        <option value="CMS Professor Edgard Magalhães Gomes" class="text-black">CMS Professor Edgard Magalhães Gomes</option>
-                        <option value="CMS Vila do Céu" class="text-black">CMS Vila do Céu</option>
-                      </optgroup>
-                  
-                      <optgroup label="Clínicas da Família (CF)" class="text-black">
-                        <option value="CF Agenor de Miranda Araújo Neto" class="text-black">CF Agenor de Miranda Araújo Neto</option>
-                        <option value="CF Alkindar Soares Pereira Filho" class="text-black">CF Alkindar Soares Pereira Filho</option>
-                        <option value="CF Antônio Gonçalves Villa Sobrinho" class="text-black">CF Antônio Gonçalves Villa Sobrinho</option>
-                        <option value="CF Dr. Rogério Rocco" class="text-black">CF Dr. Rogério Rocco</option>
-                        <option value="CF Edgard Ferreira do Amaral" class="text-black">CF Edgard Ferreira do Amaral</option>
-                        <option value="CF Everton de Souza Santos" class="text-black">CF Everton de Souza Santos</option>
-                        <option value="CF Medalhista Olímpico Bruno Schmidt" class="text-black">CF Medalhista Olímpico Bruno Schmidt</option>
-                        <option value="CF Valdecir Salustiano Cardozo" class="text-black">CF Valdecir Salustiano Cardozo</option>
-                      </optgroup>
+        <!-- DADOS PROFISSIONAIS -->
+        <div class="form-card">
+            <div class="form-card-header">
+                <span class="card-icon">🏥</span>
+                <h2>Dados Profissionais</h2>
+            </div>
+            <div class="form-card-body">
+                <div class="field full">
+                    <label for="unit">Unidade de Saúde de Atuação</label>
+                    <select id="unit" required>
+                        <option value="">Selecione uma unidade</option>
+                        <optgroup label="Centros Municipais de Saúde (CMS)">
+                            <option value="CMS Adão Pereira Nunes">CMS Adão Pereira Nunes</option>
+                            <option value="CMS Alvimar de Carvalho">CMS Alvimar de Carvalho</option>
+                            <option value="CMS Belizário Penna">CMS Belizário Penna</option>
+                            <option value="CMS Dr. Woodrow Pimentel Pantoja">CMS Dr. Woodrow Pimentel Pantoja</option>
+                            <option value="CMS Manoel de Abreu">CMS Manoel de Abreu</option>
+                            <option value="CMS Pedro Nava">CMS Pedro Nava</option>
+                            <option value="CMS Professor Edgard Magalhães Gomes">CMS Professor Edgard Magalhães Gomes</option>
+                            <option value="CMS Vila do Céu">CMS Vila do Céu</option>
+                        </optgroup>
+                        <optgroup label="Clínicas da Família (CF)">
+                            <option value="CF Agenor de Miranda Araújo Neto">CF Agenor de Miranda Araújo Neto</option>
+                            <option value="CF Alkindar Soares Pereira Filho">CF Alkindar Soares Pereira Filho</option>
+                            <option value="CF Antônio Gonçalves Villa Sobrinho">CF Antônio Gonçalves Villa Sobrinho</option>
+                            <option value="CF Dr. Rogério Rocco">CF Dr. Rogério Rocco</option>
+                            <option value="CF Edgard Ferreira do Amaral">CF Edgard Ferreira do Amaral</option>
+                            <option value="CF Everton de Souza Santos">CF Everton de Souza Santos</option>
+                            <option value="CF Medalhista Olímpico Bruno Schmidt">CF Medalhista Olímpico Bruno Schmidt</option>
+                            <option value="CF Valdecir Salustiano Cardozo">CF Valdecir Salustiano Cardozo</option>
+                        </optgroup>
                     </select>
                 </div>
-
-                <div class="form-group">
-                    <label for="matricula">Matrícula:</label>
-                    <input type="text" name="matricula" id="matricula" placeholder="Número da matrícula" required>
+                <div class="field">
+                    <label for="matricula">Matrícula</label>
+                    <input type="text" id="matricula" placeholder="Número da matrícula" required>
                 </div>
-                <div class="form-group">
-                    <label for="area">Área de Atuação:</label>
-                    <input type="text" name="area" id="area" placeholder="Microárea ou território de atuação" required>
+                <div class="field">
+                    <label for="area">Área de Atuação</label>
+                    <input type="text" id="area" placeholder="Microárea ou território" required>
                 </div>
-            </fieldset>
-
-            <fieldset class="fieldset-dados">
-                <legend><h2> Dados de Acesso ao Sistema</h2></legend>
-                
-                <div class="form-group">
-                    <label for="login">Usuário do Sistema:</label>
-                    <input type="text" name="ilogin" id="login" placeholder="Escolha nome de usuário" minlength="6" maxlength="20" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="sen">Senha:</label>
-                    <input type="password" name="isen" id="sen" placeholder="Digite uma senha" minlength="8" required>
-                </div>
-                <div class="form-group">
-                    <label for="confirmar_senha">Confirmar Senha:</label>
-                    <input type="password" name="confirmar_senha" id="confirmar_senha" placeholder="Repita a senha" minlength="8" required>
-                </div>
-            </fieldset>
-
-            <div class="form-buttons">
-                <button type="submit" class="btn-submit">Cadastrar Agente</button>
-                <button type="reset" class="btn-reset">Limpar Formulário</button>
             </div>
-        </form>
-    </div>
-    <script src="ui.js"></script>
+        </div>
 
-    <script>
-        // Senha do gerente (em produção, isso deve estar no servidor)
-        const SENHA_GERENTE = 'admin123';
-        
-        // Função de máscara para telefone
-        function mascaraTelefone(input) {
-            let v = input.value.replace(/\D/g, "");
-            if (v.length > 11) v = v.substring(0, 11);
-            
-            if (v.length >= 2) {
-                v = "(" + v.substring(0, 2) + ") " + v.substring(2);
-            }
-            if (v.length >= 10) {
-                v = v.substring(0, 10) + "-" + v.substring(10);
-            }
-            
-            input.value = v;
+        <!-- DADOS DE ACESSO -->
+        <div class="form-card">
+            <div class="form-card-header">
+                <span class="card-icon">🔑</span>
+                <h2>Dados de Acesso ao Sistema</h2>
+            </div>
+            <div class="form-card-body">
+                <div class="field full">
+                    <label for="login">Usuário do Sistema</label>
+                    <input type="text" id="login" placeholder="Mínimo 6 caracteres" minlength="6" maxlength="20" required>
+                    <span class="field-hint">Será usado para entrar no sistema. Sem espaços.</span>
+                </div>
+                <div class="field">
+                    <label for="sen">Senha</label>
+                    <div class="pwd-wrap">
+                        <input type="password" id="sen" placeholder="Mínimo 8 caracteres" minlength="8" required>
+                        <button class="pwd-toggle" type="button" onclick="toggleSenha('sen', this)">👁</button>
+                    </div>
+                </div>
+                <div class="field">
+                    <label for="confirmar_senha">Confirmar Senha</label>
+                    <div class="pwd-wrap">
+                        <input type="password" id="confirmar_senha" placeholder="Repita a senha" minlength="8" required>
+                        <button class="pwd-toggle" type="button" onclick="toggleSenha('confirmar_senha', this)">👁</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AÇÕES -->
+        <div class="form-actions">
+            <button type="reset" class="btn btn-ghost">🗑 Limpar Formulário</button>
+            <button type="submit" class="btn btn-primary">✓ Cadastrar Agente</button>
+        </div>
+
+    </form>
+</div>
+
+<script src="ui.js"></script>
+<script>
+    const SENHA_GERENTE = 'admin123';
+
+    function mascaraTelefone(input) {
+        let v = input.value.replace(/\D/g, "");
+        if (v.length > 11) v = v.substring(0, 11);
+        if (v.length >= 2) v = "(" + v.substring(0, 2) + ") " + v.substring(2);
+        if (v.length >= 10) v = v.substring(0, 10) + "-" + v.substring(10);
+        input.value = v;
+    }
+
+    function toggleSenha(id, btn) {
+        const input = document.getElementById(id);
+        if (input.type === 'password') {
+            input.type = 'text';
+            btn.textContent = '🙈';
+        } else {
+            input.type = 'password';
+            btn.textContent = '👁';
         }
-        
-        function verificarGerente() {
-            const senhaDigitada = document.getElementById('senha_gerente').value;
-            
-            if (senhaDigitada === SENHA_GERENTE) {
-                document.getElementById('verificacao-gerente').style.display = 'none';
-                document.getElementById('form-agente').style.display = 'block';
-                sessionStorage.setItem('gerenteAutenticado', 'true');
-            } else {
-                showToast('error', 'Senha incorreta', 'Acesso negado.');
-                document.getElementById('senha_gerente').value = '';
-            }
+    }
+
+    function verificarGerente() {
+        const senhaDigitada = document.getElementById('senha_gerente').value;
+        if (senhaDigitada === SENHA_GERENTE) {
+            document.getElementById('verificacao-gerente').style.display = 'none';
+            document.getElementById('form-agente').style.display = 'block';
+            sessionStorage.setItem('gerenteAutenticado', 'true');
+        } else {
+            showToast('error', 'Senha incorreta', 'Acesso negado.');
+            document.getElementById('senha_gerente').value = '';
+        }
+    }
+
+    window.onload = function() {
+        if (sessionStorage.getItem('gerenteAutenticado') === 'true') {
+            document.getElementById('verificacao-gerente').style.display = 'none';
+            document.getElementById('form-agente').style.display = 'block';
+        }
+    };
+
+    document.getElementById('form-agente').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const senha = document.getElementById('sen').value;
+        const confirmarSenha = document.getElementById('confirmar_senha').value;
+
+        if (senha !== confirmarSenha) {
+            showToast('warning', 'Senhas não coincidem', 'Verifique e tente novamente.');
+            document.getElementById('confirmar_senha').classList.add('invalid');
+            return;
+        }
+        if (senha.length < 8) {
+            showToast('warning', 'Senha muito curta', 'Use pelo menos 8 caracteres.');
+            return;
         }
 
-        // Verificar se já está autenticado
-        window.onload = function() {
-            if (sessionStorage.getItem('gerenteAutenticado') === 'true') {
-                document.getElementById('verificacao-gerente').style.display = 'none';
-                document.getElementById('form-agente').style.display = 'block';
-            }
+        const dadosAgente = {
+            nome:          document.getElementById('inom').value,
+            dataNascimento:document.getElementById('dat').value,
+            sexo:          document.querySelector('input[name="sexo"]:checked')?.value || '',
+            cpf:           document.getElementById('cpf').value,
+            telefone:      document.getElementById('tel').value,
+            email:         document.getElementById('email').value,
+            endereco:      document.getElementById('end').value,
+            unidadeSaude:  document.getElementById('unit').value,
+            matricula:     document.getElementById('matricula').value,
+            area:          document.getElementById('area').value,
+            usuario:       document.getElementById('login').value,
+            senha:         senha,
+            dataCadastro:  new Date().toLocaleDateString('pt-BR'),
+            cadastradoPor: 'Gerente'
         };
 
-        // Validação do formulário
-        document.getElementById('form-agente').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const senha = document.getElementById('sen').value;
-            const confirmarSenha = document.getElementById('confirmar_senha').value;
-            
-            if (senha !== confirmarSenha) {
-                showToast('warning', 'Senhas não coincidem', 'Verifique e tente novamente.');
-                return;
-            }
-            
-            if (senha.length < 8) {
-                showToast('warning', 'Senha muito curta', 'Use pelo menos 8 caracteres.');
-                return;
-            }
-            
-            // Coletar dados do formulário
-            const dadosAgente = {
-                nome: document.getElementById('inom').value,
-                dataNascimento: document.getElementById('dat').value,
-                sexo: document.querySelector('input[name="sexo"]:checked').value,
-                cpf: document.getElementById('cpf').value,
-                telefone: document.getElementById('tel').value,
-                email: document.getElementById('email').value,
-                endereco: document.getElementById('end').value,
-                unidadeSaude: document.getElementById('unit').value,
-                matricula: document.getElementById('matricula').value,
-                area: document.getElementById('area').value,
-                usuario: document.getElementById('login').value,
-                senha: senha,
-                dataCadastro: new Date().toLocaleDateString('pt-BR'),
-                cadastradoPor: 'Gerente'
-            };
-            
-            // Salvar no localStorage
-            let agentes = JSON.parse(localStorage.getItem('agentesSaude') || '[]');
-            agentes.push(dadosAgente);
-            localStorage.setItem('agentesSaude', JSON.stringify(agentes));
-            
-            showToast('success', 'Cadastro concluído', 'Agente de saúde cadastrado com sucesso!');
-            this.reset();
-            setTimeout(() => window.location.href = 'index.html', 700);
-        });
+        let agentes = JSON.parse(localStorage.getItem('agentesSaude') || '[]');
+        agentes.push(dadosAgente);
+        localStorage.setItem('agentesSaude', JSON.stringify(agentes));
 
-        // Permitir Enter para verificar senha
-        document.getElementById('senha_gerente').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                verificarGerente();
-            }
-        });
-    </script>
+        showToast('success', 'Cadastro concluído', 'Agente de saúde cadastrado com sucesso!');
+        this.reset();
+        setTimeout(() => window.location.href = 'gerentedash.html', 700);
+    });
+
+    document.getElementById('senha_gerente').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') verificarGerente();
+    });
+
+    // Limpar classe invalid ao redigitar
+    document.getElementById('confirmar_senha').addEventListener('input', function() {
+        this.classList.remove('invalid');
+    });
+</script>
 </body>
 </html>
