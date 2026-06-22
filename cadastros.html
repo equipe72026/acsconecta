@@ -318,7 +318,9 @@
             <div class="form-card-body">
                 <div class="field full">
                     <label for="inom">Nome Completo</label>
-                    <input type="text" id="inom" placeholder="Nome completo do agente" minlength="15" maxlength="60" required>
+                    <input type="text" id="inom" placeholder="Nome completo do agente" minlength="15" maxlength="60"
+                        oninput="this.value=this.value.replace(/[^A-Za-zÀ-ÖØ-öø-ÿ\s]/g,'')"
+                        pattern="[A-Za-zÀ-ÖØ-öø-ÿ\s]{15,60}" title="Apenas letras, mínimo 15 e máximo 60 caracteres" required>
                 </div>
                 <div class="field">
                     <label for="dat">Data de Nascimento</label>
@@ -345,9 +347,33 @@
                     <label for="email">E-mail</label>
                     <input type="email" id="email" placeholder="email@exemplo.com" required>
                 </div>
+                <div class="field">
+                    <label for="cep">CEP</label>
+                    <input type="text" id="cep" maxlength="9" placeholder="xxxxx-xxx"
+                        oninput="this.value=this.value.replace(/\D/g,'').replace(/(\d{5})(\d)/,'$1-$2').substring(0,9)"
+                        onblur="buscarCep(this.value)" required>
+                    <span class="field-hint" id="cepStatus">Digite o CEP para buscar o endereço automaticamente.</span>
+                </div>
+                <div class="field">
+                    <label for="numero">Número</label>
+                    <input type="text" id="numero" placeholder="Nº" required>
+                </div>
                 <div class="field full">
-                    <label for="end">Endereço Completo</label>
-                    <input type="text" id="end" placeholder="Rua, número, bairro, cidade" required>
+                    <label for="rua">Rua / Av. / Estrada</label>
+                    <input type="text" id="rua" placeholder="Preenchido automaticamente pelo CEP" required>
+                </div>
+                <div class="field">
+                    <label for="bairro">Bairro</label>
+                    <input type="text" id="bairro" placeholder="Preenchido automaticamente pelo CEP" required>
+                </div>
+                <div class="field">
+                    <label for="cidade">Cidade</label>
+                    <input type="text" id="cidade" placeholder="Preenchido automaticamente pelo CEP" required>
+                </div>
+                <div class="field">
+                    <label for="uf">UF</label>
+                    <input type="text" id="uf" maxlength="2" placeholder="Ex: RJ"
+                        oninput="this.value=this.value.replace(/[^A-Za-z]/g,'').toUpperCase().substring(0,2)" required>
                 </div>
             </div>
         </div>
@@ -403,7 +429,9 @@
             <div class="form-card-body">
                 <div class="field full">
                     <label for="login">Usuário do Sistema</label>
-                    <input type="text" id="login" placeholder="Mínimo 6 caracteres" minlength="6" maxlength="20" required>
+                    <input type="text" id="login" placeholder="Mínimo 6 caracteres, apenas letras" minlength="6" maxlength="20"
+                        oninput="this.value=this.value.replace(/[^A-Za-z]/g,'')"
+                        pattern="[A-Za-z]{6,20}" title="Apenas letras, mínimo 6 caracteres" required>
                     <span class="field-hint">Será usado para entrar no sistema. Sem espaços.</span>
                 </div>
                 <div class="field">
@@ -436,6 +464,47 @@
     const SENHA_GERENTE = 'admin123';
 
     // ============================================================
+    // BUSCA DE ENDEREÇO PELO CEP (Correios / ViaCEP)
+    // ============================================================
+    async function buscarCep(valor) {
+        const cep = valor.replace(/\D/g, '');
+        const status = document.getElementById('cepStatus');
+        const ruaInput = document.getElementById('rua');
+        const bairroInput = document.getElementById('bairro');
+        const cidadeInput = document.getElementById('cidade');
+        const ufInput = document.getElementById('uf');
+
+        if (cep.length !== 8) {
+            status.textContent = 'CEP inválido. Deve conter 8 dígitos.';
+            return;
+        }
+
+        status.textContent = 'Buscando endereço...';
+
+        try {
+            const resp = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+            const data = await resp.json();
+
+            if (data.erro) {
+                status.textContent = 'CEP não encontrado. Preencha o endereço manualmente.';
+                showToast('warning', 'CEP não encontrado', 'Verifique o CEP digitado ou preencha o endereço manualmente.');
+                return;
+            }
+
+            ruaInput.value = data.logradouro || '';
+            bairroInput.value = data.bairro || '';
+            cidadeInput.value = data.localidade || '';
+            ufInput.value = data.uf || '';
+
+            status.textContent = 'Endereço encontrado automaticamente.';
+            document.getElementById('numero').focus();
+        } catch (err) {
+            status.textContent = 'Não foi possível buscar o CEP agora. Preencha manualmente.';
+            showToast('error', 'Erro na busca', 'Não foi possível consultar o CEP. Verifique sua conexão.');
+        }
+    }
+
+    // ============================================================
     // MODO EDIÇÃO
     // ============================================================
     let modoEdicao = false;
@@ -465,7 +534,12 @@
         document.getElementById('cpf').value = agente.cpf || '';
         document.getElementById('tel').value = agente.telefone || '';
         document.getElementById('email').value = agente.email || '';
-        document.getElementById('end').value = agente.endereco || '';
+        document.getElementById('cep').value = agente.cep || '';
+        document.getElementById('rua').value = agente.rua || agente.endereco || '';
+        document.getElementById('numero').value = agente.numero || '';
+        document.getElementById('bairro').value = agente.bairro || '';
+        document.getElementById('cidade').value = agente.cidade || '';
+        document.getElementById('uf').value = agente.uf || '';
         document.getElementById('unit').value = agente.unidadeSaude || '';
         document.getElementById('matricula').value = agente.matricula || '';
         document.getElementById('area').value = agente.area || '';
@@ -542,6 +616,14 @@
             return;
         }
 
+        const cep      = document.getElementById('cep').value;
+        const rua      = document.getElementById('rua').value;
+        const numero   = document.getElementById('numero').value;
+        const bairro   = document.getElementById('bairro').value;
+        const cidade   = document.getElementById('cidade').value;
+        const uf       = document.getElementById('uf').value;
+        const enderecoCompleto = `${rua}, ${numero} - ${bairro}, ${cidade} - ${uf}, ${cep}`;
+
         const dadosAgente = {
             nome:          document.getElementById('inom').value,
             dataNascimento:document.getElementById('dat').value,
@@ -549,7 +631,13 @@
             cpf:           document.getElementById('cpf').value,
             telefone:      document.getElementById('tel').value,
             email:         document.getElementById('email').value,
-            endereco:      document.getElementById('end').value,
+            cep:           cep,
+            rua:           rua,
+            numero:        numero,
+            bairro:        bairro,
+            cidade:        cidade,
+            uf:            uf,
+            endereco:      enderecoCompleto,
             unidadeSaude:  document.getElementById('unit').value,
             matricula:     document.getElementById('matricula').value,
             area:          document.getElementById('area').value,
