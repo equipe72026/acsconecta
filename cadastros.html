@@ -38,6 +38,53 @@
             color: var(--text);
         }
 
+        /* ── MODO ESCURO ── */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --teal:       #1ec2c7;
+                --teal-dark:  #15a3a8;
+                --teal-light: #133b3c;
+                --slate:      #e8edf0;
+                --red:        #ff6b5e;
+                --red-dark:   #e74c3c;
+                --green:      #3ddc84;
+                --green-dark: #27ae60;
+                --amber:      #f5b041;
+                --white:      #1c2226;
+                --bg:         #11151a;
+                --card:       #1c2226;
+                --border:     #313b42;
+                --text:       #e8edf0;
+                --muted:      #9aa7ad;
+                --shadow:     0 2px 12px rgba(0,0,0,0.4);
+            }
+
+            body { background-color: var(--bg); }
+
+            .field input,
+            .field select {
+                background: #20272c;
+                color: var(--text);
+            }
+            .field input::placeholder { color: #6c7a80; }
+
+            .field input:focus,
+            .field select:focus {
+                box-shadow: 0 0 0 3px rgba(30,194,199,0.18);
+            }
+
+            .btn-ghost { color: var(--muted); }
+            .btn-ghost:hover { background: #2a1a1a; }
+
+            select#unit option,
+            select#unit optgroup {
+                background: #1c2226;
+                color: var(--text);
+            }
+
+            .header { box-shadow: 0 2px 10px rgba(0,0,0,0.4); }
+        }
+
         /* ── HEADER (idêntico ao gerentedash) ── */
         .header {
             background: var(--white);

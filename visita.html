@@ -3,41 +3,245 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registrar Visita Domiciliar</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="areacas.css">
+    <title>Registrar Visita Domiciliar - SevenSys</title>
     <link rel="stylesheet" href="ui.css">
     <style>
-        .container-visita { padding: 20px; max-width: 600px; margin: auto; }
-        .box-info { background: #f8f9fa; padding: 15px; border-radius: 6px; margin-bottom: 20px; border: 1px solid #ddd; }
-        .campo-formulario { margin-bottom: 15px; display: flex; flex-direction: column; }
-        .campo-formulario label { font-weight: bold; margin-bottom: 5px; color: #2c3e50; }
-        .campo-formulario textarea { padding: 10px; border-radius: 4px; border: 1px solid #ccc; font-family: inherit; font-size: 1em; resize: vertical; }
-        .btn-salvar-visita { background: #27ae60; color: white; border: none; padding: 12px; font-size: 1em; font-weight: bold; cursor: pointer; border-radius: 4px; width: 100%; }
-        .btn-salvar-visita:hover { background: #219150; }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --teal:       #109ea3;
+            --teal-dark:  #0b777a;
+            --teal-light: #e6f7f7;
+            --slate:      #2c3e50;
+            --red:        #e74c3c;
+            --red-dark:   #c0392b;
+            --green:      #27ae60;
+            --green-dark: #1e8449;
+            --amber:      #f39c12;
+            --white:      #ffffff;
+            --bg:         #f0f4f5;
+            --border:     #dde4e6;
+            --text:       #2c3e50;
+            --muted:      #7f8c8d;
+            --radius:     10px;
+            --shadow:     0 2px 12px rgba(0,0,0,0.08);
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: var(--bg);
+            background-image: url("img/trasno.png");
+            background-size: cover;
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: var(--text);
+        }
+
+        /* ── MODO ESCURO ── */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --teal:       #1ec2c7;
+                --teal-dark:  #15a3a8;
+                --teal-light: #133b3c;
+                --slate:      #e8edf0;
+                --red:        #ff6b5e;
+                --red-dark:   #e74c3c;
+                --green:      #3ddc84;
+                --green-dark: #27ae60;
+                --amber:      #f5b041;
+                --white:      #1c2226;
+                --bg:         #11151a;
+                --border:     #313b42;
+                --text:       #e8edf0;
+                --muted:      #9aa7ad;
+                --shadow:     0 2px 12px rgba(0,0,0,0.4);
+            }
+
+            body { background-color: var(--bg); }
+
+            .header,
+            .form-card,
+            .box-info { background: var(--white); }
+
+            .header { box-shadow: 0 2px 10px rgba(0,0,0,0.4); }
+
+            .field input,
+            .field select,
+            .field textarea {
+                background: #20272c;
+                color: var(--text);
+            }
+            .field input::placeholder,
+            .field textarea::placeholder { color: #6c7a80; }
+            .field input:focus,
+            .field select:focus,
+            .field textarea:focus {
+                box-shadow: 0 0 0 3px rgba(30,194,199,0.18);
+            }
+        }
+
+        /* ── HEADER ── */
+        .header {
+            background: var(--white);
+            border-bottom: 3px solid var(--teal);
+            padding: 0 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 72px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-logo  { height: 52px; width: auto; }
+        .header-title { font-size: 1.4rem; font-weight: 700; color: var(--teal); letter-spacing: -0.3px; }
+        .header-title span { font-weight: 400; color: var(--muted); font-size: 1rem; }
+        .btn-back {
+            display: inline-flex; align-items: center; gap: 6px;
+            text-decoration: none; background: var(--teal); color: white;
+            padding: 9px 20px; border-radius: 50px; font-weight: 600;
+            font-size: 0.9rem; transition: background 0.2s, transform 0.2s;
+        }
+        .btn-back:hover { background: var(--teal-dark); transform: translateY(-1px); }
+
+        /* ── PAGE ── */
+        .page {
+            max-width: 620px;
+            margin: 32px auto;
+            padding: 0 20px 60px;
+        }
+
+        /* ── CARD INFO DA FAMÍLIA ── */
+        .box-info {
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 18px 22px;
+            margin-bottom: 22px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            font-size: 0.92rem;
+            line-height: 1.6;
+        }
+
+        /* ── CARD FORMULÁRIO ── */
+        .form-card {
+            background: var(--white);
+            border-radius: 14px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        .form-card-header {
+            background: var(--teal);
+            padding: 13px 22px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .form-card-header h2 { font-size: 0.98rem; font-weight: 700; color: white; }
+        .form-card-body { padding: 22px 24px; }
+
+        /* ── FIELD ── */
+        .field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+        .field:last-child { margin-bottom: 0; }
+        .field label {
+            font-size: 0.78rem; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.7px; color: var(--muted);
+        }
+        .field input, .field select, .field textarea {
+            padding: 11px 14px;
+            border: 1.5px solid var(--border); border-radius: 8px;
+            font-size: 0.92rem; font-family: inherit; color: var(--text);
+            background: var(--white); transition: border-color 0.2s, box-shadow 0.2s;
+            width: 100%;
+        }
+        .field textarea { resize: vertical; }
+        .field input::placeholder,
+        .field textarea::placeholder { color: #b0bec5; }
+        .field input:focus, .field select:focus, .field textarea:focus {
+            outline: none; border-color: var(--teal);
+            box-shadow: 0 0 0 3px rgba(16,158,163,0.12);
+        }
+
+        /* ── BOTÃO SALVAR ── */
+        .btn-save {
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            background: var(--green); color: white; border: none;
+            padding: 13px 24px; font-size: 0.95rem; font-weight: 700;
+            cursor: pointer; border-radius: 8px; width: 100%;
+            transition: all 0.2s;
+        }
+        .btn-save:hover { background: var(--green-dark); transform: translateY(-1px); box-shadow: 0 4px 14px rgba(39,174,96,0.3); }
+
+        @media (max-width: 640px) {
+            .header { padding: 0 16px; }
+            .header-title { font-size: 1rem; }
+        }
     </style>
 </head>
 <body>
     <script src="ui.js"></script>
 
-<header class="topo-pagina">
-    <h2 class="titulo">Registrar Visita</h2>
-    <a href="vispen.html" class="btn-voltar">← Voltar</a>
+<header class="header">
+    <a href="index.html"><img src="img/semfindo.png" alt="Logo" class="header-logo"></a>
+    <div class="header-title">Registrar Visita <span>/ ACS</span></div>
+    <a href="vispen.html" class="btn-back">← Voltar</a>
 </header>
 
-<main class="container-visita">
+<div class="page">
     <div class="box-info" id="dadosFamilia">
         <p>Carregando dados da família...</p>
     </div>
 
     <form id="formRegistroVisita" onsubmit="event.preventDefault(); registrarVisita();">
-        <div class="campo-formulario">
-            <label for="relatorio">Relatório da Visita Domiciliar:</label>
-            <textarea id="relatorio" rows="6" placeholder="Descreva a situação de saúde encontrada, orientações passadas e observações importantes..." required></textarea>
+        <div class="form-card">
+            <div class="form-card-header">
+                <span>📝</span>
+                <h2>Dados da Visita</h2>
+            </div>
+            <div class="form-card-body">
+                <div class="field">
+                    <label for="motivo">Motivo Principal da Visita</label>
+                    <select id="motivo" required>
+                        <option value="">Selecione o motivo</option>
+                        <option value="Visita de rotina / acompanhamento">Visita de rotina / acompanhamento</option>
+                        <option value="Acompanhamento de hipertensão">Acompanhamento de hipertensão</option>
+                        <option value="Acompanhamento de diabetes">Acompanhamento de diabetes</option>
+                        <option value="Acompanhamento de gestante">Acompanhamento de gestante</option>
+                        <option value="Acompanhamento de puérpera/recém-nascido">Acompanhamento de puérpera/recém-nascido</option>
+                        <option value="Atualização de vacinação">Atualização de vacinação</option>
+                        <option value="Busca ativa (faltante/abandono)">Busca ativa (faltante/abandono)</option>
+                        <option value="Acompanhamento de tuberculose">Acompanhamento de tuberculose</option>
+                        <option value="Acompanhamento de hanseníase">Acompanhamento de hanseníase</option>
+                        <option value="Cuidado com idoso">Cuidado com idoso</option>
+                        <option value="Cuidado com pessoa com deficiência">Cuidado com pessoa com deficiência</option>
+                        <option value="Orientação em saúde / educação em saúde">Orientação em saúde / educação em saúde</option>
+                        <option value="Outro">Outro</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label for="desfecho">Desfecho / Status da Visita</label>
+                    <select id="desfecho" required>
+                        <option value="">Selecione o desfecho</option>
+                        <option value="Visita realizada com sucesso">Visita realizada com sucesso</option>
+                        <option value="Família ausente / não atendida">Família ausente / não atendida</option>
+                        <option value="Recusa de atendimento">Recusa de atendimento</option>
+                        <option value="Encaminhado para a Unidade de Saúde">Encaminhado para a Unidade de Saúde</option>
+                        <option value="Necessita visita de retorno">Necessita visita de retorno</option>
+                        <option value="Caso encerrado / resolvido">Caso encerrado / resolvido</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label for="relatorio">Relatório da Visita Domiciliar</label>
+                    <textarea id="relatorio" rows="6" placeholder="Descreva a situação de saúde encontrada, orientações passadas e observações importantes..." required></textarea>
+                </div>
+            </div>
         </div>
-        <button type="submit" class="btn-salvar-visita">CONCLUIR E SALVAR VISITA</button>
+
+        <button type="submit" class="btn-save">✓ CONCLUIR E SALVAR VISITA</button>
     </form>
-</main>
+</div>
 
 
 <script>
@@ -72,6 +276,8 @@
 
     function registrarVisita() {
         const relatorioTexto = document.getElementById('relatorio').value;
+        const motivoVisita = document.getElementById('motivo').value;
+        const desfechoVisita = document.getElementById('desfecho').value;
 
         // 1. Instancia o histórico de visitas do usuário ativo
         const chaveHistorico = loginAtivo + '_historico_visitas';
@@ -83,6 +289,8 @@
             idFamilia: familiaSelecionada.id,
             nomeFamilia: familiaSelecionada.primeiroMembro,
             endereco: familiaSelecionada.endereco,
+            motivo: motivoVisita,
+            desfecho: desfechoVisita,
             relatorio: relatorioTexto,
             dataVisita: new Date().toLocaleDateString('pt-BR')
         };

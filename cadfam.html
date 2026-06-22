@@ -37,6 +37,86 @@
             color: var(--text);
         }
 
+        /* ── MODO ESCURO ── */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --teal:       #1ec2c7;
+                --teal-dark:  #15a3a8;
+                --teal-light: #133b3c;
+                --slate:      #e8edf0;
+                --red:        #ff6b5e;
+                --red-dark:   #e74c3c;
+                --green:      #3ddc84;
+                --green-dark: #27ae60;
+                --amber:      #f5b041;
+                --white:      #1c2226;
+                --bg:         #11151a;
+                --border:     #313b42;
+                --text:       #e8edf0;
+                --muted:      #9aa7ad;
+                --shadow:     0 2px 12px rgba(0,0,0,0.4);
+            }
+
+            body { background-color: var(--bg); }
+
+            .header,
+            .form-card,
+            .membro-card,
+            .resumo-card { background: var(--white); }
+
+            .header { box-shadow: 0 2px 10px rgba(0,0,0,0.4); }
+
+            .field input,
+            .field select {
+                background: #20272c;
+                color: var(--text);
+            }
+            .field input::placeholder { color: #6c7a80; }
+            .field input:focus, .field select:focus {
+                box-shadow: 0 0 0 3px rgba(30,194,199,0.18);
+            }
+            .field input:disabled {
+                background: #15191d; color: var(--muted);
+            }
+
+            .checks-label { color: var(--muted) !important; }
+
+            .check-pill {
+                background: #15191d !important;
+                color: #f0f3f4 !important;
+                border: 1.5px solid #44515a !important;
+            }
+            .check-pill:hover {
+                border-color: #5a6973 !important;
+                background: #1b2126 !important;
+            }
+            .check-dot {
+                background: #6d7c85 !important;
+            }
+            .check-pill:has(input:checked) {
+                background: rgba(30,194,199,0.18) !important;
+                color: #5fe6eb !important;
+                border-color: var(--teal) !important;
+                box-shadow: 0 0 0 1px rgba(30,194,199,0.3) !important;
+            }
+            .check-pill:has(input:checked) .check-dot {
+                background: var(--teal) !important;
+            }
+
+            .btn-add { background: var(--teal-light); color: var(--teal); border-color: var(--teal-dark); }
+            .btn-add:hover { background: #1a4748; }
+
+            .btn-remover {
+                background: #2a1a1a; border-color: #5a2a26; color: var(--red);
+            }
+            .btn-remover:hover { background: var(--red); color: var(--white); border-color: var(--red); }
+
+            .resumo-chip {
+                background: var(--teal-light); color: var(--teal); border-color: var(--teal-dark);
+            }
+            .resumo-chip .chip-num { color: var(--white); }
+        }
+
         /* ── HEADER ── */
         .header {
             background: var(--white);
