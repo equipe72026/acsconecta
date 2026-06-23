@@ -39,51 +39,52 @@
         }
 
         /* ── MODO ESCURO ── */
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --teal:       #1ec2c7;
-                --teal-dark:  #15a3a8;
-                --teal-light: #133b3c;
-                --slate:      #e8edf0;
-                --red:        #ff6b5e;
-                --red-dark:   #e74c3c;
-                --green:      #3ddc84;
-                --green-dark: #27ae60;
-                --amber:      #f5b041;
-                --white:      #1c2226;
-                --bg:         #11151a;
-                --card:       #1c2226;
-                --border:     #313b42;
-                --text:       #e8edf0;
-                --muted:      #9aa7ad;
-                --shadow:     0 2px 12px rgba(0,0,0,0.4);
-            }
-
-            body { background-color: var(--bg); }
-
-            .field input,
-            .field select {
-                background: #20272c;
-                color: var(--text);
-            }
-            .field input::placeholder { color: #6c7a80; }
-
-            .field input:focus,
-            .field select:focus {
-                box-shadow: 0 0 0 3px rgba(30,194,199,0.18);
-            }
-
-            .btn-ghost { color: var(--muted); }
-            .btn-ghost:hover { background: #2a1a1a; }
-
-            select#unit option,
-            select#unit optgroup {
-                background: #1c2226;
-                color: var(--text);
-            }
-
-            .header { box-shadow: 0 2px 10px rgba(0,0,0,0.4); }
+        /* Agora controlado pela classe .dark-mode no <body>,
+           sincronizada entre todas as páginas via ui.js + localStorage,
+           em vez de depender da configuração do sistema operacional. */
+        body.dark-mode {
+            --teal:       #1ec2c7;
+            --teal-dark:  #15a3a8;
+            --teal-light: #133b3c;
+            --slate:      #e8edf0;
+            --red:        #ff6b5e;
+            --red-dark:   #e74c3c;
+            --green:      #3ddc84;
+            --green-dark: #27ae60;
+            --amber:      #f5b041;
+            --white:      #1c2226;
+            --bg:         #11151a;
+            --card:       #1c2226;
+            --border:     #313b42;
+            --text:       #e8edf0;
+            --muted:      #9aa7ad;
+            --shadow:     0 2px 12px rgba(0,0,0,0.4);
         }
+
+        body.dark-mode { background-color: var(--bg); }
+
+        body.dark-mode .field input,
+        body.dark-mode .field select {
+            background: #20272c;
+            color: var(--text);
+        }
+        body.dark-mode .field input::placeholder { color: #6c7a80; }
+
+        body.dark-mode .field input:focus,
+        body.dark-mode .field select:focus {
+            box-shadow: 0 0 0 3px rgba(30,194,199,0.18);
+        }
+
+        body.dark-mode .btn-ghost { color: var(--muted); }
+        body.dark-mode .btn-ghost:hover { background: #2a1a1a; }
+
+        body.dark-mode select#unit option,
+        body.dark-mode select#unit optgroup {
+            background: #1c2226;
+            color: var(--text);
+        }
+
+        body.dark-mode .header { box-shadow: 0 2px 10px rgba(0,0,0,0.4); }
 
         /* ── HEADER (idêntico ao gerentedash) ── */
         .header {
@@ -121,6 +122,15 @@
             transition: background 0.2s, transform 0.2s;
         }
         .btn-back:hover { background: var(--teal-dark); transform: translateY(-1px); }
+
+        .btn-theme {
+            display: inline-flex; align-items: center; justify-content: center;
+            background: transparent; border: 1.5px solid var(--border);
+            color: var(--muted); width: 38px; height: 38px; border-radius: 50%;
+            cursor: pointer; font-family: inherit; transition: all 0.2s; padding: 0;
+        }
+        .btn-theme:hover { border-color: var(--teal); color: var(--teal); }
+        .header-actions { display: flex; align-items: center; gap: 10px; }
 
         /* ── PAGE LAYOUT ── */
         .page {
@@ -337,7 +347,10 @@
 <header class="header">
     <a href="index.html"><img src="img/semfindo.png" alt="Logo" class="header-logo"></a>
     <div class="header-title">Cadastro de Agente <span>/ SevenSys</span></div>
-    <a href="gerentedash.html" class="btn-back">← Voltar</a>
+    <div class="header-actions">
+        <button type="button" class="btn-theme" data-theme-toggle aria-label="Alternar tema"></button>
+        <a href="gerentedash.html" class="btn-back">← Voltar</a>
+    </div>
 </header>
 
 <div class="page">

@@ -7,12 +7,24 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="areacas.css">
     <link rel="stylesheet" href="ui.css">
+    <style>
+        .btn-theme {
+            display: inline-flex; align-items: center; justify-content: center;
+            background: transparent; border: 1.5px solid #dde4e6;
+            color: #7f8c8d; width: 38px; height: 38px; border-radius: 50%;
+            cursor: pointer; font-family: inherit; transition: all 0.2s; padding: 0;
+        }
+        .btn-theme:hover { border-color: #109ea3; color: #109ea3; }
+    </style>
 </head>
 <body>
 <header class="topo-pagina" style="padding: 10px 20px; min-height: auto; height: auto; flex-wrap: wrap; justify-content: space-between; align-items: center;">
     <a href="index.html"><img src="img/semfindo.png" alt="Logo" class="logo" style="max-height: 38px; width: auto;"></a>
     <h2 class="titulo" style="font-family: 'Segoe UI', Arial, sans-serif; font-size: 1.25rem; font-weight: 700; color: #109ea3; letter-spacing: -0.3px; margin: 0; padding: 4px 0; text-align: center;">Entre com suas credenciais</h2>
-    <a href="index.html" class="btn-voltar" style="padding: 6px 14px; font-size: 0.85rem; line-height: 1.2; height: auto; display: inline-flex; align-items: center; justify-content: center;">← Voltar</a>
+    <div style="display:flex; align-items:center; gap:10px;">
+        <button type="button" class="btn-theme" data-theme-toggle aria-label="Alternar tema"></button>
+        <a href="index.html" class="btn-voltar" style="padding: 6px 14px; font-size: 0.85rem; line-height: 1.2; height: auto; display: inline-flex; align-items: center; justify-content: center;">← Voltar</a>
+    </div>
 </header>
 
 <main class="login-container">

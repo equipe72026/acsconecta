@@ -8,6 +8,41 @@
     <link rel="stylesheet" href="areacas.css">
     <link rel="stylesheet" href="ui.css">
     <style>
+        /* ── MODO ESCURO ── */
+        body.dark-mode {
+            background-color: #11151a !important;
+            color: #e8edf0 !important;
+        }
+        body.dark-mode .topo-pagina {
+            background: #1c2226 !important;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.4);
+        }
+        body.dark-mode .titulo { color: #1ec2c7 !important; }
+        body.dark-mode .card-recuperacao {
+            background: #1c2226 !important;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4) !important;
+        }
+        body.dark-mode .card-recuperacao h3 { color: #e8edf0 !important; }
+        body.dark-mode .form-grupo label { color: #9aa7ad !important; }
+        body.dark-mode .form-grupo input[type="email"] {
+            background: #20272c !important;
+            color: #e8edf0 !important;
+            border-color: #313b42 !important;
+        }
+        body.dark-mode .form-grupo input[type="email"]::placeholder { color: #6c7a80 !important; }
+        body.dark-mode .link-voltar-login { color: #1ec2c7 !important; }
+        body.dark-mode .link-voltar-login:hover { color: #15a3a8 !important; }
+
+        .btn-theme {
+            display: inline-flex; align-items: center; justify-content: center;
+            background: transparent; border: 1.5px solid #dde4e6;
+            color: #7f8c8d; width: 38px; height: 38px; border-radius: 50%;
+            cursor: pointer; font-family: inherit; transition: all 0.2s; padding: 0;
+        }
+        .btn-theme:hover { border-color: #109ea3; color: #109ea3; }
+        body.dark-mode .btn-theme { border-color: #313b42; color: #9aa7ad; }
+        body.dark-mode .btn-theme:hover { border-color: #1ec2c7; color: #1ec2c7; }
+        .header-actions { display: flex; align-items: center; gap: 10px; }
         .container-recuperacao {
             display: flex;
             justify-content: center;
@@ -111,10 +146,13 @@
 <body>
     <script src="ui.js"></script>
 
-    <header class="topo-pagina">
-        <a href="index.html"><img src="img/semfindo.png" alt="Logo" class="logo"></a>
+    <header class="topo-pagina" style="padding: 10px 20px; min-height: auto; height: auto; flex-wrap: wrap; justify-content: space-between; align-items: center;">
+        <a href="acsarea.html"><img src="img/semfindo.png" alt="Logo" class="logo" style="max-height: 38px; width: auto;"></a>
         <h2 class="titulo">Recuperação de Acesso</h2>
-        <a href="index.html" class="btn-voltar">← Voltar</a>
+        <div class="header-actions">
+            <button type="button" class="btn-theme" data-theme-toggle aria-label="Alternar tema"></button>
+            <a href="index.html" class="btn-voltar">← Voltar</a>
+        </div>
     </header>
 
     <main class="container-recuperacao">

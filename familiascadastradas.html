@@ -29,6 +29,42 @@
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; }
         .modal-content { background: white; padding: 20px; border-radius: 8px; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto; }
         .fechar-modal { background: #7f8c8d; color: white; border: none; padding: 8px 12px; cursor: pointer; border-radius: 4px; margin-top: 15px; }
+
+        /* ── MODO ESCURO ── */
+        /* Controlado pela classe .dark-mode no <body>, sincronizada
+           entre todas as páginas via ui.js + localStorage. */
+        body.dark-mode {
+            background-color: #11151a !important;
+            color: #e8edf0 !important;
+        }
+        body.dark-mode .topo-pagina {
+            background: #1c2226 !important;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.4);
+        }
+        body.dark-mode .titulo { color: #1ec2c7 !important; }
+        body.dark-mode .familia-item {
+            background: #1c2226;
+            border-left-color: #1ec2c7;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+        }
+        body.dark-mode .info-principal { color: #e8edf0; }
+        body.dark-mode .detalhes { color: #9aa7ad; }
+        body.dark-mode .modal-content {
+            background: #1c2226;
+            color: #e8edf0;
+        }
+        body.dark-mode #conteudoModal div { border-bottom-color: #313b42 !important; }
+
+        .btn-theme {
+            display: inline-flex; align-items: center; justify-content: center;
+            background: transparent; border: 1.5px solid #dde4e6;
+            color: #7f8c8d; width: 38px; height: 38px; border-radius: 50%;
+            cursor: pointer; font-family: inherit; transition: all 0.2s; padding: 0;
+        }
+        .btn-theme:hover { border-color: #109ea3; color: #109ea3; }
+        body.dark-mode .btn-theme { border-color: #313b42; color: #9aa7ad; }
+        body.dark-mode .btn-theme:hover { border-color: #1ec2c7; color: #1ec2c7; }
+        .header-actions { display: flex; align-items: center; gap: 10px; }
     </style>
     <link rel="stylesheet" href="ui.css">
 </head>
@@ -38,7 +74,10 @@
 <header class="topo-pagina" style="padding: 10px 20px; min-height: auto; height: auto; flex-wrap: wrap; justify-content: space-between; align-items: center;">
     <a href="acsarea.html"><img src="img/semfindo.png" alt="Logo" class="logo" style="max-height: 38px; width: auto;"></a>
     <h2 class="titulo" style="font-family: 'Segoe UI', Arial, sans-serif; font-size: 1.25rem; font-weight: 700; color: #109ea3; letter-spacing: -0.3px; margin: 0; padding: 4px 0; text-align: center;">Famílias Cadastradas</h2>
-    <a href="acsarea.html" class="btn-voltar" style="padding: 6px 14px; font-size: 0.85rem; line-height: 1.2; height: auto; display: inline-flex; align-items: center; justify-content: center;">← Voltar</a>
+    <div class="header-actions">
+        <button type="button" class="btn-theme" data-theme-toggle aria-label="Alternar tema"></button>
+        <a href="acsarea.html" class="btn-voltar" style="padding: 6px 14px; font-size: 0.85rem; line-height: 1.2; height: auto; display: inline-flex; align-items: center; justify-content: center;">← Voltar</a>
+    </div>
 </header>
 
 <main class="container-familias">
@@ -150,7 +189,12 @@
                         m.hipertenso ? "Hipertenso" : "",
                         m.diabetico ? "Diabético" : "",
                         m.gestante ? "Gestante" : "",
-                        m.vacina ? "Vacina Atrasada" : ""
+                        m.vacina ? "Vacina Atrasada" : "",
+                        m.idoso ? "Idoso" : "",
+                        m.deficiente ? "Deficiente" : "",
+                        m.crianca ? "Criança" : "",
+                        m.tuberculoso ? "Tuberculoso" : "",
+                        m.hanseniase ? "Hanseníase" : ""
                     ].filter(Boolean).join(", ") || "Nenhuma"}
                 </div>
             `;
