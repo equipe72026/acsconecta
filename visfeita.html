@@ -3,6 +3,162 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visitas Realizadas - Área ACS</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="areacas.css">
+    <link rel="stylesheet" href="ui.css">
+    <style>
+        .container-listagem { padding: 20px; max-width: 900px; margin: auto; }
+        .alerta-topo {
+            background-color: #dff0d8;
+            border: 1px solid #d6e9c6;
+            color: #3c763d;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+        .visita-item {
+            background: white;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border-left: 6px solid #27ae60;
+        }
+        .nome-familia { font-size: 1.1em; color: #2c3e50; display: block; font-weight: bold; }
+        .endereco-familia { color: #666; font-size: 0.9em; margin: 4px 0; }
+        .visita-meta { font-size: 0.85em; color: #888; margin: 4px 0; }
+        .visita-motivo { font-size: 0.9em; color: #2c3e50; margin: 6px 0; }
+        .visita-desfecho { font-size: 0.9em; font-weight: bold; color: #27ae60; margin: 4px 0; }
+        .visita-relatorio {
+            margin-top: 10px;
+            padding: 10px 14px;
+            background: #f8fafb;
+            border-radius: 6px;
+            font-size: 0.88em;
+            color: #444;
+            line-height: 1.6;
+            border: 1px solid #e5eaec;
+        }
+        .sem-visitas {
+            text-align: center;
+            margin-top: 50px;
+            color: #888;
+        }
+
+        /* ── MODO ESCURO ── */
+        body.dark-mode {
+            background-color: #11151a !important;
+            color: #e8edf0 !important;
+        }
+        body.dark-mode .topo-pagina {
+            background: #1c2226 !important;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.4);
+        }
+        body.dark-mode .titulo { color: #1ec2c7 !important; }
+        body.dark-mode .alerta-topo {
+            background-color: #14271b !important;
+            border-color: #1e3d29 !important;
+            color: #6fdb9a !important;
+        }
+        body.dark-mode .alerta-topo.vazio {
+            background-color: #2a2410 !important;
+            border-color: #4a3f1a !important;
+            color: #e6c875 !important;
+        }
+        body.dark-mode .visita-item {
+            background: #1c2226;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+        }
+        body.dark-mode .nome-familia { color: #e8edf0; }
+        body.dark-mode .endereco-familia { color: #9aa7ad; }
+        body.dark-mode .visita-meta { color: #6c7a80; }
+        body.dark-mode .visita-motivo { color: #c8d0d4; }
+        body.dark-mode .visita-relatorio {
+            background: #20272c;
+            border-color: #313b42;
+            color: #b0bec5;
+        }
+        body.dark-mode .sem-visitas { color: #6c7a80; }
+
+        .btn-theme {
+            display: inline-flex; align-items: center; justify-content: center;
+            background: transparent; border: 1.5px solid #dde4e6;
+            color: #7f8c8d; width: 38px; height: 38px; border-radius: 50%;
+            cursor: pointer; font-family: inherit; transition: all 0.2s; padding: 0;
+        }
+        .btn-theme:hover { border-color: #109ea3; color: #109ea3; }
+        body.dark-mode .btn-theme { border-color: #313b42; color: #9aa7ad; }
+        body.dark-mode .btn-theme:hover { border-color: #1ec2c7; color: #1ec2c7; }
+        .header-actions { display: flex; align-items: center; gap: 10px; }
+    </style>
+    <script src="ui.js"></script>
+</head>
+<body>
+
+<header class="topo-pagina" style="padding: 10px 20px; min-height: auto; height: auto; flex-wrap: wrap; justify-content: space-between; align-items: center;">
+    <a href="acsarea.html"><img src="img/semfindo.png" alt="Logo" class="logo" style="max-height: 38px; width: auto;"></a>
+    <h2 class="titulo" style="font-family: 'Segoe UI', Arial, sans-serif; font-size: 1.25rem; font-weight: 700; color: #109ea3; letter-spacing: -0.3px; margin: 0; padding: 4px 0; text-align: center;">Visitas Realizadas</h2>
+    <div class="header-actions">
+        <button type="button" class="btn-theme" data-theme-toggle aria-label="Alternar tema"></button>
+        <a href="acsarea.html" class="btn-voltar" style="padding: 6px 14px; font-size: 0.85rem; line-height: 1.2; height: auto; display: inline-flex; align-items: center; justify-content: center;">← Voltar</a>
+    </div>
+</header>
+
+<main class="container-listagem">
+    <div class="alerta-topo" id="alertaContador">
+        <p>📊 Carregando histórico de visitas...</p>
+    </div>
+    <div id="listaVisitas"></div>
+</main>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const loginAtivo = sessionStorage.getItem('loginUsuario');
+
+        if (!loginAtivo) {
+            window.location.href = "login.html";
+            return;
+        }
+
+        const container = document.getElementById('listaVisitas');
+        const alertaTopo = document.getElementById('alertaContador');
+
+        const historico = JSON.parse(localStorage.getItem(loginAtivo + '_historico_visitas') || '[]');
+
+        if (historico.length === 0) {
+            alertaTopo.className = 'alerta-topo vazio';
+            alertaTopo.style.backgroundColor = '';
+            alertaTopo.style.borderColor = '';
+            alertaTopo.style.color = '';
+            alertaTopo.innerHTML = `<p>⚠️ <strong>Nenhuma visita registrada ainda.</strong></p>`;
+            container.innerHTML = `<div class="sem-visitas"><p>As visitas realizadas aparecerão aqui após o registro.</p></div>`;
+            return;
+        }
+
+        alertaTopo.innerHTML = `<p>✅ <strong>${historico.length}</strong> visita(s) registrada(s) no histórico.</p>`;
+
+        // Exibe do mais recente para o mais antigo
+        [...historico].reverse().forEach(v => {
+            const div = document.createElement('div');
+            div.className = 'visita-item';
+            div.innerHTML = `
+                <strong class="nome-familia">👤 ${v.nomeFamilia}</strong>
+                <p class="endereco-familia">📍 ${v.endereco}</p>
+                <p class="visita-meta">📅 Data: <strong>${v.dataVisita}</strong></p>
+                <p class="visita-motivo">🎯 Motivo: ${v.motivo}</p>
+                <p class="visita-desfecho">✔ Desfecho: ${v.desfecho}</p>
+                <div class="visita-relatorio">📝 ${v.relatorio}</div>
+            `;
+            container.appendChild(div);
+        });
+    });
+</script>
+</body>
+</html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Visitas Pendentes - Área ACS</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="areacas.css">
