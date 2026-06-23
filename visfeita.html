@@ -40,11 +40,79 @@
             line-height: 1.6;
             border: 1px solid #e5eaec;
         }
-        .sem-visitas {
-            text-align: center;
-            margin-top: 50px;
-            color: #888;
+        .visita-acoes {
+            display: flex;
+            gap: 10px;
+            margin-top: 14px;
         }
+        .btn-editar, .btn-excluir {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 7px 16px; border-radius: 6px; font-size: 0.85em;
+            font-weight: bold; cursor: pointer; border: none; transition: all 0.2s;
+            font-family: inherit;
+        }
+        .btn-editar { background: #109ea3; color: white; }
+        .btn-editar:hover { background: #0b777a; transform: translateY(-1px); }
+        .btn-excluir { background: #e74c3c; color: white; }
+        .btn-excluir:hover { background: #c0392b; transform: translateY(-1px); }
+
+        body.dark-mode .btn-editar { background: #1ec2c7; }
+        body.dark-mode .btn-editar:hover { background: #15a3a8; }
+        body.dark-mode .btn-excluir { background: #ff6b5e; }
+        body.dark-mode .btn-excluir:hover { background: #e74c3c; }
+
+        /* ── MODAL EDITAR ── */
+        .modal-overlay {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.55); z-index: 999;
+            align-items: center; justify-content: center;
+        }
+        .modal-overlay.aberto { display: flex; }
+        .modal-box {
+            background: white; border-radius: 12px;
+            padding: 32px 28px 24px; width: 90%; max-width: 500px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2); position: relative;
+        }
+        .modal-box h3 { color: #109ea3; margin-bottom: 20px; font-size: 1.1rem; }
+        .modal-field { display: flex; flex-direction: column; gap: 5px; margin-bottom: 14px; }
+        .modal-field label { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: #7f8c8d; }
+        .modal-field select, .modal-field textarea {
+            padding: 10px 12px; border: 1.5px solid #dde4e6; border-radius: 7px;
+            font-size: 0.9rem; font-family: inherit; color: #2c3e50;
+            background: white; transition: border-color 0.2s;
+        }
+        .modal-field select:focus, .modal-field textarea:focus {
+            outline: none; border-color: #109ea3;
+            box-shadow: 0 0 0 3px rgba(16,158,163,0.12);
+        }
+        .modal-field textarea { resize: vertical; }
+        .modal-acoes { display: flex; gap: 10px; margin-top: 20px; }
+        .btn-modal-salvar {
+            flex: 1; padding: 11px; background: #27ae60; color: white;
+            border: none; border-radius: 7px; font-weight: bold; font-size: 0.95rem;
+            cursor: pointer; font-family: inherit; transition: background 0.2s;
+        }
+        .btn-modal-salvar:hover { background: #1e8449; }
+        .btn-modal-cancelar {
+            flex: 1; padding: 11px; background: #f0f4f5; color: #555;
+            border: 1.5px solid #dde4e6; border-radius: 7px; font-weight: bold;
+            font-size: 0.95rem; cursor: pointer; font-family: inherit; transition: background 0.2s;
+        }
+        .btn-modal-cancelar:hover { background: #e0e6e8; }
+        .btn-fechar-modal {
+            position: absolute; top: 12px; right: 16px;
+            background: none; border: none; font-size: 1.2rem;
+            cursor: pointer; color: #888; line-height: 1;
+        }
+
+        body.dark-mode .modal-box { background: #1c2226; }
+        body.dark-mode .modal-box h3 { color: #1ec2c7; }
+        body.dark-mode .modal-field label { color: #9aa7ad; }
+        body.dark-mode .modal-field select,
+        body.dark-mode .modal-field textarea { background: #20272c; color: #e8edf0; border-color: #313b42; }
+        body.dark-mode .btn-modal-cancelar { background: #20272c; color: #9aa7ad; border-color: #313b42; }
+        body.dark-mode .btn-modal-cancelar:hover { background: #2a3238; }
+        body.dark-mode .btn-fechar-modal { color: #6c7a80; }
 
         /* ── MODO ESCURO ── */
         body.dark-mode {
@@ -112,36 +180,80 @@
     <div id="listaVisitas"></div>
 </main>
 
+<div class="modal-overlay" id="modalEditar">
+    <div class="modal-box">
+        <button class="btn-fechar-modal" onclick="fecharModal()">✕</button>
+        <h3>✏️ Editar Visita</h3>
+        <div class="modal-field">
+            <label>Motivo Principal</label>
+            <select id="edit-motivo">
+                <option value="Visita de rotina / acompanhamento">Visita de rotina / acompanhamento</option>
+                <option value="Acompanhamento de hipertensão">Acompanhamento de hipertensão</option>
+                <option value="Acompanhamento de diabetes">Acompanhamento de diabetes</option>
+                <option value="Acompanhamento de gestante">Acompanhamento de gestante</option>
+                <option value="Acompanhamento de puérpera/recém-nascido">Acompanhamento de puérpera/recém-nascido</option>
+                <option value="Atualização de vacinação">Atualização de vacinação</option>
+                <option value="Busca ativa (faltante/abandono)">Busca ativa (faltante/abandono)</option>
+                <option value="Acompanhamento de tuberculose">Acompanhamento de tuberculose</option>
+                <option value="Acompanhamento de hanseníase">Acompanhamento de hanseníase</option>
+                <option value="Cuidado com idoso">Cuidado com idoso</option>
+                <option value="Cuidado com pessoa com deficiência">Cuidado com pessoa com deficiência</option>
+                <option value="Orientação em saúde / educação em saúde">Orientação em saúde / educação em saúde</option>
+                <option value="Outro">Outro</option>
+            </select>
+        </div>
+        <div class="modal-field">
+            <label>Desfecho / Status</label>
+            <select id="edit-desfecho">
+                <option value="Visita realizada com sucesso">Visita realizada com sucesso</option>
+                <option value="Família ausente / não atendida">Família ausente / não atendida</option>
+                <option value="Recusa de atendimento">Recusa de atendimento</option>
+                <option value="Encaminhado para a Unidade de Saúde">Encaminhado para a Unidade de Saúde</option>
+                <option value="Necessita visita de retorno">Necessita visita de retorno</option>
+                <option value="Caso encerrado / resolvido">Caso encerrado / resolvido</option>
+            </select>
+        </div>
+        <div class="modal-field">
+            <label>Relatório</label>
+            <textarea id="edit-relatorio" rows="5"></textarea>
+        </div>
+        <div class="modal-acoes">
+            <button class="btn-modal-cancelar" onclick="fecharModal()">Cancelar</button>
+            <button class="btn-modal-salvar" onclick="salvarEdicao()">✓ Salvar</button>
+        </div>
+    </div>
+</div>
+
 <script>
+    const loginAtivo = sessionStorage.getItem('loginUsuario');
+    let idVisitaEditando = null;
+
     document.addEventListener('DOMContentLoaded', function() {
-        const loginAtivo = sessionStorage.getItem('loginUsuario');
+        if (!loginAtivo) { window.location.href = "login.html"; return; }
+        renderizarHistorico();
+    });
 
-        if (!loginAtivo) {
-            window.location.href = "login.html";
-            return;
-        }
-
+    function renderizarHistorico() {
         const container = document.getElementById('listaVisitas');
         const alertaTopo = document.getElementById('alertaContador');
-
         const historico = JSON.parse(localStorage.getItem(loginAtivo + '_historico_visitas') || '[]');
 
         if (historico.length === 0) {
             alertaTopo.className = 'alerta-topo vazio';
-            alertaTopo.style.backgroundColor = '';
-            alertaTopo.style.borderColor = '';
-            alertaTopo.style.color = '';
             alertaTopo.innerHTML = `<p>⚠️ <strong>Nenhuma visita registrada ainda.</strong></p>`;
             container.innerHTML = `<div class="sem-visitas"><p>As visitas realizadas aparecerão aqui após o registro.</p></div>`;
             return;
         }
 
+        alertaTopo.className = 'alerta-topo';
         alertaTopo.innerHTML = `<p>✅ <strong>${historico.length}</strong> visita(s) registrada(s) no histórico.</p>`;
+        container.innerHTML = '';
 
-        // Exibe do mais recente para o mais antigo
         [...historico].reverse().forEach(v => {
+            const idxOriginal = historico.findIndex(h => h.idVisita === v.idVisita);
             const div = document.createElement('div');
             div.className = 'visita-item';
+            div.id = 'visita-' + v.idVisita;
             div.innerHTML = `
                 <strong class="nome-familia">👤 ${v.nomeFamilia}</strong>
                 <p class="endereco-familia">📍 ${v.endereco}</p>
@@ -149,9 +261,64 @@
                 <p class="visita-motivo">🎯 Motivo: ${v.motivo}</p>
                 <p class="visita-desfecho">✔ Desfecho: ${v.desfecho}</p>
                 <div class="visita-relatorio">📝 ${v.relatorio}</div>
+                <div class="visita-acoes">
+                    <button class="btn-editar" onclick="abrirModal(${v.idVisita})">✏️ Editar</button>
+                    <button class="btn-excluir" onclick="excluirVisita(${v.idVisita})">🗑️ Excluir</button>
+                </div>
             `;
             container.appendChild(div);
         });
+    }
+
+    function abrirModal(idVisita) {
+        const historico = JSON.parse(localStorage.getItem(loginAtivo + '_historico_visitas') || '[]');
+        const visita = historico.find(v => v.idVisita === idVisita);
+        if (!visita) return;
+
+        idVisitaEditando = idVisita;
+        document.getElementById('edit-motivo').value = visita.motivo;
+        document.getElementById('edit-desfecho').value = visita.desfecho;
+        document.getElementById('edit-relatorio').value = visita.relatorio;
+        document.getElementById('modalEditar').classList.add('aberto');
+    }
+
+    function fecharModal() {
+        document.getElementById('modalEditar').classList.remove('aberto');
+        idVisitaEditando = null;
+    }
+
+    function salvarEdicao() {
+        const historico = JSON.parse(localStorage.getItem(loginAtivo + '_historico_visitas') || '[]');
+        const idx = historico.findIndex(v => v.idVisita === idVisitaEditando);
+        if (idx === -1) return;
+
+        historico[idx].motivo    = document.getElementById('edit-motivo').value;
+        historico[idx].desfecho  = document.getElementById('edit-desfecho').value;
+        historico[idx].relatorio = document.getElementById('edit-relatorio').value;
+
+        localStorage.setItem(loginAtivo + '_historico_visitas', JSON.stringify(historico));
+        fecharModal();
+        renderizarHistorico();
+        showToast('success', 'Visita atualizada', 'As informações foram salvas com sucesso.');
+    }
+
+    function excluirVisita(idVisita) {
+        if (!confirm('Tem certeza que deseja excluir esta visita? Esta ação não pode ser desfeita.')) return;
+
+        let historico = JSON.parse(localStorage.getItem(loginAtivo + '_historico_visitas') || '[]');
+        historico = historico.filter(v => v.idVisita !== idVisita);
+        localStorage.setItem(loginAtivo + '_historico_visitas', JSON.stringify(historico));
+
+        // Atualiza contador do dashboard
+        localStorage.setItem(loginAtivo + '_totalVisitas', historico.length);
+
+        renderizarHistorico();
+        showToast('success', 'Visita excluída', 'Registro removido do histórico.');
+    }
+
+    // Fechar modal clicando fora
+    document.getElementById('modalEditar').addEventListener('click', function(e) {
+        if (e.target === this) fecharModal();
     });
 </script>
 </body>
@@ -244,84 +411,6 @@
 </head>
 <body>
 
-<header class="topo-pagina" style="padding: 10px 20px; min-height: auto; height: auto; flex-wrap: wrap; justify-content: space-between; align-items: center;">
-    <a href="acsarea.html"><img src="img/semfindo.png" alt="Logo" class="logo" style="max-height: 38px; width: auto;"></a>
-    <h2 class="titulo" style="font-family: 'Segoe UI', Arial, sans-serif; font-size: 1.25rem; font-weight: 700; color: #109ea3; letter-spacing: -0.3px; margin: 0; padding: 4px 0; text-align: center;">Visitas Pendentes</h2>
-    <div class="header-actions">
-        <button type="button" class="btn-theme" data-theme-toggle aria-label="Alternar tema"></button>
-        <a href="acsarea.html" class="btn-voltar" style="padding: 6px 14px; font-size: 0.85rem; line-height: 1.2; height: auto; display: inline-flex; align-items: center; justify-content: center;">← Voltar</a>
-    </div>
-</header>
-
-<main class="container-listagem">
-    <div class="alerta-topo" id="alertaContador">
-        <p>📊 Verificando pendências no sistema...</p>
-    </div>
-
-    <div id="listaPendentes">
-        </div>
-</main>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const loginAtivo = sessionStorage.getItem('loginUsuario');
-        
-        if (!loginAtivo) {
-            window.location.href = "login.html";
-            return;
-        }
-
-        const container = document.getElementById('listaPendentes');
-        const alertaTopo = document.getElementById('alertaContador');
-
-        // 1. Carrega as listas do LocalStorage baseadas no usuário logado
-        const listaFamilias = JSON.parse(localStorage.getItem(loginAtivo + '_lista_familias') || "[]");
-        const historicoVisitas = JSON.parse(localStorage.getItem(loginAtivo + '_historico_visitas') || "[]");
-
-        // 2. Filtra as famílias que NÃO possuem nenhuma visita registrada no histórico
-        // Usamos o endereço ou o id para cruzar os dados. Como o histórico usa 'nomeFamilia' e 'endereco', cruzaremos por eles.
-        const familiasPendentes = listaFamilias.filter(familia => {
-            const jaFoiVisitada = historicoVisitas.some(visita => visita.idFamilia == familia.id);
-            return !jaFoiVisitada;
-        });
-
-        // 3. Atualiza a mensagem de alerta do topo com base no número real
-        if (familiasPendentes.length === 0) {
-            alertaTopo.className = "alerta-topo";
-            alertaTopo.style.backgroundColor = "#dff0d8";
-            alertaTopo.style.borderColor = "#d6e9c6";
-            alertaTopo.style.color = "#3c763d";
-            alertaTopo.innerHTML = `<p>✅ <strong>Excelente!</strong> Todas as famílias cadastradas já receberam visitas.</p>`;
-            
-            container.innerHTML = `
-                <div style="text-align:center; margin-top:50px; color:#666;">
-                    <p>Nenhuma visita pendente encontrada para as famílias atuais.</p>
-                </div>`;
-            return;
-        } else {
-            alertaTopo.innerHTML = `<p>⚠️ <strong>Atenção:</strong> Você possui <strong>${familiasPendentes.length}</strong> família(s) cadastrada(s) aguardando a primeira visita.</p>`;
-        }
-
-        // 4. Renderiza as famílias que faltam ser visitadas
-        container.innerHTML = "";
-        familiasPendentes.forEach(fam => {
-            const div = document.createElement('div');
-            div.className = 'familia-item';
-            div.innerHTML = `
-                <div class="familia-resumo">
-                    <div class="info-principal">
-                        <strong class="nome-familia">Responsável: ${fam.primeiroMembro}</strong>
-                        <p class="endereco-familia">📍 <strong>Endereço:</strong> ${fam.endereco}</p>
-                        <p class="status-visita">❌ Status: Nova família (Nenhuma visita realizada)</p>
-                    </div>
-                    <div class="acoes" style="margin-top: 10px;">
-                        <a href="visita.html?id=${fam.id}" class="btn-visitar">Realizar Visita</a>
-                    </div>
-                </div>
-            `;
-            container.appendChild(div);
-        });
-    });
 </script>
 </body>
 </html>
