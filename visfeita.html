@@ -8,30 +8,40 @@
     <link rel="stylesheet" href="areacas.css">
     <link rel="stylesheet" href="ui.css">
     <style>
-        .container-listagem { padding: 20px; max-width: 900px; margin: auto; }
+        .container-listagem { padding: 24px 20px 60px; width: min(720px, calc(100% - 40px)); max-width: 720px; margin: 32px auto 0; }
         .alerta-topo {
-            background-color: #dff0d8;
-            border: 1px solid #d6e9c6;
-            color: #3c763d;
-            padding: 15px;
-            margin-bottom: 20px;
-            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255,255,255,0.96);
+            border: 1px solid #dce8ea;
+            border-left: 4px solid #109ea3;
+            color: #2c3e50;
+            padding: 12px 16px;
+            margin-bottom: 18px;
+            border-radius: 10px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
         }
+        .alerta-topo p { margin: 0; font-size: .86rem; }
+        .alerta-topo strong { color: #0b777a; }
         .visita-item {
-            background: white;
-            padding: 20px;
+            background: rgba(255,255,255,0.96);
+            padding: 0;
             margin-bottom: 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            border-left: 6px solid #27ae60;
+            border: 1px solid #e2eaed;
+            border-top: 4px solid #109ea3;
+            border-radius: 14px;
+            box-shadow: 0 10px 26px rgba(15,23,42,0.09);
+            overflow: hidden;
         }
-        .nome-familia { font-size: 1.1em; color: #2c3e50; display: block; font-weight: bold; }
-        .endereco-familia { color: #666; font-size: 0.9em; margin: 4px 0; }
-        .visita-meta { font-size: 0.85em; color: #888; margin: 4px 0; }
-        .visita-motivo { font-size: 0.9em; color: #2c3e50; margin: 6px 0; }
-        .visita-desfecho { font-size: 0.9em; font-weight: bold; color: #27ae60; margin: 4px 0; }
+        .visita-item > *:not(.visita-acoes) { margin-left: 18px; margin-right: 18px; }
+        .nome-familia { display: block; color: #2c3e50; padding: 18px 18px 0; margin: 0 !important; font-size: 1.05rem; font-weight: bold; }
+        .endereco-familia { color: #667780; font-size: 0.86em; margin-top: 16px !important; }
+        .visita-meta { font-size: 0.84em; color: #7f8c8d; margin-top: 7px !important; }
+        .visita-motivo { font-size: 0.88em; color: #2c3e50; margin-top: 7px !important; }
+        .visita-desfecho { font-size: 0.88em; font-weight: bold; color: #27ae60; margin-top: 7px !important; }
         .visita-relatorio {
-            margin-top: 10px;
+            margin: 14px 18px !important;
             padding: 10px 14px;
             background: #f8fafb;
             border-radius: 6px;
@@ -43,12 +53,23 @@
         .visita-acoes {
             display: flex;
             gap: 10px;
-            margin-top: 14px;
+            margin: 0 18px 18px !important;
         }
         .btn-editar, .btn-excluir {
-            display: inline-flex; align-items: center; gap: 6px;
-            padding: 7px 16px; border-radius: 6px; font-size: 0.85em;
-            font-weight: bold; cursor: pointer; border: none; transition: all 0.2s;
+            display: inline-flex !important;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            height: 39px;
+            min-width: 78px;
+            padding: 0 16px !important;
+            border-radius: 6px !important;
+            font-size: 0.85em !important;
+            line-height: 1;
+            font-weight: bold;
+            cursor: pointer;
+            border: none !important;
+            transition: all 0.2s;
             font-family: inherit;
         }
         .btn-editar { background: #109ea3; color: white; }
@@ -124,20 +145,20 @@
             box-shadow: 0 2px 10px rgba(0,0,0,0.4);
         }
         body.dark-mode .titulo { color: #1ec2c7 !important; }
-        body.dark-mode .alerta-topo {
-            background-color: #14271b !important;
-            border-color: #1e3d29 !important;
-            color: #6fdb9a !important;
-        }
         body.dark-mode .alerta-topo.vazio {
-            background-color: #2a2410 !important;
-            border-color: #4a3f1a !important;
-            color: #e6c875 !important;
+            background-color: #1c2226 !important;
+            border-color: #313b42 !important;
+            border-left-color: #1ec2c7 !important;
+            color: #e8edf0 !important;
         }
         body.dark-mode .visita-item {
             background: #1c2226;
+            border-color: #313b42;
+            border-top-color: #1ec2c7;
             box-shadow: 0 2px 5px rgba(0,0,0,0.4);
         }
+        body.dark-mode .alerta-topo { background: #1c2226; border-color: #313b42; border-left-color: #1ec2c7; color: #e8edf0; }
+        body.dark-mode .alerta-topo strong { color: #5fe6eb; }
         body.dark-mode .nome-familia { color: #e8edf0; }
         body.dark-mode .endereco-familia { color: #9aa7ad; }
         body.dark-mode .visita-meta { color: #6c7a80; }
@@ -159,6 +180,14 @@
         body.dark-mode .btn-theme { border-color: #313b42; color: #9aa7ad; }
         body.dark-mode .btn-theme:hover { border-color: #1ec2c7; color: #1ec2c7; }
         .header-actions { display: flex; align-items: center; gap: 10px; }
+        body.acs-page.ss-has-menu > main.container-listagem {
+            width: min(720px, calc(100% - 40px)) !important;
+            max-width: 720px !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+            padding-left: 20px !important;
+            padding-right: 20px !important;
+        }
     </style>
     <script src="ui.js"></script>
 </head>
@@ -303,17 +332,24 @@
     }
 
     function excluirVisita(idVisita) {
-        if (!confirm('Tem certeza que deseja excluir esta visita? Esta ação não pode ser desfeita.')) return;
+        ssConfirm({
+            titulo: 'Excluir visita',
+            subtitulo: 'Esta ação não pode ser desfeita.',
+            mensagem: 'Deseja realmente excluir este registro do histórico?',
+            tipo: 'danger',
+            textoBotao: 'Excluir',
+            onConfirm: function() {
+                let historico = JSON.parse(localStorage.getItem(loginAtivo + '_historico_visitas') || '[]');
+                historico = historico.filter(v => v.idVisita !== idVisita);
+                localStorage.setItem(loginAtivo + '_historico_visitas', JSON.stringify(historico));
 
-        let historico = JSON.parse(localStorage.getItem(loginAtivo + '_historico_visitas') || '[]');
-        historico = historico.filter(v => v.idVisita !== idVisita);
-        localStorage.setItem(loginAtivo + '_historico_visitas', JSON.stringify(historico));
+                // Atualiza contador do dashboard
+                localStorage.setItem(loginAtivo + '_totalVisitas', historico.length);
 
-        // Atualiza contador do dashboard
-        localStorage.setItem(loginAtivo + '_totalVisitas', historico.length);
-
-        renderizarHistorico();
-        showToast('success', 'Visita excluída', 'Registro removido do histórico.');
+                renderizarHistorico();
+                showToast('success', 'Visita excluída', 'Registro removido do histórico.');
+            }
+        });
     }
 
     // Fechar modal clicando fora
@@ -333,13 +369,20 @@
     <style>
         .container-listagem { padding: 20px; max-width: 900px; margin: auto; }
         .alerta-topo {
-            background-color: #fcf8e3;
-            border: 1px solid #faebcc;
-            color: #8a6d3b;
-            padding: 15px;
-            margin-bottom: 20px;
-            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255,255,255,0.96) !important;
+            border: 1px solid #dce8ea !important;
+            border-left: 4px solid #109ea3 !important;
+            color: #2c3e50 !important;
+            padding: 12px 16px;
+            margin-bottom: 18px;
+            border-radius: 10px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
         }
+        .alerta-topo p { margin: 0; font-size: .86rem; }
+        .alerta-topo strong { color: #0b777a; }
         .familia-item { 
             background: white; 
             padding: 20px; 

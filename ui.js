@@ -32,6 +32,7 @@
     document.addEventListener('DOMContentLoaded', function () {
         aplicarTemaSalvo();
         sincronizarBotoesDeTema();
+        inicializarControleFonte();
     });
 
     // Alterna o tema atual e propaga a escolha para qualquer botão
@@ -66,6 +67,225 @@
         alternar: alternarTema,
         aplicarSalvo: aplicarTemaSalvo
     };
+
+    /* =========================================================
+       Controle de tamanho da fonte
+       A escala usa rem/em e é aplicada no documento inteiro.
+       A preferência permanece entre páginas e sessões.
+    ========================================================= */
+    const FONTE_MINIMA = 0.875;
+    const FONTE_PADRAO = 1;
+    const FONTE_MAXIMA = 1.25;
+    const FONTE_PASSO = 0.125;
+
+    function obterEscalaFonte() {
+        const valor = Number(localStorage.getItem('fontScale'));
+        return Number.isFinite(valor) && valor >= FONTE_MINIMA && valor <= FONTE_MAXIMA
+            ? valor
+            : FONTE_PADRAO;
+    }
+
+    function aplicarEscalaFonte(escala) {
+        const escalaSegura = Math.min(FONTE_MAXIMA, Math.max(FONTE_MINIMA, escala));
+        root.style.setProperty('--ss-font-scale', escalaSegura);
+        root.style.fontSize = (escalaSegura * 100) + '%';
+        localStorage.setItem('fontScale', String(escalaSegura));
+
+        const indicador = document.querySelector('[data-font-size-value]');
+        if (indicador) indicador.textContent = Math.round(escalaSegura * 100) + '%';
+
+        document.querySelectorAll('[data-font-decrease]').forEach(function (botao) {
+            botao.disabled = escalaSegura <= FONTE_MINIMA;
+        });
+        document.querySelectorAll('[data-font-increase]').forEach(function (botao) {
+            botao.disabled = escalaSegura >= FONTE_MAXIMA;
+        });
+    }
+
+    function alterarEscalaFonte(delta) {
+        aplicarEscalaFonte(obterEscalaFonte() + delta);
+    }
+
+    function inicializarControleFonte() {
+        aplicarEscalaFonte(obterEscalaFonte());
+
+        if (!document.querySelector('[data-font-controls]')) {
+            const controles = document.createElement('div');
+            controles.className = 'ss-font-controls';
+            controles.setAttribute('data-font-controls', '');
+            controles.setAttribute('aria-label', 'Controles de tamanho da fonte');
+            controles.innerHTML =
+                '<span class="ss-font-label">Fonte</span>' +
+                '<button type="button" data-font-decrease aria-label="Diminuir fonte" title="Diminuir fonte">A−</button>' +
+                '<button type="button" data-font-reset aria-label="Restaurar tamanho padrão" title="Restaurar tamanho padrão"><span data-font-size-value>100%</span></button>' +
+                '<button type="button" data-font-increase aria-label="Aumentar fonte" title="Aumentar fonte">A+</button>';
+
+            let botaoTema = document.querySelector('[data-theme-toggle], #ss-dark-mode-toggle');
+            if (!botaoTema) {
+                botaoTema = document.createElement('button');
+                botaoTema.type = 'button';
+                botaoTema.className = 'btn-theme';
+                botaoTema.setAttribute('data-theme-toggle', '');
+                botaoTema.setAttribute('aria-label', 'Alternar tema');
+                document.body.appendChild(botaoTema);
+                sincronizarBotoesDeTema();
+            }
+            let grupoCabecalho = botaoTema && botaoTema.closest('.header-actions, .topo-pagina > div');
+            if (grupoCabecalho) {
+                grupoCabecalho.insertBefore(controles, botaoTema);
+            } else if (botaoTema && botaoTema.closest('header')) {
+                grupoCabecalho = document.createElement('div');
+                grupoCabecalho.className = 'ss-accessibility-controls';
+                botaoTema.parentElement.insertBefore(grupoCabecalho, botaoTema);
+                grupoCabecalho.appendChild(botaoTema);
+                grupoCabecalho.appendChild(controles);
+            } else {
+                document.body.appendChild(controles);
+            }
+
+            function inicializarMenuResponsivo() {
+                const paginasPublicas = ['index.html', 'login.html', 'recsenha.html'];
+                const paginaAtual = (window.location.pathname.split('/').pop() || 'index.html').toLowerCase();
+                if (paginasPublicas.indexOf(paginaAtual) !== -1 || document.querySelector('[data-ss-menu]')) return;
+
+                const acessoAdministrador = sessionStorage.getItem('tipoAcesso') === 'administrador';
+                const ehAdministrador = acessoAdministrador;
+                const ehGerente = !acessoAdministrador &&
+                    (paginaAtual === 'gerentedash.html' || paginaAtual === 'cadastros.html');
+                const prefixo = ehAdministrador ? 'Administração' : ehGerente ? 'Gerência' : 'Área ACS';
+                document.body.classList.add(ehAdministrador ? 'admin-page' : ehGerente ? 'gerente-page' : 'acs-page');
+                if (!ehAdministrador && !ehGerente) {
+                    document.body.classList.add('ss-area-acs');
+                }
+                if (!ehAdministrador && !ehGerente) {
+                    window.history.scrollRestoration = 'manual';
+                    window.scrollTo(0, 0);
+                }
+                const itens = ehAdministrador
+                    ? [
+                        ['admindash.html', '▦', 'Estatísticas'],
+                        ['cadastrog.html', '＋', 'Cadastrar gerente'],
+                        ['cadastros.html', '♙', 'Cadastrar ACS'],
+                        ['admindash.html#relatorios', '▣', 'Relatórios']
+                    ]
+                    : ehGerente
+                        ? [
+                            ['gerentedash.html', '▦', 'Estatísticas'],
+                            ['cadastros.html', '♙', 'Cadastrar ACS'],
+                            ['gerentedash.html#relatorios', '▣', 'Relatórios']
+                        ]
+                        : [
+                            ['acsarea.html', '▦', 'Dashboard'],
+                            ['cadfam.html', '＋', 'Cadastrar família'],
+                            ['familiascadastradas.html', '⌂', 'Famílias cadastradas'],
+                            ['vispen.html', '◷', 'Visitas pendentes'],
+                            ['visfeita.html', '✓', 'Visitas realizadas'],
+                            ['relatoriomensal.html', '▣', 'Relatório mensal']
+                        ];
+
+                const menu = document.createElement('aside');
+                menu.className = 'ss-side-menu';
+                menu.setAttribute('data-ss-menu', '');
+                menu.setAttribute('aria-label', 'Menu principal');
+                menu.innerHTML =
+                    '<div class="ss-menu-brand"><img src="img/semfindo.png" alt="ACS Conecta"></div>' +
+                    '<div class="ss-menu-title">' + prefixo + '</div>' +
+                    '<nav class="ss-menu-nav">' +
+                    itens.map(function (item) {
+                        const partesLink = item[0].split('#');
+                        const mesmaPagina = partesLink[0] === paginaAtual;
+                        const mesmaAncora = partesLink.length > 1
+                            ? window.location.hash === '#' + partesLink[1]
+                            : !window.location.hash;
+                        const ativo = mesmaPagina && mesmaAncora ? ' class="active"' : '';
+                        return '<a' + ativo + ' href="' + item[0] + '"><span class="ss-menu-icon">' + item[1] + '</span><span>' + item[2] + '</span></a>';
+                    }).join('') +
+                    '<a href="#opcoes" data-ss-options><span class="ss-menu-icon">⚙</span><span>Opções</span></a>' +
+                    '</nav>' +
+                    '<div class="ss-options-panel" data-ss-options-panel aria-hidden="true">' +
+                        '<div class="ss-options-title">Opções</div>' +
+                        '<div class="ss-options-body"></div>' +
+                    '</div>' +
+                    '<nav class="ss-menu-exit"><a href="login.html"><span class="ss-menu-icon">↪</span><span>Sair do painel</span></a></nav>';
+
+                const menuInferior = document.createElement('nav');
+                menuInferior.className = 'ss-bottom-menu';
+                menuInferior.setAttribute('aria-label', 'Menu principal');
+                menuInferior.innerHTML = itens.map(function (item) {
+                    const partesLink = item[0].split('#');
+                    const mesmaPagina = partesLink[0] === paginaAtual;
+                    const mesmaAncora = partesLink.length > 1
+                        ? window.location.hash === '#' + partesLink[1]
+                        : !window.location.hash;
+                    const ativo = mesmaPagina && mesmaAncora ? ' class="active"' : '';
+                    return '<a' + ativo + ' href="' + item[0] + '"><span class="ss-menu-icon">' + item[1] + '</span><span>' + item[2] + '</span></a>';
+                }).join('') +
+                    '<a href="#opcoes" data-ss-options><span class="ss-menu-icon">⚙</span><span>Opções</span></a>' +
+                    '<a href="login.html"><span class="ss-menu-icon">↪</span><span>Sair</span></a>' +
+                    '<div class="ss-options-panel ss-bottom-options" data-ss-options-panel aria-hidden="true">' +
+                        '<div class="ss-options-title">Opções</div>' +
+                        '<div class="ss-options-body"></div>' +
+                    '</div>';
+
+                document.body.classList.add('ss-has-menu');
+                document.body.appendChild(menu);
+                document.body.appendChild(menuInferior);
+
+                const controlesFonte = document.querySelector('[data-font-controls]');
+                const botaoTema = document.querySelector('[data-theme-toggle], #ss-dark-mode-toggle');
+                const paineisOpcoes = document.querySelectorAll('[data-ss-options-panel]');
+
+                if (controlesFonte) {
+                    paineisOpcoes.forEach(function (painel) {
+                        painel.querySelector('.ss-options-body').appendChild(controlesFonte.cloneNode(true));
+                    });
+                    controlesFonte.remove();
+                }
+
+                if (botaoTema) {
+                    paineisOpcoes.forEach(function (painel) {
+                        painel.querySelector('.ss-options-body').appendChild(botaoTema.cloneNode(true));
+                    });
+                    botaoTema.remove();
+                }
+
+                document.querySelectorAll('[data-ss-options]').forEach(function (botao) {
+                    botao.addEventListener('click', function (evento) {
+                        evento.preventDefault();
+                        const painel = botao.closest('.ss-side-menu, .ss-bottom-menu').querySelector('[data-ss-options-panel]');
+                        const aberto = painel.classList.toggle('ss-open');
+                        painel.setAttribute('aria-hidden', aberto ? 'false' : 'true');
+                    });
+                });
+            }
+            inicializarMenuResponsivo();
+            aplicarEscalaFonte(obterEscalaFonte());
+        }
+    }
+
+    document.addEventListener('click', function (e) {
+        const botaoDiminuir = e.target.closest('[data-font-decrease]');
+        const botaoAumentar = e.target.closest('[data-font-increase]');
+        const botaoResetar = e.target.closest('[data-font-reset]');
+
+        if (botaoDiminuir) alterarEscalaFonte(-FONTE_PASSO);
+        if (botaoAumentar) alterarEscalaFonte(FONTE_PASSO);
+        if (botaoResetar) aplicarEscalaFonte(FONTE_PADRAO);
+    });
+
+    document.addEventListener('keydown', function (e) {
+        if (!e.ctrlKey && !e.metaKey) return;
+        if (e.key === '+' || e.key === '=') {
+            e.preventDefault();
+            alterarEscalaFonte(FONTE_PASSO);
+        } else if (e.key === '-') {
+            e.preventDefault();
+            alterarEscalaFonte(-FONTE_PASSO);
+        } else if (e.key === '0') {
+            e.preventDefault();
+            aplicarEscalaFonte(FONTE_PADRAO);
+        }
+    });
 })();
 
 /* =========================================================

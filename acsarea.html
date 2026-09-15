@@ -56,6 +56,79 @@
         body.dark-mode .btn-theme:hover { border-color: #1ec2c7; color: #1ec2c7; }
     </style>
     <link rel="stylesheet" href="ui.css">
+    <style>
+        /* Mantém o painel centralizado na mesma área útil das páginas internas. */
+        body.acs-page.ss-has-menu > .container {
+            width: min(720px, calc(100% - 40px)) !important;
+            max-width: 720px !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+            padding-left: 20px !important;
+            padding-right: 20px !important;
+            box-sizing: border-box;
+        }
+        body.acs-page.ss-has-menu > .cards {
+            width: calc(100% - 40px) !important;
+            max-width: 900px !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+            box-sizing: border-box;
+            display: grid !important;
+            grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+            justify-content: center !important;
+            gap: 24px !important;
+        }
+        body.acs-page.ss-has-menu > .cards .card-link {
+            display: block !important;
+            width: 100% !important;
+            min-width: 0 !important;
+            position: static !important;
+        }
+        body.acs-page.ss-has-menu > .cards .card {
+            width: 100% !important;
+            min-width: 0 !important;
+            margin: 0 !important;
+            position: static !important;
+            box-sizing: border-box;
+        }
+        .dashboard-cards {
+            display: flex !important;
+            flex-direction: row !important;
+            flex-wrap: nowrap !important;
+            width: min(1000px, calc(100% - 40px)) !important;
+            max-width: 1000px !important;
+            margin: 24px auto 42px !important;
+            padding: 0 !important;
+            gap: 24px !important;
+            box-sizing: border-box;
+        }
+        .dashboard-cards > .card-link {
+            display: block !important;
+            flex: 1 1 0 !important;
+            width: auto !important;
+            min-width: 0 !important;
+            position: static !important;
+        }
+        .dashboard-cards > .card-link > .card {
+            display: flex !important;
+            width: 100% !important;
+            min-width: 0 !important;
+            min-height: 190px !important;
+            margin: 0 !important;
+            box-sizing: border-box;
+        }
+        @media (max-width: 760px) {
+            body.acs-page.ss-has-menu > .cards {
+                grid-template-columns: 1fr !important;
+            }
+            body.acs-page.ss-has-menu > .cards .card-link { width: 100% !important; }
+            .dashboard-cards {
+                flex-direction: column !important;
+                width: calc(100% - 32px) !important;
+            }
+            .dashboard-cards > .card-link { width: 100% !important; }
+        }
+    </style>
 </head>
 <body>
     <script src="ui.js"></script>
@@ -69,12 +142,11 @@
     </header>
     
     <div class="container">
+        <p class="dashboard-welcome">Seja bem-vindo, <span id="nome-dashboard">ACS</span>!</p>
         <h1>Dashboard</h1>
-        <a href="cadfam.html"><input type="button" class="sairmenu" value="Cadastrar Familia"></a>
-        <a href="relatoriomensal.html" style="margin-left: 12px;"><input type="button" class="sairmenu" value="Relatório Mensal"></a>
     </div>
 
-    <div class="cards">
+    <div class="cards dashboard-cards">
         <a href="familiascadastradas.html" class="card-link">
             <div class="card">
                 <h3>Famílias cadastradas</h3>
@@ -107,6 +179,7 @@
 
             if (nomeSalvo && loginSalvo) {
                 document.getElementById('nome-exibicao').textContent = "| Bem-vindo, " + nomeSalvo;
+                document.getElementById('nome-dashboard').textContent = nomeSalvo;
 
                 // BUSCA DADOS INDIVIDUAIS: Usamos o login no nome da chave
                 const familias = localStorage.getItem(loginSalvo + '_totalFamilias') || 0;

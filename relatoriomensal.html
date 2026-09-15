@@ -7,6 +7,53 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="areacas.css">
     <link rel="stylesheet" href="ui.css">
+    <style>
+        /* Mantém o relatório compacto e centralizado como as páginas de visitas. */
+        body.acs-page.ss-has-menu > .container {
+            width: min(720px, calc(100% - 40px)) !important;
+            max-width: 720px !important;
+            margin: 32px auto 0 !important;
+            padding: 0 20px 60px !important;
+            box-sizing: border-box;
+        }
+        body.acs-page.ss-has-menu > .container .filtro-mes {
+            gap: 10px;
+            padding: 14px;
+            border-radius: 12px;
+            margin-bottom: 18px;
+        }
+        body.acs-page.ss-has-menu > .container .filtro-item {
+            min-width: 0;
+            flex: 1 1 150px;
+            gap: 5px;
+        }
+        body.acs-page.ss-has-menu > .container .filtro-mes select,
+        body.acs-page.ss-has-menu > .container .filtro-mes input {
+            padding: 9px 10px;
+            border-radius: 8px;
+        }
+        body.acs-page.ss-has-menu > .container .resumo-cards {
+            gap: 12px;
+        }
+        body.acs-page.ss-has-menu > .container .card-resumo {
+            padding: 16px;
+            border-radius: 14px;
+            border-top: 3px solid #109ea3;
+        }
+        body.acs-page.ss-has-menu > .container .detalhes-relatorio,
+        body.acs-page.ss-has-menu > .container .resumo-relatorio {
+            margin-bottom: 18px;
+        }
+        @media (max-width: 760px) {
+            body.acs-page.ss-has-menu > .container {
+                width: 100% !important;
+                max-width: none !important;
+                margin-top: 16px !important;
+                padding-left: 16px !important;
+                padding-right: 16px !important;
+            }
+        }
+    </style>
 </head>
 <body>
    <header class="topo-pagina" style="padding: 10px 20px; min-height: auto; height: auto; flex-wrap: wrap; justify-content: space-between; align-items: center;">

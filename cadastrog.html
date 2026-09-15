@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastro de Agente de Saúde - SevenSys</title>
+    <title>Cadastro de Gerente - SevenSys</title>
     <link rel="stylesheet" href="ui.css">
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -84,6 +84,45 @@
             color: var(--text);
         }
 
+        body.dark-mode .header { box-shadow: 0 2px 10px rgba(0,0,0,0.4); }
+
+        /* ── HEADER (idêntico ao gerentedash) ── */
+        .header {
+            background: var(--white);
+            border-bottom: 3px solid var(--teal);
+            padding: 0 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 72px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-logo  { height: 52px; width: auto; }
+        .header-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--teal);
+            letter-spacing: -0.3px;
+        }
+        .header-title span { font-weight: 400; color: var(--muted); font-size: 1rem; }
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+            background: var(--teal);
+            color: white;
+            padding: 9px 20px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: background 0.2s, transform 0.2s;
+        }
+        .btn-back:hover { background: var(--teal-dark); transform: translateY(-1px); }
+
         .btn-theme {
             display: inline-flex; align-items: center; justify-content: center;
             background: transparent; border: 1.5px solid var(--border);
@@ -91,6 +130,8 @@
             cursor: pointer; font-family: inherit; transition: all 0.2s; padding: 0;
         }
         .btn-theme:hover { border-color: var(--teal); color: var(--teal); }
+        .header-actions { display: flex; align-items: center; gap: 10px; }
+
         /* ── PAGE LAYOUT ── */
         .page {
             max-width: 780px;
@@ -292,6 +333,8 @@
 
         /* ── RESPONSIVE ── */
         @media (max-width: 640px) {
+            .header { padding: 0 16px; }
+            .header-title { font-size: 1rem; }
             .form-card-body { grid-template-columns: 1fr; padding: 18px; }
             .form-card-body .full { grid-column: 1; }
             .form-actions { flex-direction: column-reverse; }
@@ -321,12 +364,12 @@
         <div class="form-card">
             <div class="form-card-header">
                 <span class="card-icon">👤</span>
-                <h2>Dados Pessoais do Agente</h2>
+                <h2>Dados Pessoais do Gerente</h2>
             </div>
             <div class="form-card-body">
                 <div class="field full">
                     <label for="inom">Nome Completo</label>
-                    <input type="text" id="inom" placeholder="Nome completo do agente" minlength="15" maxlength="60"
+                    <input type="text" id="inom" placeholder="Nome completo do gerente" minlength="15" maxlength="60"
                         oninput="this.value=this.value.replace(/[^A-Za-zÀ-ÖØ-öø-ÿ\s]/g,'')"
                         pattern="[A-Za-zÀ-ÖØ-öø-ÿ\s]{15,60}" title="Apenas letras, mínimo 15 e máximo 60 caracteres" required>
                 </div>
@@ -428,10 +471,6 @@
                     <label for="matricula">Matrícula</label>
                     <input type="text" id="matricula" placeholder="Número da matrícula" required>
                 </div>
-                <div class="field">
-                    <label for="area">Área de Atuação</label>
-                    <input type="text" id="area" placeholder="Microárea ou território" required>
-                </div>
             </div>
         </div>
 
@@ -441,6 +480,14 @@
                 <h2>Dados de Acesso ao Sistema</h2>
             </div>
             <div class="form-card-body">
+                <div class="field full">
+                    <label for="tipoAcesso">Tipo de Acesso</label>
+                    <select id="tipoAcesso" required>
+                        <option value="gerente">Gerente</option>
+                        <option value="administrador">Administrador</option>
+                    </select>
+                    <span class="field-hint">Gerente acessa o Painel do Gerente; Administrador acessa o Painel do Administrador.</span>
+                </div>
                 <div class="field full">
                     <label for="login">Usuário do Sistema</label>
                     <input type="text" id="login" placeholder="Mínimo 6 caracteres, apenas letras" minlength="6" maxlength="20"
@@ -467,7 +514,7 @@
 
         <div class="form-actions">
             <button type="reset" class="btn btn-ghost">🗑 Limpar Formulário</button>
-            <button type="submit" class="btn btn-primary">✓ Cadastrar Agente</button>
+            <button type="submit" class="btn btn-primary">✓ Cadastrar Gerente</button>
         </div>
 
     </form>
@@ -529,66 +576,42 @@
         const loginEditar = params.get('editar');
         if (!loginEditar) return;
 
-        const agentes = JSON.parse(localStorage.getItem('agentesSaude') || '[]');
-        const agente = agentes.find(a => (a.usuario || a.login) === loginEditar);
-        if (!agente) {
-            showToast('warning', 'Agente não encontrado', 'Não foi possível carregar os dados para edição.');
+        const gerentes = JSON.parse(localStorage.getItem('gerentes') || '[]');
+        const gerente = gerentes.find(g => (g.usuario || g.login) === loginEditar);
+        if (!gerente) {
+            showToast('warning', 'Gerente não encontrado', 'Não foi possível carregar os dados para edição.');
             return;
         }
 
         modoEdicao = true;
         loginOriginal = loginEditar;
 
-        document.getElementById('inom').value = agente.nome || '';
-        document.getElementById('nomeMae').value = agente.nomeMae || '';
-        document.getElementById('dat').value = agente.dataNascimento || '';
-        if (agente.sexo) {
-            const radio = document.querySelector(`input[name="sexo"][value="${agente.sexo}"]`);
+        document.getElementById('inom').value = gerente.nome || '';
+        document.getElementById('nomeMae').value = gerente.nomeMae || '';
+        document.getElementById('dat').value = gerente.dataNascimento || '';
+        if (gerente.sexo) {
+            const radio = document.querySelector(`input[name="sexo"][value="${gerente.sexo}"]`);
             if (radio) radio.checked = true;
         }
-        document.getElementById('cpf').value = agente.cpf || '';
-        document.getElementById('tel').value = agente.telefone || '';
-        document.getElementById('email').value = agente.email || '';
-        document.getElementById('cep').value = agente.cep || '';
-        document.getElementById('rua').value = agente.rua || agente.endereco || '';
-        document.getElementById('numero').value = agente.numero || '';
-        document.getElementById('bairro').value = agente.bairro || '';
-        document.getElementById('cidade').value = agente.cidade || '';
-        document.getElementById('uf').value = agente.uf || '';
-        document.getElementById('unit').value = agente.unidadeSaude || '';
-        document.getElementById('matricula').value = agente.matricula || '';
-        document.getElementById('area').value = agente.area || '';
-        document.getElementById('login').value = agente.usuario || agente.login || '';
-        document.getElementById('sen').value = agente.senha || '';
-        document.getElementById('confirmar_senha').value = agente.senha || '';
+        document.getElementById('cpf').value = gerente.cpf || '';
+        document.getElementById('tel').value = gerente.telefone || '';
+        document.getElementById('email').value = gerente.email || '';
+        document.getElementById('cep').value = gerente.cep || '';
+        document.getElementById('rua').value = gerente.rua || gerente.endereco || '';
+        document.getElementById('numero').value = gerente.numero || '';
+        document.getElementById('bairro').value = gerente.bairro || '';
+        document.getElementById('cidade').value = gerente.cidade || '';
+        document.getElementById('uf').value = gerente.uf || '';
+        document.getElementById('unit').value = gerente.unidadeSaude || '';
+        document.getElementById('matricula').value = gerente.matricula || '';
+        document.getElementById('tipoAcesso').value = gerente.tipo || 'gerente';
+        document.getElementById('login').value = gerente.usuario || gerente.login || '';
+        document.getElementById('sen').value = gerente.senha || '';
+        document.getElementById('confirmar_senha').value = gerente.senha || '';
 
         // Ajusta textos da página para refletir o modo de edição
         const btnSubmit = document.querySelector('#form-agente button[type="submit"]');
         if (btnSubmit) btnSubmit.textContent = '✓ Salvar Alterações';
-    }
-
-    function restringirUnidadeDoGerente() {
-        if (sessionStorage.getItem('tipoAcesso') === 'administrador') return;
-
-        let unidadeGerente = sessionStorage.getItem('unidadeGerente') || '';
-        if (!unidadeGerente) {
-            const loginGerente = sessionStorage.getItem('loginGerente');
-            const gerentes = JSON.parse(localStorage.getItem('gerentes') || '[]');
-            const gerente = gerentes.find(g => (g.usuario || g.login) === loginGerente);
-            unidadeGerente = gerente ? (gerente.unidadeSaude || '') : '';
-        }
-        const unidadeSelect = document.getElementById('unit');
-        if (!unidadeSelect || !unidadeGerente) return;
-
-        sessionStorage.setItem('unidadeGerente', unidadeGerente);
-        unidadeSelect.value = unidadeGerente;
-        unidadeSelect.disabled = true;
-        unidadeSelect.title = 'A unidade do ACS deve ser a mesma unidade do gerente.';
-
-        const aviso = document.createElement('span');
-        aviso.className = 'field-hint';
-        aviso.textContent = 'Unidade definida automaticamente conforme a unidade do gerente.';
-        unidadeSelect.parentElement.appendChild(aviso);
     }
 
     function mascaraTelefone(input) {
@@ -621,6 +644,7 @@
             document.getElementById('verificacao-gerente').style.display = 'none';
             document.getElementById('form-agente').style.display = 'block';
             sessionStorage.setItem('gerenteAutenticado', 'true');
+            sessionStorage.setItem('tipoAcesso', 'administrador');
             carregarParaEdicao();
         } else {
             showToast('error', 'Senha incorreta', 'Acesso negado.');
@@ -630,9 +654,13 @@
 
     window.onload = function() {
         if (sessionStorage.getItem('gerenteAutenticado') === 'true') {
+            if (sessionStorage.getItem('tipoAcesso') !== 'administrador') {
+                showToast('error', 'Acesso restrito', 'Somente administradores podem cadastrar contas de acesso.');
+                window.location.href = 'gerentedash.html';
+                return;
+            }
             document.getElementById('verificacao-gerente').style.display = 'none';
             document.getElementById('form-agente').style.display = 'block';
-            restringirUnidadeDoGerente();
             carregarParaEdicao();
         }
     };
@@ -669,15 +697,7 @@
         const uf       = document.getElementById('uf').value;
         const enderecoCompleto = `${rua}, ${numero} - ${bairro}, ${cidade} - ${uf}, ${cep}`;
 
-        const ehGerente = sessionStorage.getItem('tipoAcesso') !== 'administrador';
-        const unidadeGerente = sessionStorage.getItem('unidadeGerente') || '';
-        const unidadeSelecionada = document.getElementById('unit').value;
-        if (ehGerente && (!unidadeGerente || unidadeSelecionada !== unidadeGerente)) {
-            showToast('error', 'Unidade inválida', 'O ACS deve ser cadastrado na mesma unidade do gerente.');
-            return;
-        }
-
-        const dadosAgente = {
+        const dadosGerente = {
             nome:          document.getElementById('inom').value,
             nomeMae:       document.getElementById('nomeMae').value,
             dataNascimento:document.getElementById('dat').value,
@@ -692,39 +712,36 @@
             cidade:        cidade,
             uf:            uf,
             endereco:      enderecoCompleto,
-            unidadeSaude:  ehGerente ? unidadeGerente : unidadeSelecionada,
+            unidadeSaude:  document.getElementById('unit').value,
             matricula:     document.getElementById('matricula').value,
-            area:          document.getElementById('area').value,
+            tipo:          document.getElementById('tipoAcesso').value,
             usuario:       document.getElementById('login').value,
             senha:         senha,
             dataCadastro:  new Date().toLocaleDateString('pt-BR'),
             cadastradoPor: 'Gerente'
         };
 
-        let agentes = JSON.parse(localStorage.getItem('agentesSaude') || '[]');
+        let gerentes = JSON.parse(localStorage.getItem('gerentes') || '[]');
 
         if (modoEdicao) {
-            const idx = agentes.findIndex(a => (a.usuario || a.login) === loginOriginal);
+            const idx = gerentes.findIndex(g => (g.usuario || g.login) === loginOriginal);
             if (idx !== -1) {
-                dadosAgente.dataCadastro  = agentes[idx].dataCadastro || dadosAgente.dataCadastro;
-                dadosAgente.cadastradoPor = agentes[idx].cadastradoPor || dadosAgente.cadastradoPor;
-                agentes[idx] = dadosAgente;
+                dadosGerente.dataCadastro  = gerentes[idx].dataCadastro || dadosGerente.dataCadastro;
+                dadosGerente.cadastradoPor = gerentes[idx].cadastradoPor || dadosGerente.cadastradoPor;
+                gerentes[idx] = dadosGerente;
             } else {
-                agentes.push(dadosAgente);
+                gerentes.push(dadosGerente);
             }
         } else {
-            agentes.push(dadosAgente);
+            gerentes.push(dadosGerente);
         }
 
-        localStorage.setItem('agentesSaude', JSON.stringify(agentes));
+        localStorage.setItem('gerentes', JSON.stringify(gerentes));
 
         showToast('success', modoEdicao ? 'Alterações salvas' : 'Cadastro concluído',
-            modoEdicao ? 'Agente de saúde atualizado com sucesso!' : 'Agente de saúde cadastrado com sucesso!');
+            modoEdicao ? 'Gerente atualizado com sucesso!' : 'Gerente cadastrado com sucesso!');
         this.reset();
-        const paginaDestino = sessionStorage.getItem('tipoAcesso') === 'administrador'
-            ? 'admindash.html'
-            : 'gerentedash.html';
-        setTimeout(() => window.location.href = paginaDestino, 700);
+        setTimeout(() => window.location.href = 'gerentedash.html', 700);
     });
 
     document.getElementById('senha_gerente').addEventListener('keypress', function(e) {

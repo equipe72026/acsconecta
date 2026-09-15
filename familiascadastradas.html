@@ -7,28 +7,50 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="areacas.css">
     <style>
-        .container-familias { padding: 20px; max-width: 800px; margin: auto; }
+        .container-familias { padding: 24px 20px 60px; width: min(720px, calc(100% - 40px)); margin: 32px auto 0; }
         .familia-item { 
-            background: white; 
-            padding: 15px; 
-            margin-bottom: 15px; 
-            border-radius: 8px; 
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            border-left: 5px solid #2c3e50;
+            position: relative;
+            background: rgba(255,255,255,0.96); 
+            padding: 20px 22px; 
+            margin-bottom: 16px; 
+            border: 1px solid #e2eaed;
+            border-top: 4px solid #109ea3;
+            border-radius: 14px; 
+            box-shadow: 0 10px 26px rgba(15,23,42,0.09);
         }
-        .info-principal { font-weight: bold; font-size: 1.1em; color: #2c3e50; }
-        .detalhes { font-size: 0.9em; color: #666; margin: 10px 0; }
-        .acoes { display: flex; gap: 10px; flex-wrap: wrap; }
+        .info-principal { font-weight: 700; font-size: 1.05em; color: #2c3e50; }
+        .detalhes { font-size: 0.88em; color: #667780; margin: 12px 0 16px; line-height: 1.8; }
+        .acoes { display: flex; gap: 7px; flex-wrap: wrap; }
         
         /* Estilização dos Botões */
-        .btn-visita { background: #27ae60; color: white; border: none; padding: 8px 12px; cursor: pointer; border-radius: 4px; }
-        .btn-excluir { background: #c0392b; color: white; border: none; padding: 8px 12px; cursor: pointer; border-radius: 4px; }
-        .btn-detalhes { background: #2980b9; color: white; border: none; padding: 8px 12px; cursor: pointer; border-radius: 4px; }
+        .acoes button { border: none; padding: 9px 13px; cursor: pointer; border-radius: 8px; font-weight: 700; font-size: 0.8rem; transition: transform .2s, opacity .2s; }
+        .acoes button:hover { transform: translateY(-1px); opacity: .9; }
+        .btn-visita { background: #27ae60; color: white; }
+        .btn-excluir { background: #e74c3c; color: white; }
+        .btn-detalhes { background: #e6f7f7; color: #0b777a; border: 1px solid #b2e5e7 !important; }
+        .btn-editar { background: #109ea3; color: white; }
         
-        /* Modal de Detalhes */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; }
-        .modal-content { background: white; padding: 20px; border-radius: 8px; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto; }
-        .fechar-modal { background: #7f8c8d; color: white; border: none; padding: 8px 12px; cursor: pointer; border-radius: 4px; margin-top: 15px; }
+        /* Modal de integrantes */
+        .modal { display: none; position: fixed; inset: 0; z-index: 1000; padding: 24px; background: rgba(15,23,42,0.62); justify-content: center; align-items: center; backdrop-filter: blur(4px); }
+        .modal-content { background: white; padding: 26px; border-radius: 18px; max-width: 650px; width: min(100%, 650px); max-height: 86vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(15,23,42,0.25); }
+        .modal-topo { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 20px; }
+        .modal-topo h3 { color: #2c3e50; font-size: 1.2rem; margin: 0; }
+        .modal-subtitulo { color: #7f8c8d; font-size: .82rem; margin-top: 5px; }
+        .btn-fechar-x { border: 0; background: #eef4f5; color: #587078; border-radius: 50%; width: 32px; height: 32px; cursor: pointer; font-size: 1.1rem; }
+        .integrante-card { border: 1px solid #e2eaed; border-left: 4px solid #109ea3; border-radius: 12px; padding: 16px; margin-bottom: 12px; background: #fbfdfd; }
+        .integrante-cabecalho { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 12px; }
+        .integrante-cabecalho strong { color: #2c3e50; font-size: .98rem; }
+        .integrante-numero { color: #0b777a; background: #e6f7f7; border-radius: 20px; padding: 4px 9px; font-size: .72rem; font-weight: 700; }
+        .integrante-dados { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 16px; color: #667780; font-size: .82rem; line-height: 1.45; }
+        .integrante-dados b { color: #44545b; }
+        .condicoes { grid-column: 1 / -1; padding-top: 8px; border-top: 1px solid #e8eef0; }
+        .fechar-modal { background: #109ea3; color: white; border: none; padding: 10px 18px; cursor: pointer; border-radius: 8px; margin-top: 16px; font-weight: 700; }
+        @media (max-width: 520px) {
+            .modal { padding: 12px; }
+            .modal-content { padding: 20px 16px; }
+            .integrante-dados { grid-template-columns: 1fr; }
+            .condicoes { grid-column: auto; }
+        }
 
         /* ── MODO ESCURO ── */
         /* Controlado pela classe .dark-mode no <body>, sincronizada
@@ -44,16 +66,26 @@
         body.dark-mode .titulo { color: #1ec2c7 !important; }
         body.dark-mode .familia-item {
             background: #1c2226;
-            border-left-color: #1ec2c7;
+            border-color: #313b42;
+            border-top-color: #1ec2c7;
             box-shadow: 0 2px 5px rgba(0,0,0,0.4);
         }
         body.dark-mode .info-principal { color: #e8edf0; }
         body.dark-mode .detalhes { color: #9aa7ad; }
+        body.dark-mode .btn-detalhes { background: #133b3c; color: #5fe6eb; border-color: #245b5d !important; }
         body.dark-mode .modal-content {
             background: #1c2226;
             color: #e8edf0;
         }
-        body.dark-mode #conteudoModal div { border-bottom-color: #313b42 !important; }
+        body.dark-mode .modal-topo h3,
+        body.dark-mode .integrante-cabecalho strong { color: #e8edf0; }
+        body.dark-mode .modal-subtitulo,
+        body.dark-mode .integrante-dados { color: #9aa7ad; }
+        body.dark-mode .integrante-dados b { color: #d6e0e3; }
+        body.dark-mode .integrante-card { background: #20272c; border-color: #313b42; border-left-color: #1ec2c7; }
+        body.dark-mode .integrante-numero { background: #133b3c; color: #5fe6eb; }
+        body.dark-mode .condicoes { border-top-color: #313b42; }
+        body.dark-mode .btn-fechar-x { background: #2a3339; color: #c7d2d6; }
 
         .btn-theme {
             display: inline-flex; align-items: center; justify-content: center;
@@ -67,6 +99,31 @@
         .header-actions { display: flex; align-items: center; gap: 10px; }
     </style>
     <link rel="stylesheet" href="ui.css">
+    <style>
+        /* Usa o mesmo posicionamento das páginas de visitas. */
+        body.acs-page.ss-has-menu > main.container-familias {
+            width: min(720px, calc(100% - 40px)) !important;
+            max-width: 720px !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+            padding-left: 20px !important;
+            padding-right: 20px !important;
+        }
+        body.acs-page.ss-has-menu > main.container-familias .familia-item {
+            width: 100% !important;
+            max-width: 720px !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+        }
+        @media (max-width: 760px) {
+            body.acs-page.ss-has-menu > main.container-familias {
+                width: 100% !important;
+                margin-left: 0 !important;
+                padding-left: 16px !important;
+                padding-right: 16px !important;
+            }
+        }
+    </style>
 </head>
 <body>
     <script src="ui.js"></script>
@@ -87,7 +144,13 @@
 
 <div id="modalDetalhes" class="modal">
     <div class="modal-content">
-        <h3>Membros da Família</h3>
+        <div class="modal-topo">
+            <div>
+                <h3>Membros da Família</h3>
+                <div class="modal-subtitulo">Dados cadastrados e condições de saúde</div>
+            </div>
+            <button class="btn-fechar-x" onclick="fecharModal()" aria-label="Fechar">×</button>
+        </div>
         <div id="conteudoModal"></div>
         <button class="fechar-modal" onclick="fecharModal()">Fechar</button>
     </div>
@@ -128,6 +191,7 @@
                 <div class="acoes">
                     <button class="btn-visita" onclick="fazerVisita(${familia.id})">Realizar Visita</button>
                     <button class="btn-detalhes" onclick="verDetalhes(${familia.id})">Ver Integrantes</button>
+                    <button class="btn-editar" onclick="editarFamilia(${familia.id})">Editar Família</button>
                     <button class="btn-excluir" onclick="excluirFamilia(${index})">Excluir Família</button>
                 </div>
             `;
@@ -167,9 +231,13 @@
         window.location.href = `visita.html?id=${id}`;
     }
 
+    function editarFamilia(id) {
+        window.location.href = `cadfam.html?editar=${encodeURIComponent(id)}`;
+    }
+
     function verDetalhes(id) {
         const lista = JSON.parse(localStorage.getItem(loginAtivo + '_lista_familias') || "[]");
-        const familia = lista.find(f => f.id === id);
+        const familia = lista.find(f => String(f.id) === String(id));
 
         if (!familia || !familia.membros) {
             showToast('error', 'Detalhes não encontrados', 'Não foi possível localizar esta família.');
@@ -180,22 +248,30 @@
         modalConteudo.innerHTML = "";
 
         familia.membros.forEach((m, idx) => {
+            const condicoes = [
+                m.hipertenso ? "Hipertenso" : "",
+                m.diabetico ? "Diabético" : "",
+                m.gestante ? "Gestante" : "",
+                m.vacina ? "Vacina atrasada" : "",
+                m.idoso ? "Idoso" : "",
+                m.deficiente ? "Deficiente" : "",
+                m.crianca ? "Criança" : "",
+                m.tuberculoso ? "Tuberculoso" : "",
+                m.hanseniase ? "Hanseníase" : ""
+            ].filter(Boolean);
             modalConteudo.innerHTML += `
-                <div style="border-bottom: 1px solid #eee; padding: 10px 0;">
-                    <strong>Membro ${idx + 1}:</strong> ${m.nome}<br>
-                    🎂 Nascimento: ${m.nascimento} | 🧑‍🤝‍🧑 Sexo: ${m.sexo}<br>
-                    🪪 CPF: ${m.cpf} | 📱 Cel: ${m.celular}<br>
-                    📌 Condições: ${[
-                        m.hipertenso ? "Hipertenso" : "",
-                        m.diabetico ? "Diabético" : "",
-                        m.gestante ? "Gestante" : "",
-                        m.vacina ? "Vacina Atrasada" : "",
-                        m.idoso ? "Idoso" : "",
-                        m.deficiente ? "Deficiente" : "",
-                        m.crianca ? "Criança" : "",
-                        m.tuberculoso ? "Tuberculoso" : "",
-                        m.hanseniase ? "Hanseníase" : ""
-                    ].filter(Boolean).join(", ") || "Nenhuma"}
+                <div class="integrante-card">
+                    <div class="integrante-cabecalho">
+                        <strong>${m.nome}</strong>
+                        <span class="integrante-numero">MEMBRO ${idx + 1}</span>
+                    </div>
+                    <div class="integrante-dados">
+                        <div><b>Nascimento:</b> ${m.nascimento || "Não informado"}</div>
+                        <div><b>Sexo:</b> ${m.sexo || "Não informado"}</div>
+                        <div><b>CPF:</b> ${m.cpf || "Não informado"}</div>
+                        <div><b>Celular:</b> ${m.celular || "Não informado"}</div>
+                        <div class="condicoes"><b>Condições:</b> ${condicoes.join(", ") || "Nenhuma informada"}</div>
+                    </div>
                 </div>
             `;
         });

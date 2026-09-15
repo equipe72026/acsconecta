@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel do Administrador - SevenSys</title>
+    <style>
+        /* =============================================
+           RESET & BASE
+        ============================================= */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --teal:       #109ea3;
+            --teal-dark:  #0b777a;
+            --teal-light: #e6f7f7;
+            --slate:      #2c3e50;
+            --slate-mid:  #4a6275;
+            --red:        #e74c3c;
+            --red-dark:   #c0392b;
+            --green:      #27ae60;
+            --green-dark: #1e8449;
+            --amber:      #f39c12;
+            --purple:     #8e44ad;
+            --white:      #ffffff;
+            --bg:         #f0f4f5;
+            --card:       #ffffff;
+            --border:     #dde4e6;
+            --text:       #2c3e50;
+            --muted:      #7f8c8d;
+            --radius:     10px;
+            --shadow:     0 2px 12px rgba(0,0,0,0.08);
+            --shadow-hover: 0 6px 20px rgba(0,0,0,0.13);
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: var(--bg);
+            background-image: url("img/trasno.png");
+            background-size: cover;
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: var(--text);
+        }
+
+        /* ── MODO ESCURO ── */
+        body.dark-mode {
+            --teal:       #1ec2c7;
+            --teal-dark:  #15a3a8;
+            --teal-light: #133b3c;
+            --slate:      #e8edf0;
+            --slate-mid:  #aebac1;
+            --red:        #ff6b5e;
+            --red-dark:   #e74c3c;
+            --green:      #3ddc84;
+            --green-dark: #27ae60;
+            --amber:      #f5b041;
+            --purple:     #b87fd1;
+            --white:      #1c2226;
+            --bg:         #11151a;
+            --card:       #1c2226;
+            --border:     #313b42;
+            --text:       #e8edf0;
+            --muted:      #9aa7ad;
+            --shadow:     0 2px 12px rgba(0,0,0,0.4);
+            --shadow-hover: 0 6px 20px rgba(0,0,0,0.5);
+        }
+
+        body.dark-mode { background-color: var(--bg); }
+        body.dark-mode .search-input,
+        body.dark-mode select,
+        body.dark-mode input {
+            background: #20272c;
+            color: var(--text);
+            border-color: var(--border);
+        }
+        body.dark-mode .search-input::placeholder,
+        body.dark-mode input::placeholder { color: #6c7a80; }
+        body.dark-mode .agent-login { background: #20272c; }
+        body.dark-mode .badge-unit { background: #16323f; color: #6fc3e8; }
+        body.dark-mode .badge-role.admin { background: #3a2036; color: #e29be0; }
+        body.dark-mode .badge-role.gerente { background: #16323f; color: #6fc3e8; }
+        body.dark-mode .modal-box { background: var(--card); }
+        body.dark-mode .btn-outline { color: var(--teal); border-color: var(--teal); }
+        body.dark-mode .btn-outline:hover { background: var(--teal-light); }
+
+        @media (min-width: 901px) {
+            .admin-page .ss-side-menu {
+                top: 0;
+            }
+        }
+
+        /* =============================================
+           LAYOUT
+        ============================================= */
+        .page {
+            max-width: 1100px;
+            margin: 32px auto;
+            padding: 0 20px 60px;
+        }
+
+        .admin-dashboard .page {
+            width: calc(100% - 238px);
+            max-width: none;
+            margin: 32px 0 0 238px;
+            padding-left: max(20px, calc((100vw - 238px - 1100px) / 2));
+            padding-right: max(20px, calc((100vw - 238px - 1100px) / 2));
+        }
+
+        /* =============================================
+           STATS BAR
+        ============================================= */
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 20px 24px;
+            box-shadow: var(--shadow);
+            border-top: 4px solid var(--teal);
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .stat-card.purple { border-top-color: var(--teal); }
+
+        .stat-label { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.8px; color: var(--muted); font-weight: 600; }
+        .stat-value { font-size: 2rem; font-weight: 700; color: var(--teal); line-height: 1; }
+        .stat-card.purple .stat-value { color: var(--teal); }
+
+        /* =============================================
+           SECTION HEADER
+        ============================================= */
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .section-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--slate);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-title::before {
+            content: '';
+            display: inline-block;
+            width: 4px;
+            height: 20px;
+            background: var(--teal);
+            border-radius: 4px;
+        }
+
+        /* =============================================
+           BUTTONS
+        ============================================= */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 9px 18px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.88rem;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .btn-primary   { background: var(--teal);   color: white; }
+        .btn-primary:hover { background: var(--teal-dark); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(16,158,163,0.3); }
+
+        .btn-danger    { background: var(--red);    color: white; }
+        .btn-danger:hover  { background: var(--red-dark);  transform: translateY(-1px); }
+
+        .btn-success   { background: var(--green);  color: white; }
+        .btn-success:hover { background: var(--green-dark);  transform: translateY(-1px); }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--teal);
+            color: var(--teal);
+        }
+        .btn-outline:hover { background: var(--teal-light); }
+
+        /* =============================================
+           SEARCH INPUT
+        ============================================= */
+        .search-input {
+            padding: 9px 14px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            width: 240px;
+            transition: border-color 0.2s;
+        }
+        .search-input:focus { border-color: var(--teal); outline: none; box-shadow: 0 0 0 3px rgba(16,158,163,0.12); }
+
+        .filter-select {
+            padding: 9px 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            color: var(--text);
+            background: var(--card);
+        }
+
+        /* =============================================
+           MANAGERS TABLE
+        ============================================= */
+        .table-wrap {
+            background: var(--card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        table {
+            width: 100%;
+            min-width: 760px;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        thead tr { background: var(--teal); color: white; }
+
+        thead th {
+            padding: 13px 16px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            white-space: nowrap;
+        }
+
+        tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+        tbody tr:last-child { border-bottom: none; }
+        tbody tr:hover { background: var(--teal-light); }
+
+        tbody td { padding: 13px 16px; vertical-align: middle; }
+
+        .agent-name { font-weight: 600; color: var(--slate); }
+        .agent-login { font-family: monospace; background: var(--bg); padding: 2px 8px; border-radius: 4px; font-size: 0.82rem; }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+        .badge-unit { background: #eaf4fb; color: #1a6fa8; }
+        .badge-role.admin    { background: #f4e6fa; color: #8e44ad; }
+        .badge-role.gerente  { background: #eaf4fb; color: #1a6fa8; }
+
+        .action-group { display: flex; gap: 8px; flex-wrap: wrap; }
+
+        .empty-state {
+            text-align: center;
+            padding: 50px 20px;
+            color: var(--muted);
+        }
+        .empty-state p { margin-top: 10px; font-size: 0.95rem; }
+
+        /* =============================================
+           MODAL BASE
+        ============================================= */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.55);
+            backdrop-filter: blur(3px);
+            z-index: 200;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 40px 16px;
+            overflow-y: auto;
+        }
+
+        .modal-overlay.open { display: flex; }
+
+        .modal-box {
+            background: var(--card);
+            border-radius: 14px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+            overflow: hidden;
+            animation: slideUp 0.22s ease;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(24px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .modal-header {
+            background: var(--red);
+            color: white;
+            padding: 18px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 { font-size: 1.05rem; font-weight: 700; }
+
+        .modal-close {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+        .modal-close:hover { background: rgba(255,255,255,0.35); }
+
+        .modal-body { padding: 24px; }
+
+        #modalRelatorio .modal-box {
+            width: min(1100px, calc(100vw - 32px));
+            max-width: 1100px;
+        }
+
+        #modalRelatorio .report-toolbar {
+            display: grid;
+            grid-template-columns: minmax(180px, 1fr) minmax(180px, 1fr) auto;
+            gap: 12px;
+            align-items: end;
+            padding: 16px;
+            margin-bottom: 18px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: var(--teal-light);
+        }
+
+        #modalRelatorio .report-field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        #modalRelatorio .report-field label {
+            color: var(--muted);
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.7px;
+            text-transform: uppercase;
+        }
+
+        #modalRelatorio select {
+            width: 100%;
+            min-height: 42px;
+            padding: 9px 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--card);
+            color: var(--text);
+            font: inherit;
+        }
+
+        #modalRelatorio .report-summary {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        #modalRelatorio .report-summary .stat-card {
+            padding: 15px 16px;
+        }
+
+        #modalRelatorio .report-table-wrap {
+            overflow-x: auto;
+        }
+
+        @media (max-width: 700px) {
+            #modalRelatorio .report-toolbar,
+            #modalRelatorio .report-summary {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* =============================================
+           RESPONSIVE
+        ============================================= */
+        @media (max-width: 700px) {
+            .admin-dashboard .page {
+                width: 100%;
+                margin: 16px 0;
+                padding-left: 20px;
+                padding-right: 20px;
+            }
+            .page { margin: 16px auto; }
+            .stats-bar { grid-template-columns: 1fr 1fr; }
+            table { font-size: 0.8rem; }
+            thead th, tbody td { padding: 10px 10px; }
+        }
+
+        @media (max-width: 500px) {
+            .stats-bar { grid-template-columns: 1fr; }
+        }
+    </style>
+    <link rel="stylesheet" href="ui.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+    <script src="ui.js"></script>
+</head>
+<body class="admin-page admin-dashboard">
+
+<!-- PAGE CONTENT -->
+<div class="page">
+
+    <!-- STATS BAR -->
+    <div class="stats-bar" id="statsBar">
+        <div class="stat-card">
+            <div class="stat-label">Total de contas</div>
+            <div class="stat-value" id="st-total">—</div>
+        </div>
+        <div class="stat-card purple">
+            <div class="stat-label">Administradores</div>
+            <div class="stat-value" id="st-admins">—</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Gerentes</div>
+            <div class="stat-value" id="st-gerentes">—</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">ACS</div>
+            <div class="stat-value" id="st-acs">—</div>
+        </div>
+    </div>
+
+    <!-- MANAGERS SECTION -->
+    <div class="section-header">
+        <div class="section-title">Contas cadastradas</div>
+        <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+            <input type="text" class="search-input" id="searchManagers" placeholder="🔍 Buscar por nome ou usuário..." oninput="filtrarGerentes()">
+            <select class="filter-select" id="typeFilter" onchange="filtrarGerentes()" aria-label="Filtrar por tipo">
+                <option value="todos">Todos</option>
+                <option value="acs">ACS</option>
+                <option value="gerentes">Gerentes</option>
+                <option value="administradores">Administradores</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="table-wrap" id="managersTableWrap">
+        <table id="managersTable">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Nome</th>
+                    <th>Usuário</th>
+                    <th>Tipo</th>
+                    <th>Unidade de Saúde</th>
+                    <th>Cadastro</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody id="managersBody">
+            </tbody>
+        </table>
+    </div>
+
+    <!-- EMPTY STATE (shown via JS) -->
+    <div id="emptyManagers" class="empty-state" style="display:none;">
+        <div style="font-size:3rem;">🧑‍💼</div>
+        <p>Nenhuma conta de gerente ou administrador cadastrada ainda.</p>
+    </div>
+
+</div>
+
+
+<!-- ============================================================
+     MODAL: CONFIRMAR EXCLUSÃO
+============================================================ -->
+<div class="modal-overlay" id="modalRelatorio">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h3>📊 Relatórios Gerais</h3>
+            <button class="modal-close" onclick="fecharModal('modalRelatorio')">✕</button>
+        </div>
+        <div class="modal-body">
+            <div class="report-toolbar">
+                <div class="report-field">
+                    <label for="relFiltroAgente">Filtrar por agente</label>
+                    <select id="relFiltroAgente" onchange="gerarRelatorioAdministrador()">
+                        <option value="">Todos os agentes</option>
+                    </select>
+                </div>
+                <div class="report-field">
+                    <label for="relFiltroUnidade">Filtrar por unidade de saúde</label>
+                    <select id="relFiltroUnidade" onchange="gerarRelatorioAdministrador()">
+                        <option value="">Todas as unidades</option>
+                    </select>
+                </div>
+                <div class="report-field">
+                    <label for="relFiltroPeriodo">Período da análise</label>
+                    <select id="relFiltroPeriodo" onchange="gerarRelatorioAdministrador()">
+                        <option value="">Todo o período</option>
+                        <option value="7">Últimos 7 dias</option>
+                        <option value="30">Últimos 30 dias</option>
+                        <option value="90">Últimos 90 dias</option>
+                    </select>
+                </div>
+                <button class="btn btn-primary" onclick="exportarRelatorioAdministrador()">📄 Exportar PDF</button>
+            </div>
+            <div class="report-summary">
+                <div class="stat-card">
+                    <div class="stat-label">Agentes no filtro</div>
+                    <div class="stat-value" id="rel-agentes">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Famílias cadastradas</div>
+                    <div class="stat-value" id="rel-familias">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Visitas realizadas</div>
+                    <div class="stat-value" id="rel-visitas">0</div>
+                </div>
+            </div>
+            <div class="report-table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Agente</th>
+                            <th>Usuário</th>
+                            <th>Unidade de Saúde</th>
+                            <th>Famílias</th>
+                            <th>Visitas</th>
+                        </tr>
+                    </thead>
+                    <tbody id="relatorioBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="modalConfirm">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h3>Confirmar Exclusão</h3>
+            <button class="modal-close" onclick="fecharModal('modalConfirm')">✕</button>
+        </div>
+        <div class="modal-body">
+            <p style="margin-bottom:16px; font-size:0.95rem; color:#444;" id="confirmMsg"></p>
+            <p style="font-size:0.85rem; color:var(--muted); margin-bottom:24px;">
+                ⚠️ O acesso desta conta ao sistema será <strong>permanentemente removido</strong>.
+            </p>
+            <div style="display:flex; gap:12px; justify-content:flex-end;">
+                <button class="btn btn-outline" onclick="fecharModal('modalConfirm')">Cancelar</button>
+                <button class="btn btn-danger" id="confirmDeleteBtn">Confirmar Exclusão</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    // ============================================================
+    // GUARDA DE ACESSO — só administradores autenticados entram aqui
+    // ============================================================
+    if (sessionStorage.getItem('gerenteAutenticado') !== 'true' ||
+        sessionStorage.getItem('tipoAcesso') !== 'administrador') {
+        window.location.href = 'login.html';
+    }
+
+    // ============================================================
+    // DADOS & ESTADO
+    // ============================================================
+    let gerentes = [];
+    let agentes = [];
+
+    document.addEventListener('DOMContentLoaded', function () {
+        carregarGerentes();
+        carregarAgentes();
+        atualizarStats();
+        renderizarTabelaGerentes();
+        popularFiltrosRelatorioAdministrador();
+        if (window.location.hash === '#relatorios') abrirRelatorioAdministrador();
+    });
+
+    function popularFiltrosRelatorioAdministrador() {
+        const agenteSelect = document.getElementById('relFiltroAgente');
+        const unidadeSelect = document.getElementById('relFiltroUnidade');
+        if (!agenteSelect || !unidadeSelect) return;
+
+        agenteSelect.innerHTML = '<option value="">Todos os agentes</option>';
+        agentes.forEach(function (agente) {
+            const login = agente.usuario || agente.login;
+            agenteSelect.insertAdjacentHTML('beforeend',
+                '<option value="' + login.replace(/"/g, '&quot;') + '">' +
+                agente.nome + ' (' + login + ')</option>');
+        });
+
+        const unidades = [...new Set(agentes.map(function (agente) {
+            return (agente.unidadeSaude || '').trim();
+        }).filter(Boolean))].sort(function (a, b) {
+            return a.localeCompare(b, 'pt-BR');
+        });
+        unidadeSelect.innerHTML = '<option value="">Todas as unidades</option>';
+        unidades.forEach(function (unidade) {
+            const option = document.createElement('option');
+            option.value = unidade;
+            option.textContent = unidade;
+            unidadeSelect.appendChild(option);
+        });
+    }
+
+    function abrirRelatorioAdministrador() {
+        popularFiltrosRelatorioAdministrador();
+        gerarRelatorioAdministrador();
+        abrirModal('modalRelatorio');
+    }
+
+    document.addEventListener('click', function (event) {
+        const link = event.target.closest('a[href$="admindash.html#relatorios"]');
+        if (!link) return;
+
+        event.preventDefault();
+        history.pushState(null, '', 'admindash.html#relatorios');
+        abrirRelatorioAdministrador();
+    });
+
+    function gerarRelatorioAdministrador() {
+        const filtroAgente = document.getElementById('relFiltroAgente').value;
+        const filtroUnidade = document.getElementById('relFiltroUnidade').value;
+        const filtroDias = parseInt(document.getElementById('relFiltroPeriodo').value) || 0;
+        const agora = new Date();
+        const lista = agentes.filter(function (agente) {
+            return (!filtroAgente || (agente.usuario || agente.login) === filtroAgente) &&
+                (!filtroUnidade || (agente.unidadeSaude || '') === filtroUnidade);
+        });
+        const tbody = document.getElementById('relatorioBody');
+        tbody.innerHTML = '';
+        let totalFamilias = 0;
+        let totalVisitas = 0;
+
+        lista.forEach(function (agente, index) {
+            const login = agente.usuario || agente.login;
+            const familias = JSON.parse(localStorage.getItem(login + '_lista_familias') || '[]');
+            let visitas = JSON.parse(localStorage.getItem(login + '_historico_visitas') || '[]');
+            if (filtroDias > 0) {
+                visitas = visitas.filter(function (visita) {
+                    if (!visita.dataVisita) return false;
+                    const data = visita.dataVisita.includes('/')
+                        ? visita.dataVisita.split('/').reverse().join('-')
+                        : visita.dataVisita;
+                    const diferenca = (agora - new Date(data)) / 86400000;
+                    return diferenca >= 0 && diferenca <= filtroDias;
+                });
+            }
+            totalFamilias += familias.length;
+            totalVisitas += visitas.length;
+            const row = document.createElement('tr');
+            row.innerHTML =
+                '<td>' + String(index + 1).padStart(2, '0') + '</td>' +
+                '<td>' + (agente.nome || '—') + '</td>' +
+                '<td>' + login + '</td>' +
+                '<td>' + (agente.unidadeSaude || '—') + '</td>' +
+                '<td>' + familias.length + '</td>' +
+                '<td>' + visitas.length + '</td>';
+            tbody.appendChild(row);
+        });
+
+        document.getElementById('rel-agentes').textContent = lista.length;
+        document.getElementById('rel-familias').textContent = totalFamilias;
+        document.getElementById('rel-visitas').textContent = totalVisitas;
+    }
+
+    function exportarRelatorioAdministrador() {
+        if (!window.jspdf || !window.jspdf.jsPDF) {
+            showToast('warning', 'Exportação indisponível', 'A biblioteca de PDF ainda não foi carregada.');
+            return;
+        }
+
+        const filtroAgente = document.getElementById('relFiltroAgente').value;
+        const filtroUnidade = document.getElementById('relFiltroUnidade').value;
+        const filtroDias = parseInt(document.getElementById('relFiltroPeriodo').value) || 0;
+        const agora = new Date();
+        const lista = agentes.filter(function (agente) {
+            return (!filtroAgente || (agente.usuario || agente.login) === filtroAgente) &&
+                (!filtroUnidade || (agente.unidadeSaude || '') === filtroUnidade);
+        });
+        const linhas = lista.map(function (agente) {
+            const login = agente.usuario || agente.login;
+            const familias = JSON.parse(localStorage.getItem(login + '_lista_familias') || '[]');
+            let visitas = JSON.parse(localStorage.getItem(login + '_historico_visitas') || '[]');
+            if (filtroDias > 0) {
+                visitas = visitas.filter(function (visita) {
+                    if (!visita.dataVisita) return false;
+                    const data = visita.dataVisita.includes('/')
+                        ? visita.dataVisita.split('/').reverse().join('-')
+                        : visita.dataVisita;
+                    const diferenca = (agora - new Date(data)) / 86400000;
+                    return diferenca >= 0 && diferenca <= filtroDias;
+                });
+            }
+            return [agente.nome || '—', login, agente.unidadeSaude || '—',
+                familias.length, visitas.length];
+        });
+
+        const doc = new window.jspdf.jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+        doc.setFontSize(14);
+        doc.text('Relatório Geral - Agentes de Saúde', 14, 14);
+        doc.setFontSize(9);
+        doc.text('Unidade: ' + (filtroUnidade || 'Todas') + ' | Período: ' +
+            (filtroDias ? 'Últimos ' + filtroDias + ' dias' : 'Todo o período'), 14, 22);
+        doc.autoTable({
+            startY: 28,
+            head: [['Agente', 'Usuário', 'Unidade de Saúde', 'Famílias', 'Visitas']],
+            body: linhas,
+            styles: { fontSize: 8 },
+            headStyles: { fillColor: [16, 158, 163] }
+        });
+        doc.save('relatorio-acs-' + new Date().toLocaleDateString('pt-BR').replace(/\//g, '-') + '.pdf');
+        showToast('success', 'PDF gerado!', 'Relatório exportado em PDF com sucesso.');
+    }
+
+    function carregarGerentes() {
+        const salvos = JSON.parse(localStorage.getItem('gerentes') || '[]');
+        gerentes = [...salvos];
+    }
+
+    function carregarAgentes() {
+        const salvos = JSON.parse(localStorage.getItem('agentesSaude') || '[]');
+        agentes = [...salvos];
+    }
+
+    function atualizarStats() {
+        const admins = gerentes.filter(g => g.tipo === 'administrador').length;
+        document.getElementById('st-total').textContent    = gerentes.length + agentes.length;
+        document.getElementById('st-admins').textContent   = admins;
+        document.getElementById('st-gerentes').textContent = gerentes.length - admins;
+        document.getElementById('st-acs').textContent      = agentes.length;
+    }
+
+    function renderizarTabelaGerentes(filtro = '') {
+        const tbody = document.getElementById('managersBody');
+        tbody.innerHTML = '';
+        const tipoFiltro = document.getElementById('typeFilter').value;
+        const contas = [
+            ...gerentes.map(g => ({ ...g, categoria: g.tipo === 'administrador' ? 'administrador' : 'gerente' })),
+            ...agentes.map(a => ({ ...a, categoria: 'acs' }))
+        ];
+
+        const lista = contas.filter(conta =>
+            (tipoFiltro === 'todos' ||
+             (tipoFiltro === 'gerentes' && conta.categoria === 'gerente') ||
+             (tipoFiltro === 'administradores' && conta.categoria === 'administrador') ||
+             (tipoFiltro === 'acs' && conta.categoria === 'acs')) &&
+            (!filtro || (conta.nome || '').toLowerCase().includes(filtro) ||
+            (conta.usuario || conta.login || '').toLowerCase().includes(filtro) ||
+            (conta.unidadeSaude || '').toLowerCase().includes(filtro))
+        );
+
+        if (lista.length === 0) {
+            document.getElementById('emptyManagers').style.display = 'block';
+            document.getElementById('managersTableWrap').style.display = 'none';
+            return;
+        }
+
+        document.getElementById('emptyManagers').style.display = 'none';
+        document.getElementById('managersTableWrap').style.display = '';
+
+        lista.forEach((g, idx) => {
+            const login = g.usuario || g.login;
+            const tipo = g.categoria;
+            const tipoLabel = tipo === 'administrador' ? 'Administrador' : tipo === 'gerente' ? 'Gerente' : 'ACS';
+            const tr = document.createElement('tr');
+            tr.setAttribute('data-search', `${g.nome} ${login} ${g.unidadeSaude || ''}`);
+            tr.innerHTML = `
+                <td style="color:var(--muted); font-size:0.8rem;">${String(idx + 1).padStart(2,'0')}</td>
+                <td><div class="agent-name">${g.nome}</div></td>
+                <td><span class="agent-login">${login}</span></td>
+                <td><span class="badge badge-role ${tipo === 'administrador' ? 'admin' : 'gerente'}">${tipoLabel}</span></td>
+                <td><span class="badge badge-unit">${g.unidadeSaude || '—'}</span></td>
+                <td style="font-size:0.82rem; color:var(--muted);">${g.dataCadastro || '—'}</td>
+                <td>
+                    <div class="action-group">
+                        <button class="btn btn-success" style="padding:6px 12px; font-size:0.8rem;" onclick="${tipo === 'acs' ? `editarAgente('${login}')` : `editarGerente('${login}')`}">Editar</button>
+                        <button class="btn btn-danger" style="padding:6px 12px; font-size:0.8rem;" onclick="${tipo === 'acs' ? `confirmarExclusaoAgente('${login}')` : `confirmarExclusaoGerente('${login}')`}">Excluir</button>
+                    </div>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function filtrarGerentes() {
+        const v = document.getElementById('searchManagers').value.toLowerCase();
+        renderizarTabelaGerentes(v);
+    }
+
+    function editarAgente(login) {
+        window.location.href = `cadastros.html?editar=${encodeURIComponent(login)}`;
+    }
+
+    function confirmarExclusaoAgente(login) {
+        const agente = agentes.find(a => (a.usuario || a.login) === login);
+        if (!agente) return;
+        document.getElementById('confirmMsg').textContent =
+            `Você está prestes a excluir a conta "${agente.nome}" (usuário: ${login}).`;
+        document.getElementById('confirmDeleteBtn').onclick = function () {
+            const salvos = agentes.filter(a => (a.usuario || a.login) !== login);
+            localStorage.setItem('agentesSaude', JSON.stringify(salvos));
+            carregarAgentes();
+            atualizarStats();
+            renderizarTabelaGerentes(document.getElementById('searchManagers').value.toLowerCase());
+            fecharModal('modalConfirm');
+            showToast('success', 'Conta removida', `Conta "${login}" removida com sucesso.`);
+        };
+        abrirModal('modalConfirm');
+    }
+
+    function editarGerente(login) {
+        window.location.href = `cadastrog.html?editar=${encodeURIComponent(login)}`;
+    }
+
+    function confirmarExclusaoGerente(login) {
+        const g = gerentes.find(x => (x.usuario || x.login) === login);
+        if (!g) return;
+
+        if (login === sessionStorage.getItem('loginGerente')) {
+            showToast('warning', 'Ação não permitida', 'Você não pode excluir a própria conta enquanto estiver logado nela.');
+            return;
+        }
+
+        document.getElementById('confirmMsg').textContent =
+            `Você está prestes a excluir a conta "${g.nome}" (usuário: ${login}).`;
+
+        document.getElementById('confirmDeleteBtn').onclick = function () {
+            excluirGerente(login);
+            fecharModal('modalConfirm');
+        };
+
+        abrirModal('modalConfirm');
+    }
+
+    function excluirGerente(login) {
+        let salvos = JSON.parse(localStorage.getItem('gerentes') || '[]');
+        salvos = salvos.filter(g => (g.usuario || g.login) !== login);
+        localStorage.setItem('gerentes', JSON.stringify(salvos));
+
+        carregarGerentes();
+        atualizarStats();
+        renderizarTabelaGerentes(document.getElementById('searchManagers').value.toLowerCase());
+
+        showToast('success', 'Conta removida', `Conta "${login}" removida com sucesso.`);
+    }
+
+    // ============================================================
+    // HELPERS: MODAL
+    // ============================================================
+    function abrirModal(id) {
+        document.getElementById(id).classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function fecharModal(id) {
+        document.getElementById(id).classList.remove('open');
+        document.body.style.overflow = '';
+        if (id === 'modalRelatorio' && window.location.hash === '#relatorios') {
+            history.replaceState(null, '', 'admindash.html');
+            document.querySelectorAll('.ss-menu-nav a, .ss-bottom-menu a').forEach(function (link) {
+                link.classList.toggle('active', link.getAttribute('href') === 'admindash.html');
+            });
+        }
+    }
+
+    document.querySelectorAll('.modal-overlay').forEach(overlay => {
+        overlay.addEventListener('click', function (e) {
+            if (e.target === overlay) fecharModal(overlay.id);
+        });
+    });
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+            document.querySelectorAll('.modal-overlay.open').forEach(m => fecharModal(m.id));
+        }
+    });
+</script>
+
+</body>
+</html>

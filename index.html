@@ -17,11 +17,51 @@
         .btn-theme:hover { border-color: #109ea3; color: #109ea3; }
         body.dark-mode .btn-theme { border-color: #313b42; color: #9aa7ad; }
         body.dark-mode .btn-theme:hover { border-color: #1ec2c7; color: #1ec2c7; }
+
+        .index-header {
+            position: relative;
+        }
+        .index-header .titulo {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+        }
+
+        @media (max-width: 900px) {
+            .index-header {
+                display: grid !important;
+                grid-template-columns: 1fr !important;
+                justify-items: center;
+                gap: 10px;
+                padding: 14px 16px 12px !important;
+            }
+            .index-header .logo {
+                max-height: 38px !important;
+                margin: 0 auto;
+            }
+            .index-header .titulo {
+                order: 2;
+                flex: none !important;
+                position: static;
+                transform: none;
+                font-size: 1.15rem !important;
+                line-height: 1.15;
+                margin: 0 !important;
+            }
+            .index-header .btn-theme,
+            .index-header .ss-accessibility-controls {
+                order: 3;
+            }
+            .index-header .ss-accessibility-controls {
+                justify-content: center;
+            }
+        }
     </style>
     <script src="ui.js"></script>
 </head>
 <body>
-    <header class="topo-pagina" style="padding: 10px 20px; min-height: auto; height: auto; flex-wrap: wrap; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.95); display: flex;">
+    <header class="topo-pagina index-header" style="padding: 10px 20px; min-height: auto; height: auto; flex-wrap: wrap; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.95); display: flex;">
         <img src="img/semfindo.png" alt="Logo" class="logo" style="max-height: 38px; width: auto;">
         <h1 class="titulo" style="font-family: 'Segoe UI', Arial, sans-serif; font-size: 1.25rem; font-weight: 700; color: #109ea3; letter-spacing: -0.3px; margin: 0; padding: 4px 0; text-align: center; flex: 1;">Sejam Bem-Vindos!</h1>
         <button id="ss-dark-mode-toggle" class="btn-theme" type="button" aria-label="Alternar tema"></button>

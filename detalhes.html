@@ -31,6 +31,11 @@
         .tag-diabetico { background: #e74c3c; } /* Vermelho */
         .tag-gestante { background: #9b59b6; }  /* Roxo */
         .tag-vacina { background: #34495e; }    /* Cinza escuro */
+        .tag-idoso { background: #16a085; }     /* Verde-azulado */
+        .tag-deficiente { background: #2980b9; }/* Azul */
+        .tag-crianca { background: #f39c12; }   /* Amarelo */
+        .tag-tuberculoso { background: #8e44ad; }/* Roxo escuro */
+        .tag-hanseniase { background: #c0392b; }/* Vermelho escuro */
         .tag-normal { background: #27ae60; }    /* Verde */
     </style>
     <link rel="stylesheet" href="ui.css">
@@ -83,6 +88,11 @@
                     if (m.diabetico) tagsHTML += '<span class="tag tag-diabetico">Diabético</span>';
                     if (m.gestante) tagsHTML += '<span class="tag tag-gestante">Gestante</span>';
                     if (m.vacina) tagsHTML += '<span class="tag tag-vacina">Vacina Atrasada</span>';
+                    if (m.idoso) tagsHTML += '<span class="tag tag-idoso">Idoso</span>';
+                    if (m.deficiente) tagsHTML += '<span class="tag tag-deficiente">Deficiente</span>';
+                    if (m.crianca) tagsHTML += '<span class="tag tag-crianca">Criança</span>';
+                    if (m.tuberculoso) tagsHTML += '<span class="tag tag-tuberculoso">Tuberculoso</span>';
+                    if (m.hanseniase) tagsHTML += '<span class="tag tag-hanseniase">Hanseníase</span>';
                     
                     // Se não tiver nada marcado, mostra "Sem observações"
                     if (tagsHTML === '') tagsHTML = '<span class="tag tag-normal">Sem condições específicas</span>';

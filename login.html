@@ -15,10 +15,26 @@
             cursor: pointer; font-family: inherit; transition: all 0.2s; padding: 0;
         }
         .btn-theme:hover { border-color: #109ea3; color: #109ea3; }
+        .login-header {
+            position: relative;
+        }
+        .login-header .titulo {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+        }
+        @media (max-width: 900px) {
+            .login-header .titulo {
+                position: static;
+                transform: none;
+                white-space: normal;
+            }
+        }
     </style>
 </head>
 <body>
-<header class="topo-pagina" style="padding: 10px 20px; min-height: auto; height: auto; flex-wrap: wrap; justify-content: space-between; align-items: center;">
+<header class="topo-pagina login-header" style="padding: 10px 20px; min-height: auto; height: auto; flex-wrap: wrap; justify-content: space-between; align-items: center;">
     <a href="index.html"><img src="img/semfindo.png" alt="Logo" class="logo" style="max-height: 38px; width: auto;"></a>
     <h2 class="titulo" style="font-family: 'Segoe UI', Arial, sans-serif; font-size: 1.25rem; font-weight: 700; color: #109ea3; letter-spacing: -0.3px; margin: 0; padding: 4px 0; text-align: center;">Entre com suas credenciais</h2>
     <div style="display:flex; align-items:center; gap:10px;">
@@ -88,11 +104,33 @@
         <p style="color: #666; margin-bottom: 24px; font-family: Arial, sans-serif; font-size: 0.9rem;">Por favor, identifique-se para continuar</p>
 
         <div style="text-align: left; margin-bottom: 18px;">
-            <label for="senha_gerente_modal" style="display: block; margin-bottom: 6px; font-family: Arial, sans-serif; font-size: 0.9rem; color: #444; font-weight: 600;">Senha do Gerente:</label>
+            <label for="usuario_gerente_modal" style="display: block; margin-bottom: 6px; font-family: Arial, sans-serif; font-size: 0.9rem; color: #444; font-weight: 600;">Usuário:</label>
+            <input
+                type="text"
+                id="usuario_gerente_modal"
+                placeholder="Digite seu usuário"
+                onkeypress="if(event.key==='Enter') document.getElementById('senha_gerente_modal').focus()"
+                style="
+                    width: 100%;
+                    padding: 11px 14px;
+                    border: 1.5px solid #ddd;
+                    border-radius: 7px;
+                    font-size: 0.95rem;
+                    font-family: Arial, sans-serif;
+                    outline: none;
+                    transition: border-color 0.2s;
+                "
+                onfocus="this.style.borderColor='#109ea3'"
+                onblur="this.style.borderColor='#ddd'"
+            >
+        </div>
+
+        <div style="text-align: left; margin-bottom: 18px;">
+            <label for="senha_gerente_modal" style="display: block; margin-bottom: 6px; font-family: Arial, sans-serif; font-size: 0.9rem; color: #444; font-weight: 600;">Senha:</label>
             <input
                 type="password"
                 id="senha_gerente_modal"
-                placeholder="Digite a senha do gerente"
+                placeholder="Digite sua senha"
                 onkeypress="if(event.key==='Enter') verificarGerenteModal()"
                 style="
                     width: 100%;
@@ -110,7 +148,7 @@
         </div>
 
         <div id="erro_gerente_modal" style="color: #e74c3c; font-size: 0.85rem; margin-bottom: 12px; font-family: Arial, sans-serif; display: none;">
-            Senha incorreta! Acesso negado.
+            Usuário ou senha incorretos! Acesso negado.
         </div>
 
         <button onclick="verificarGerenteModal()" style="
@@ -134,13 +172,18 @@
 
 <script src="ui.js"></script>
 <script>
-    const SENHA_GERENTE = 'admin123';
+    // Conta padrão do sistema, usada apenas para o primeiro acesso
+    // (antes de existir qualquer gerente/administrador cadastrado).
+    const gerentesPermitidos = [
+        { login: "admin", senha: "admin123", nome: "Administrador", tipo: "administrador" }
+    ];
 
     function abrirModalGerente() {
         document.getElementById('modalGerente').style.display = 'flex';
+        document.getElementById('usuario_gerente_modal').value = '';
         document.getElementById('senha_gerente_modal').value = '';
         document.getElementById('erro_gerente_modal').style.display = 'none';
-        setTimeout(() => document.getElementById('senha_gerente_modal').focus(), 100);
+        setTimeout(() => document.getElementById('usuario_gerente_modal').focus(), 100);
     }
 
     function fecharModalGerente() {
@@ -148,10 +191,31 @@
     }
 
     function verificarGerenteModal() {
+        const usuario = document.getElementById('usuario_gerente_modal').value.trim();
         const senha = document.getElementById('senha_gerente_modal').value;
-        if (senha === SENHA_GERENTE) {
+
+        // Primeiro verifica os gerentes/administradores cadastrados no localStorage
+        const gerentesCadastrados = JSON.parse(localStorage.getItem('gerentes') || '[]');
+        let gerenteEncontrado = gerentesCadastrados.find(g =>
+            (g.usuario || g.login) === usuario && g.senha === senha
+        );
+
+        // Se não encontrar, verifica na lista padrão do sistema
+        if (!gerenteEncontrado) {
+            gerenteEncontrado = gerentesPermitidos.find(g => g.login === usuario && g.senha === senha);
+        }
+
+        if (gerenteEncontrado) {
+            // Cadastros antigos não tinham o campo "tipo" — tratados como gerente.
+            const tipo = gerenteEncontrado.tipo || 'gerente';
+
             sessionStorage.setItem('gerenteAutenticado', 'true');
-            window.location.href = 'gerentedash.html';
+            sessionStorage.setItem('tipoAcesso', tipo);
+            sessionStorage.setItem('nomeGerente', gerenteEncontrado.nome || gerenteEncontrado.usuario || gerenteEncontrado.login);
+            sessionStorage.setItem('loginGerente', gerenteEncontrado.usuario || gerenteEncontrado.login);
+            sessionStorage.setItem('unidadeGerente', gerenteEncontrado.unidadeSaude || '');
+
+            window.location.href = tipo === 'administrador' ? 'admindash.html' : 'gerentedash.html';
         } else {
             document.getElementById('erro_gerente_modal').style.display = 'block';
             document.getElementById('senha_gerente_modal').value = '';

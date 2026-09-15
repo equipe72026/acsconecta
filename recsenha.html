@@ -43,6 +43,30 @@
         body.dark-mode .btn-theme { border-color: #313b42; color: #9aa7ad; }
         body.dark-mode .btn-theme:hover { border-color: #1ec2c7; color: #1ec2c7; }
         .header-actions { display: flex; align-items: center; gap: 10px; }
+        .recuperacao-header .titulo {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: 'Segoe UI', Arial, sans-serif;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #109ea3;
+            letter-spacing: -0.3px;
+            margin: 0;
+            padding: 4px 0;
+            text-align: center;
+            white-space: nowrap;
+        }
+        @media (max-width: 900px) {
+            .recuperacao-header .titulo {
+                position: static;
+                transform: none;
+                font-size: 1.15rem;
+                line-height: 1.15;
+                margin: 0;
+                white-space: normal;
+            }
+        }
         .container-recuperacao {
             display: flex;
             justify-content: center;
@@ -146,7 +170,7 @@
 <body>
     <script src="ui.js"></script>
 
-    <header class="topo-pagina" style="padding: 10px 20px; min-height: auto; height: auto; flex-wrap: wrap; justify-content: space-between; align-items: center;">
+    <header class="topo-pagina recuperacao-header" style="padding: 10px 20px; min-height: auto; height: auto; flex-wrap: wrap; justify-content: space-between; align-items: center; position: relative;">
         <a href="acsarea.html"><img src="img/semfindo.png" alt="Logo" class="logo" style="max-height: 38px; width: auto;"></a>
         <h2 class="titulo">Recuperação de Acesso</h2>
         <div class="header-actions">

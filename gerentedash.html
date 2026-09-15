@@ -99,65 +99,6 @@
         body.dark-mode .btn-outline:hover { background: var(--teal-light); }
 
         /* =============================================
-           HEADER
-        ============================================= */
-        .header {
-            background: var(--white);
-            border-bottom: 3px solid var(--teal);
-            padding: 0 40px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            height: 72px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .header-logo {
-            height: 52px;
-            width: auto;
-        }
-
-        .header-title {
-            font-size: 1.4rem;
-            font-weight: 700;
-            color: var(--teal);
-            letter-spacing: -0.3px;
-        }
-
-        .header-title span {
-            font-weight: 400;
-            color: var(--muted);
-            font-size: 1rem;
-        }
-
-        .btn-back {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            text-decoration: none;
-            background: var(--teal);
-            color: white;
-            padding: 9px 20px;
-            border-radius: 50px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            transition: background 0.2s, transform 0.2s;
-        }
-        .btn-back:hover { background: var(--teal-dark); transform: translateY(-1px); }
-
-        .btn-theme {
-            display: inline-flex; align-items: center; justify-content: center;
-            background: transparent; border: 1.5px solid var(--border);
-            color: var(--muted); width: 38px; height: 38px; border-radius: 50%;
-            cursor: pointer; font-family: inherit; transition: all 0.2s; padding: 0;
-        }
-        .btn-theme:hover { border-color: var(--teal); color: var(--teal); }
-        .header-actions { display: flex; align-items: center; gap: 10px; }
-
-        /* =============================================
            LAYOUT
         ============================================= */
         .page {
@@ -187,17 +128,17 @@
             gap: 6px;
         }
 
-        .stat-card.red   { border-top-color: var(--red); }
-        .stat-card.green { border-top-color: var(--green); }
-        .stat-card.amber { border-top-color: var(--amber); }
-        .stat-card.purple{ border-top-color: var(--purple); }
+        .stat-card.red,
+        .stat-card.green,
+        .stat-card.amber,
+        .stat-card.purple { border-top-color: var(--teal); }
 
         .stat-label { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.8px; color: var(--muted); font-weight: 600; }
         .stat-value { font-size: 2rem; font-weight: 700; color: var(--teal); line-height: 1; }
-        .stat-card.red   .stat-value { color: var(--red); }
-        .stat-card.green .stat-value { color: var(--green); }
-        .stat-card.amber .stat-value { color: var(--amber); }
-        .stat-card.purple .stat-value { color: var(--purple); }
+        .stat-card.red   .stat-value,
+        .stat-card.green .stat-value,
+        .stat-card.amber .stat-value,
+        .stat-card.purple .stat-value { color: var(--teal); }
 
         /* =============================================
            SECTION HEADER
@@ -487,6 +428,149 @@
         }
 
         /* =============================================
+           MODAL: REPORTS - VISUAL
+        ============================================= */
+        #modalRelatorio .modal-box {
+            max-width: 900px !important;
+            border: 1px solid rgba(16,158,163,0.25);
+        }
+
+        #modalRelatorio .modal-header {
+            background: var(--card) !important;
+            color: var(--text);
+            padding: 22px 26px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        #modalRelatorio .modal-header h3 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text);
+            font-size: 1.15rem;
+        }
+
+        #modalRelatorio .modal-header h3::first-letter {
+            color: var(--teal);
+        }
+
+        #modalRelatorio .modal-close {
+            background: transparent;
+            color: var(--muted);
+            font-size: 1.35rem;
+        }
+
+        #modalRelatorio .modal-close:hover {
+            background: var(--teal-light);
+            color: var(--teal);
+        }
+
+        .report-toolbar {
+            display: grid;
+            grid-template-columns: minmax(190px, 1fr) minmax(180px, 1fr) auto;
+            gap: 12px;
+            align-items: end;
+            padding: 16px;
+            margin-bottom: 18px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: var(--teal-light);
+        }
+
+        .report-field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .report-field label {
+            color: var(--muted);
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.7px;
+            text-transform: uppercase;
+        }
+
+        .report-field select {
+            width: 100%;
+            min-height: 42px;
+            padding: 9px 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--card);
+            color: var(--text);
+            font: inherit;
+        }
+
+        .report-export {
+            min-height: 42px;
+            justify-content: center;
+            background: var(--red);
+        }
+
+        .report-summary {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .report-summary .stat-card {
+            padding: 15px 16px;
+            border-top-width: 3px;
+        }
+
+        .report-summary .stat-value {
+            font-size: 1.65rem;
+        }
+
+        .report-table-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 4px 0 10px;
+            color: var(--text);
+            font-size: 0.95rem;
+            font-weight: 700;
+        }
+
+        .report-table-title::before {
+            content: '';
+            width: 4px;
+            height: 18px;
+            border-radius: 4px;
+            background: var(--teal);
+        }
+
+        .report-footer {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 18px;
+        }
+
+        .report-footer .btn {
+            min-width: 150px;
+            justify-content: center;
+            background: var(--teal-light);
+            color: var(--teal-dark);
+        }
+
+        body.dark-mode #modalRelatorio .report-toolbar {
+            background: rgba(19,59,60,0.45);
+        }
+
+        @media (max-width: 700px) {
+            .report-toolbar,
+            .report-summary {
+                grid-template-columns: 1fr;
+            }
+
+            #modalRelatorio .modal-body {
+                padding: 18px;
+            }
+        }
+
+        /* =============================================
            TABS
         ============================================= */
         .modal-tabs {
@@ -548,8 +632,6 @@
            RESPONSIVE
         ============================================= */
         @media (max-width: 700px) {
-            .header { padding: 0 16px; }
-            .header-title { font-size: 1rem; }
             .page { margin: 16px auto; }
             .stats-bar { grid-template-columns: 1fr 1fr; }
             table { font-size: 0.8rem; }
@@ -585,7 +667,7 @@
 
         /* ── Print ── */
         @media print {
-            .header, .section-header .btn, .btn-back,
+            .section-header .btn,
             #relFiltroAgente, #relFiltroPeriodo { display: none !important; }
             .page { margin: 0; padding: 0; }
             body { background: white !important; }
@@ -596,17 +678,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 </head>
-<body>
-
-<!-- HEADER -->
-<header class="header">
-    <a href="index.html"><img src="img/semfindo.png" alt="Logo" class="header-logo"></a>
-    <div class="header-title">Painel do Gerente <span>/ SevenSys</span></div>
-    <div class="header-actions">
-        <button type="button" class="btn-theme" data-theme-toggle aria-label="Alternar tema"></button>
-        <a href="index.html" class="btn-back">← Sair</a>
-    </div>
-</header>
+<body class="gerente-page gerente-dashboard">
 
 <!-- PAGE CONTENT -->
 <div class="page">
@@ -636,8 +708,6 @@
         <div class="section-title">Agentes de Saúde</div>
         <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
             <input type="text" class="search-input" id="searchAgents" placeholder="🔍 Buscar agente..." oninput="filtrarAgentes()">
-            <button class="btn btn-success" onclick="abrirRelatorioGeral()">📊 Relatórios Gerais</button>
-            <a href="cadastros.html" class="btn btn-primary">+ Cadastrar Agente</a>
         </div>
     </div>
 
@@ -663,7 +733,6 @@
     <div id="emptyAgents" class="empty-state" style="display:none;">
         <div style="font-size:3rem;">👤</div>
         <p>Nenhum agente cadastrado ainda.</p>
-        <a href="cadastros.html" class="btn btn-primary" style="margin-top:14px; display:inline-flex;">+ Cadastrar primeiro agente</a>
     </div>
 
 </div>
@@ -673,31 +742,35 @@
      MODAL: RELATÓRIOS GERAIS
 ============================================================ -->
 <div class="modal-overlay" id="modalRelatorio">
-    <div class="modal-box" style="max-width:900px;">
-        <div class="modal-header" style="background: var(--green);">
+    <div class="modal-box report-modal">
+        <div class="modal-header">
             <h3>📊 Relatórios Gerais</h3>
             <button class="modal-close" onclick="fecharModal('modalRelatorio')">✕</button>
         </div>
         <div class="modal-body">
 
             <!-- Filtros -->
-            <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:20px;">
-                <select id="relFiltroAgente" class="report-search" style="flex:none; width:auto;" onchange="gerarRelatorio()">
-                    <option value="">Todos os agentes</option>
-                </select>
-                <select id="relFiltroPeriodo" class="report-search" style="flex:none; width:auto;" onchange="gerarRelatorio()">
-                    <option value="">Todo o período</option>
-                    <option value="7">Últimos 7 dias</option>
-                    <option value="30">Últimos 30 dias</option>
-                    <option value="90">Últimos 90 dias</option>
-                </select>
-                <div style="margin-left:auto; display:flex; gap:8px; flex-wrap:wrap;">
-                    <button class="btn btn-danger" onclick="exportarPDF()">📄 Exportar PDF</button>
+            <div class="report-toolbar">
+                <div class="report-field">
+                    <label for="relFiltroAgente">Filtrar por agente</label>
+                    <select id="relFiltroAgente" onchange="gerarRelatorio()">
+                        <option value="">Todos os agentes</option>
+                    </select>
                 </div>
+                <div class="report-field">
+                    <label for="relFiltroPeriodo">Período da análise</label>
+                    <select id="relFiltroPeriodo" onchange="gerarRelatorio()">
+                        <option value="">Todo o período</option>
+                        <option value="7">Últimos 7 dias</option>
+                        <option value="30">Últimos 30 dias</option>
+                        <option value="90">Últimos 90 dias</option>
+                    </select>
+                </div>
+                <button class="btn report-export" onclick="exportarPDF()">📄 Exportar PDF</button>
             </div>
 
             <!-- Cards de resumo -->
-            <div class="stats-bar" style="margin-bottom:20px;">
+            <div class="report-summary">
                 <div class="stat-card">
                     <div class="stat-label">Agentes no filtro</div>
                     <div class="stat-value" id="rel-agentes" style="color:var(--teal);">—</div>
@@ -710,25 +783,19 @@
                     <div class="stat-label">Visitas realizadas</div>
                     <div class="stat-value" id="rel-visitas" style="color:var(--amber);">—</div>
                 </div>
-                <div class="stat-card purple">
-                    <div class="stat-label">Média visitas/agente</div>
-                    <div class="stat-value" id="rel-media" style="color:var(--purple);">—</div>
-                </div>
             </div>
 
             <!-- Tabela -->
+            <div class="report-table-title">Desempenho dos agentes</div>
             <div class="table-wrap" id="relatorioWrap" style="overflow-x:auto;">
                 <table id="relatorioTable" style="min-width:640px;">
                     <thead>
                         <tr>
-                            <th>#</th>
                             <th>Agente</th>
                             <th>Usuário</th>
                             <th>Unidade de Saúde</th>
                             <th>Famílias</th>
                             <th>Visitas</th>
-                            <th>Pendentes</th>
-                            <th>Cobertura</th>
                         </tr>
                     </thead>
                     <tbody id="relatorioBody"></tbody>
@@ -738,6 +805,9 @@
                 📋 Nenhum dado disponível para o filtro selecionado.
             </div>
 
+            <div class="report-footer">
+                <button class="btn" onclick="fecharModal('modalRelatorio')">Fechar</button>
+            </div>
         </div>
     </div>
 </div>
@@ -793,7 +863,7 @@
         </div>
         <div class="modal-body">
             <p style="margin-bottom:16px; font-size:0.95rem; color:#444;" id="confirmMsg"></p>
-            <p style="font-size:0.85rem; color:var(--muted); margin-bottom:24px;">
+            <p style="font-size:0.85rem; color:var(--muted); margin-bottom:24px;" id="confirmWarning">
                 ⚠️ Todos os dados deste agente — incluindo famílias cadastradas, histórico de visitas e indicadores — serão <strong>permanentemente removidos</strong>.
             </p>
             <div style="display:flex; gap:12px; justify-content:flex-end;">
@@ -807,10 +877,29 @@
 
 <script>
     // ============================================================
+    // GUARDA DE ACESSO — só gerentes autenticados entram aqui
+    // ============================================================
+    if (sessionStorage.getItem('gerenteAutenticado') !== 'true') {
+        window.location.href = 'login.html';
+    }
+
+    // ============================================================
     // DADOS & ESTADO
     // ============================================================
     let agentes = [];
     let agenteAtivo = null;
+    const acessoAdministrador = sessionStorage.getItem('tipoAcesso') === 'administrador';
+
+    function obterUnidadeGerente() {
+        if (acessoAdministrador) return '';
+        const unidadeSessao = sessionStorage.getItem('unidadeGerente');
+        if (unidadeSessao) return unidadeSessao;
+
+        const login = sessionStorage.getItem('loginGerente');
+        const gerentes = JSON.parse(localStorage.getItem('gerentes') || '[]');
+        const gerente = gerentes.find(g => (g.usuario || g.login) === login);
+        return gerente ? (gerente.unidadeSaude || '') : '';
+    }
 
     // ============================================================
     // INICIALIZAÇÃO
@@ -820,6 +909,7 @@
         atualizarStats();
         renderizarTabela();
         popularFiltroAgentes();
+        if (window.location.hash === '#relatorios') abrirRelatorioGeral();
     });
 
     function abrirRelatorioGeral() {
@@ -827,9 +917,21 @@
         abrirModal('modalRelatorio');
     }
 
+    document.addEventListener('click', function (event) {
+        const link = event.target.closest('a[href$="gerentedash.html#relatorios"]');
+        if (!link) return;
+
+        event.preventDefault();
+        history.replaceState(null, '', 'gerentedash.html#relatorios');
+        abrirRelatorioGeral();
+    });
+
     function carregarAgentes() {
         const salvos = JSON.parse(localStorage.getItem('agentesSaude') || '[]');
-        agentes = [...salvos];
+        const unidadeGerente = obterUnidadeGerente();
+        agentes = acessoAdministrador
+            ? [...salvos]
+            : salvos.filter(ag => unidadeGerente && ag.unidadeSaude === unidadeGerente);
     }
 
     // ============================================================
@@ -1089,6 +1191,8 @@
 
         document.getElementById('confirmMsg').textContent =
             `Você está prestes a excluir o agente "${ag.nome}" (usuário: ${login}).`;
+        document.getElementById('confirmWarning').innerHTML =
+            '⚠️ Todos os dados deste agente — incluindo famílias cadastradas, histórico de visitas e indicadores — serão <strong>permanentemente removidos</strong>.';
 
         document.getElementById('confirmDeleteBtn').onclick = function () {
             excluirAgente(login);
@@ -1134,6 +1238,7 @@
             opt.textContent = ag.nome + ' (' + login + ')';
             sel.appendChild(opt);
         });
+
     }
 
     function gerarRelatorio() {
@@ -1141,9 +1246,9 @@
         const filtroDias    = parseInt(document.getElementById('relFiltroPeriodo').value) || 0;
         const agora         = new Date();
 
-        const lista = filtroAgente
-            ? agentes.filter(ag => (ag.usuario || ag.login) === filtroAgente)
-            : agentes;
+        const lista = agentes.filter(ag =>
+            (!filtroAgente || (ag.usuario || ag.login) === filtroAgente)
+        );
 
         const tbody = document.getElementById('relatorioBody');
         tbody.innerHTML = '';
@@ -1170,17 +1275,10 @@
 
             const nVisitas  = historico.length;
             const nFamilias = familias.length;
-            const pendentes = familias.filter(f =>
-                !historico.some(v => v.endereco && f.endereco &&
-                    v.endereco.trim().toLowerCase() === f.endereco.trim().toLowerCase())
-            ).length;
-            const cobertura = nFamilias > 0 ? Math.round((nFamilias - pendentes) / nFamilias * 100) : 0;
-            const corClass  = cobertura >= 75 ? '' : cobertura >= 40 ? 'mid' : 'low';
-
             totalFamilias += nFamilias;
             totalVisitas  += nVisitas;
 
-            return { ag, login, nFamilias, nVisitas, pendentes, cobertura, corClass, idx };
+            return { ag, login, nFamilias, nVisitas, idx };
         });
 
         // Ordena por visitas (maior primeiro)
@@ -1197,19 +1295,11 @@
         linhas.forEach((r, rank) => {
             const tr = document.createElement('tr');
             tr.innerHTML = `
-                <td style="color:var(--muted); font-size:0.8rem;">${String(rank + 1).padStart(2,'0')}</td>
                 <td><div class="agent-name">${r.ag.nome}</div></td>
                 <td><span class="agent-login">${r.login}</span></td>
                 <td><span class="badge badge-unit">${r.ag.unidadeSaude || '—'}</span></td>
                 <td style="font-weight:700; color:var(--teal);">${r.nFamilias}</td>
                 <td style="font-weight:700; color:var(--green);">${r.nVisitas}</td>
-                <td style="font-weight:700; color:var(--red);">${r.pendentes}</td>
-                <td>
-                    <div class="coverage-label" style="color:${r.corClass === '' ? 'var(--green)' : r.corClass === 'mid' ? 'var(--amber)' : 'var(--red)'};">${r.cobertura}%</div>
-                    <div class="coverage-bar-wrap">
-                        <div class="coverage-bar-fill ${r.corClass}" style="width:${r.cobertura}%"></div>
-                    </div>
-                </td>
             `;
             tbody.appendChild(tr);
         });
@@ -1219,9 +1309,6 @@
         document.getElementById('rel-agentes').textContent  = nAgentes;
         document.getElementById('rel-familias').textContent = totalFamilias;
         document.getElementById('rel-visitas').textContent  = totalVisitas;
-        document.getElementById('rel-media').textContent    = nAgentes > 0
-            ? (totalVisitas / nAgentes).toFixed(1)
-            : '0';
     }
 
     function exportarPDF() {
@@ -1233,9 +1320,9 @@
         const agora        = new Date();
         const dataAtual    = agora.toLocaleDateString('pt-BR');
 
-        const lista = filtroAgente
-            ? agentes.filter(ag => (ag.usuario || ag.login) === filtroAgente)
-            : agentes;
+        const lista = agentes.filter(ag =>
+            (!filtroAgente || (ag.usuario || ag.login) === filtroAgente)
+        );
 
         // Coleta dados
         const linhas = [];
@@ -1259,16 +1346,9 @@
 
             const nFamilias = familias.length;
             const nVisitas  = historico.length;
-            const pendentes = familias.filter(f =>
-                !historico.some(v => v.endereco && f.endereco &&
-                    v.endereco.trim().toLowerCase() === f.endereco.trim().toLowerCase())
-            ).length;
-            const cobertura = nFamilias > 0 ? Math.round((nFamilias - pendentes) / nFamilias * 100) : 0;
-
             totalFamilias += nFamilias;
             totalVisitas  += nVisitas;
-            linhas.push([ag.nome, login, ag.unidadeSaude || '—', ag.matricula || '—',
-                         nFamilias, nVisitas, pendentes, cobertura + '%']);
+            linhas.push([ag.nome, login, ag.unidadeSaude || '—', nFamilias, nVisitas]);
         });
 
         // Ordenar por visitas (maior primeiro)
@@ -1290,32 +1370,21 @@
         doc.setFontSize(9);
         const periodo = filtroDias > 0 ? 'Últimos ' + filtroDias + ' dias' : 'Todo o período';
         const agenteFiltro = filtroAgente || 'Todos';
-        doc.text('Agente: ' + agenteFiltro + '   |   Período: ' + periodo +
+        doc.text('Agente: ' + agenteFiltro + '   |   Unidade: ' + (obterUnidadeGerente() || 'Todas') + '   |   Período: ' + periodo +
                  '   |   Total famílias: ' + totalFamilias + '   |   Total visitas: ' + totalVisitas,
                  14, 30);
 
         // Tabela
         doc.autoTable({
             startY: 35,
-            head: [['#', 'Agente', 'Usuário', 'Unidade de Saúde', 'Matrícula', 'Famílias', 'Visitas', 'Pendentes', 'Cobertura']],
-            body: linhas.map((r, i) => [String(i + 1).padStart(2, '0'), ...r]),
+            head: [['Agente', 'Usuário', 'Unidade de Saúde', 'Famílias', 'Visitas']],
+            body: linhas,
             styles: { fontSize: 8, cellPadding: 3, overflow: 'linebreak' },
             headStyles: { fillColor: [39, 174, 96], textColor: 255, fontStyle: 'bold' },
             alternateRowStyles: { fillColor: [240, 249, 244] },
             columnStyles: {
-                0: { cellWidth: 10, halign: 'center' },
-                5: { halign: 'center' },
-                6: { halign: 'center' },
-                7: { halign: 'center' },
-                8: { halign: 'center' }
-            },
-            didParseCell: function(data) {
-                if (data.column.index === 8 && data.section === 'body') {
-                    const val = parseInt(data.cell.raw);
-                    if (val >= 75)      data.cell.styles.textColor = [39, 174, 96];
-                    else if (val >= 40) data.cell.styles.textColor = [243, 156, 18];
-                    else                data.cell.styles.textColor = [231, 76, 60];
-                }
+                3: { halign: 'center' },
+                4: { halign: 'center' }
             },
             margin: { left: 14, right: 14 }
         });
@@ -1346,6 +1415,12 @@
     function fecharModal(id) {
         document.getElementById(id).classList.remove('open');
         document.body.style.overflow = '';
+        if (id === 'modalRelatorio' && window.location.hash === '#relatorios') {
+            history.replaceState(null, '', 'gerentedash.html');
+            document.querySelectorAll('.ss-menu-nav a, .ss-bottom-menu a').forEach(function (link) {
+                link.classList.toggle('active', link.getAttribute('href') === 'gerentedash.html');
+            });
+        }
     }
 
     // Fechar modal clicando fora
