@@ -171,6 +171,7 @@
 </div>
 
 <script src="ui.js"></script>
+<script src="auth2fa.js"></script>
 <script>
     // Conta padrão do sistema, usada apenas para o primeiro acesso
     // (antes de existir qualquer gerente/administrador cadastrado).
@@ -209,13 +210,23 @@
             // Cadastros antigos não tinham o campo "tipo" — tratados como gerente.
             const tipo = gerenteEncontrado.tipo || 'gerente';
 
-            sessionStorage.setItem('gerenteAutenticado', 'true');
-            sessionStorage.setItem('tipoAcesso', tipo);
-            sessionStorage.setItem('nomeGerente', gerenteEncontrado.nome || gerenteEncontrado.usuario || gerenteEncontrado.login);
-            sessionStorage.setItem('loginGerente', gerenteEncontrado.usuario || gerenteEncontrado.login);
-            sessionStorage.setItem('unidadeGerente', gerenteEncontrado.unidadeSaude || '');
+            fecharModalGerente();
+            SS2FA.verificar(gerenteEncontrado, tipo, {
+                onSucesso: function () {
+                    // Limpa qualquer sessão anterior (ex: agente ACS logado antes
+                    // neste navegador) para não deixar flags de outro perfil "presas".
+                    sessionStorage.clear();
+                    // A sessão só é criada depois que o 2FA é aprovado
+                    sessionStorage.setItem('gerenteAutenticado', 'true');
+                    sessionStorage.setItem('tipoAcesso', tipo);
+                    sessionStorage.setItem('nomeGerente', gerenteEncontrado.nome || gerenteEncontrado.usuario || gerenteEncontrado.login);
+                    sessionStorage.setItem('loginGerente', gerenteEncontrado.usuario || gerenteEncontrado.login);
+                    sessionStorage.setItem('unidadeGerente', gerenteEncontrado.unidadeSaude || '');
 
-            window.location.href = tipo === 'administrador' ? 'admindash.html' : 'gerentedash.html';
+                    window.location.href = tipo === 'administrador' ? 'admindash.html' : 'gerentedash.html';
+                },
+                onCancelar: function () { /* volta para a tela de login */ }
+            });
         } else {
             document.getElementById('erro_gerente_modal').style.display = 'block';
             document.getElementById('senha_gerente_modal').value = '';
@@ -257,17 +268,24 @@
         }
 
         if (usuarioEncontrado) {
-            // SALVANDO OS DADOS NA SESSÃO
-            sessionStorage.setItem('nomeUsuario', usuarioEncontrado.nome);
-            // Usar 'usuario' se for do localStorage, ou 'login' se for da lista hardcoded
-            sessionStorage.setItem('loginUsuario', usuarioEncontrado.usuario || usuarioEncontrado.login);
-            
-            console.log("Acesso autorizado para:", usuarioEncontrado.usuario || usuarioEncontrado.login);
+            SS2FA.verificar(usuarioEncontrado, 'agente', {
+                onSucesso: function () {
+                    // Limpa qualquer sessão anterior (ex: gerente/administrador logado
+                    // antes neste navegador) para não deixar flags de outro perfil "presas".
+                    sessionStorage.clear();
+                    // A sessão só é criada depois que o 2FA é aprovado
+                    sessionStorage.setItem('nomeUsuario', usuarioEncontrado.nome);
+                    // Usar 'usuario' se for do localStorage, ou 'login' se for da lista hardcoded
+                    sessionStorage.setItem('loginUsuario', usuarioEncontrado.usuario || usuarioEncontrado.login);
 
-            showToast('success', 'Bem-vindo', 'Olá, ' + usuarioEncontrado.nome + '!');
-            
-            // REDIRECIONAMENTO ÚNICO
-            setTimeout(() => window.location.href = "acsarea.html", 700);
+                    showToast('success', 'Bem-vindo', 'Olá, ' + usuarioEncontrado.nome + '!');
+                    setTimeout(() => window.location.href = "acsarea.html", 700);
+                },
+                onCancelar: function () {
+                    form.reset();
+                    document.getElementById('ilogin').focus();
+                }
+            });
         } else {
             showToast('error', 'Falha no login', 'Usuário ou senha incorretos.');
         }

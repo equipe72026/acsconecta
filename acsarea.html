@@ -129,6 +129,145 @@
             .dashboard-cards > .card-link { width: 100% !important; }
         }
     </style>
+    <style>
+        /* ══ Funções portadas do painel do 2.0 (Consultas, Relatórios, Opções) ══
+           Visual do 1.0: teal #109ea3, cards brancos com borda superior,
+           modais no padrão de familiascadastradas.html e modo escuro por body.dark-mode. */
+        .ac-unidade { color: #7f8c8d; font-size: .85rem; margin: 6px 0 0; }
+        body.dark-mode .ac-unidade { color: #9aa7ad; }
+        .ac-quick { width: min(1000px, calc(100% - 40px)); margin: 0 auto 26px; box-sizing: border-box; }
+        .ac-quick h2 { font-size: 1.05rem; color: #2c3e50; margin: 0 0 12px; font-weight: 700; }
+        .ac-quick-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(175px, 1fr)); gap: 12px; }
+        .ac-quick-btn {
+            display: flex; align-items: center; gap: 10px; padding: 14px 16px;
+            background: rgba(255,255,255,0.96); border: 1px solid #e2eaed; border-left: 4px solid #109ea3;
+            border-radius: 12px; color: #2c3e50; font-weight: 700; font-size: .9rem; text-align: left;
+            cursor: pointer; text-decoration: none; font-family: inherit;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06); transition: transform .2s, box-shadow .2s;
+        }
+        .ac-quick-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(15,23,42,0.1); }
+
+        .ac-overlay {
+            display: none; position: fixed; inset: 0; z-index: 900; padding: 24px;
+            background: rgba(15,23,42,0.62); backdrop-filter: blur(4px);
+            justify-content: center; align-items: flex-start; overflow-y: auto;
+        }
+        .ac-overlay.open { display: flex; }
+        .ac-modal {
+            background: #fff; color: #2c3e50; width: min(100%, 820px); margin: auto;
+            border-radius: 18px; padding: 26px; box-sizing: border-box;
+            box-shadow: 0 20px 60px rgba(15,23,42,0.25); text-align: left;
+        }
+        .ac-modal-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 18px; }
+        .ac-modal-top h3 { margin: 0; font-size: 1.2rem; color: #2c3e50; }
+        .ac-sub { color: #7f8c8d; font-size: .82rem; margin-top: 5px; }
+        .ac-x { border: 0; background: #eef4f5; color: #587078; border-radius: 50%; width: 32px; height: 32px; cursor: pointer; font-size: 1.1rem; flex-shrink: 0; }
+
+        .ac-btn { border: none; padding: 10px 16px; border-radius: 8px; font-weight: 700; font-size: .85rem; cursor: pointer; font-family: inherit; transition: transform .2s, opacity .2s; }
+        .ac-btn:hover { transform: translateY(-1px); opacity: .92; }
+        .ac-primary { background: #109ea3; color: #fff; }
+        .ac-green   { background: #27ae60; color: #fff; }
+        .ac-red     { background: #e74c3c; color: #fff; }
+        .ac-ghost   { background: #e6f7f7; color: #0b777a; border: 1px solid #b2e5e7; }
+        .ac-actions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; margin-top: 14px; }
+
+        .ac-filtros { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+        .ac-pill { border: 1px solid #dde4e6; background: #fff; color: #587078; padding: 8px 14px; border-radius: 50px; font-weight: 700; font-size: .8rem; cursor: pointer; font-family: inherit; }
+        .ac-pill.on { background: #109ea3; border-color: #109ea3; color: #fff; }
+        .ac-pill.on.warn { background: #f39c12; border-color: #f39c12; }
+        .ac-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
+        .ac-stat { border: 1px solid #e2eaed; border-top: 3px solid #109ea3; border-radius: 12px; padding: 12px; text-align: center; background: #fbfdfd; }
+        .ac-stat b { display: block; font-size: 1.5rem; color: #109ea3; }
+        .ac-stat span { font-size: .72rem; text-transform: uppercase; letter-spacing: .5px; color: #7f8c8d; font-weight: 700; }
+
+        .ac-field { display: flex; flex-direction: column; gap: 5px; margin-bottom: 12px; }
+        .ac-field label { font-size: .75rem; font-weight: 700; text-transform: uppercase; letter-spacing: .6px; color: #7f8c8d; }
+        .ac-field input, .ac-field select, .ac-field textarea {
+            padding: 10px 12px; border: 1.5px solid #dde4e6; border-radius: 8px; font-size: .9rem;
+            font-family: inherit; background: #fff; color: #2c3e50; width: 100%; box-sizing: border-box;
+        }
+        .ac-field input:focus, .ac-field select:focus, .ac-field textarea:focus { outline: none; border-color: #109ea3; box-shadow: 0 0 0 3px rgba(16,158,163,0.12); }
+        .ac-field input:disabled { opacity: .6; cursor: not-allowed; }
+        .ac-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; }
+        .ac-pw { position: relative; }
+        .ac-pw input { padding-right: 44px; }
+        .ac-pw button { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); border: 0; background: transparent; cursor: pointer; font-size: 1rem; padding: 4px 8px; }
+
+        .ac-form { border: 1px solid #b2e5e7; background: #f4fbfb; border-radius: 14px; padding: 18px; margin-bottom: 16px; display: none; }
+        .ac-form h4 { margin: 0 0 4px; color: #0b777a; font-size: 1rem; }
+
+        .ac-fam { border: 1px solid #e2eaed; border-top: 4px solid #109ea3; border-radius: 14px; padding: 16px; margin-bottom: 14px; background: #fff; }
+        .ac-fam-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; flex-wrap: wrap; }
+        .ac-fam-head strong { color: #2c3e50; font-size: 1rem; }
+        .ac-fam-end { color: #667780; font-size: .82rem; margin: 6px 0 12px; }
+        .ac-mems { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 10px; }
+        .ac-mem { border: 1px solid #e8eef0; border-radius: 12px; padding: 12px; background: #fbfdfd; display: flex; flex-direction: column; gap: 8px; }
+        .ac-mem-top { display: flex; justify-content: space-between; gap: 8px; align-items: flex-start; }
+        .ac-mem-top strong { color: #2c3e50; font-size: .9rem; }
+        .ac-mem small { display: block; color: #7f8c8d; font-size: .75rem; margin-top: 2px; }
+        .ac-mem-btns { display: flex; gap: 8px; }
+        .ac-mem-btns .ac-btn { flex: 1; }
+        .ac-mem > .ac-btn { width: 100%; }
+        .ac-badge { display: inline-block; padding: 3px 9px; border-radius: 20px; font-size: .68rem; font-weight: 700; text-transform: uppercase; white-space: nowrap; }
+        .ac-ok   { background: rgba(39,174,96,.14); color: #1e8449; }
+        .ac-warn { background: rgba(243,156,18,.16); color: #b9770e; }
+        .ac-det { border: 1px dashed #dde4e6; border-radius: 8px; padding: 8px 10px; font-size: .78rem; color: #667780; display: flex; flex-direction: column; gap: 3px; }
+        .ac-det-ok { border: 1px solid rgba(39,174,96,.35); background: rgba(39,174,96,.06); }
+        .ac-det-ok strong { color: #1e8449; }
+        .ac-vazio { text-align: center; color: #667780; padding: 28px 10px; font-size: .9rem; }
+
+        .ac-rel { border: 1px solid #e2eaed; border-left: 4px solid #109ea3; border-radius: 14px; padding: 18px; margin-bottom: 14px; background: #fbfdfd; }
+        .ac-rel h4 { margin: 0 0 4px; color: #2c3e50; font-size: 1rem; }
+        .ac-prev { display: none; margin-top: 12px; border-top: 1px solid #e8eef0; padding-top: 10px; font-size: .85rem; max-height: 220px; overflow-y: auto; }
+        .ac-prev p { margin: 0 0 8px; font-weight: 700; color: #0b777a; }
+        .ac-li { display: flex; justify-content: space-between; gap: 10px; padding: 6px 0; border-bottom: 1px solid #eef2f3; color: #44545b; }
+        .ac-li b { color: #109ea3; text-align: right; }
+        .ac-link { display: inline-block; margin-top: 4px; color: #109ea3; font-weight: 700; font-size: .85rem; text-decoration: none; }
+        .ac-link:hover { text-decoration: underline; }
+
+        .ac-sec { border: 1px solid #e2eaed; border-radius: 14px; padding: 18px; margin-bottom: 14px; }
+        .ac-sec h4 { margin: 0 0 12px; color: #2c3e50; font-size: 1rem; }
+        .ac-msg { font-size: .82rem; margin: 8px 0 0; min-height: 1em; font-weight: 600; }
+        .ac-msg.ok { color: #27ae60; } .ac-msg.erro { color: #e74c3c; }
+        .ac-aviso { background: #fff8e6; border: 1px solid #f5d98a; color: #8a6d1a; border-radius: 10px; padding: 10px 12px; font-size: .82rem; margin-bottom: 14px; }
+
+        @media (max-width: 520px) {
+            .ac-overlay { padding: 12px; }
+            .ac-modal { padding: 20px 16px; }
+            .ac-stats { grid-template-columns: 1fr; }
+        }
+
+        /* ── MODO ESCURO ── */
+        body.dark-mode .ac-quick h2 { color: #e8edf0; }
+        body.dark-mode .ac-quick-btn { background: #1c2226; border-color: #313b42; border-left-color: #1ec2c7; color: #e8edf0; box-shadow: 0 2px 5px rgba(0,0,0,0.4); }
+        body.dark-mode .ac-modal { background: #1c2226; color: #e8edf0; }
+        body.dark-mode .ac-modal-top h3, body.dark-mode .ac-fam-head strong, body.dark-mode .ac-mem-top strong,
+        body.dark-mode .ac-rel h4, body.dark-mode .ac-sec h4 { color: #e8edf0; }
+        body.dark-mode .ac-sub, body.dark-mode .ac-fam-end, body.dark-mode .ac-mem small, body.dark-mode .ac-vazio,
+        body.dark-mode .ac-det, body.dark-mode .ac-li { color: #9aa7ad; }
+        body.dark-mode .ac-x { background: #2a3339; color: #c7d2d6; }
+        body.dark-mode .ac-ghost { background: #133b3c; color: #5fe6eb; border-color: #245b5d; }
+        body.dark-mode .ac-pill { background: #20272c; border-color: #313b42; color: #c7d2d6; }
+        body.dark-mode .ac-pill.on { background: #109ea3; border-color: #109ea3; color: #fff; }
+        body.dark-mode .ac-pill.on.warn { background: #f39c12; border-color: #f39c12; }
+        body.dark-mode .ac-stat, body.dark-mode .ac-mem, body.dark-mode .ac-rel { background: #20272c; border-color: #313b42; }
+        body.dark-mode .ac-stat b, body.dark-mode .ac-li b, body.dark-mode .ac-link { color: #1ec2c7; }
+        body.dark-mode .ac-stat { border-top-color: #1ec2c7; }
+        body.dark-mode .ac-rel { border-left-color: #1ec2c7; }
+        body.dark-mode .ac-fam { background: #1c2226; border-color: #313b42; border-top-color: #1ec2c7; }
+        body.dark-mode .ac-sec { border-color: #313b42; }
+        body.dark-mode .ac-form { background: #133b3c; border-color: #245b5d; }
+        body.dark-mode .ac-form h4, body.dark-mode .ac-prev p { color: #5fe6eb; }
+        body.dark-mode .ac-field label { color: #9aa7ad; }
+        body.dark-mode .ac-field input, body.dark-mode .ac-field select, body.dark-mode .ac-field textarea { background: #20272c; color: #e8edf0; border-color: #313b42; }
+        body.dark-mode .ac-field input::placeholder, body.dark-mode .ac-field textarea::placeholder { color: #6c7a80; }
+        body.dark-mode .ac-det { border-color: #313b42; }
+        body.dark-mode .ac-ok { color: #3ddc84; } body.dark-mode .ac-warn { color: #f5b041; }
+        body.dark-mode .ac-det-ok strong { color: #3ddc84; }
+        body.dark-mode .ac-prev { border-top-color: #313b42; } body.dark-mode .ac-li { border-bottom-color: #2a3339; }
+        body.dark-mode .ac-aviso { background: #3a3117; border-color: #6b5a22; color: #f1d98a; }
+        body.dark-mode .ac-msg.ok { color: #3ddc84; } body.dark-mode .ac-msg.erro { color: #ff6b5e; }
+    </style>
 </head>
 <body>
     <script src="ui.js"></script>
@@ -144,6 +283,7 @@
     <div class="container">
         <p class="dashboard-welcome">Seja bem-vindo, <span id="nome-dashboard">ACS</span>!</p>
         <h1>Dashboard</h1>
+        <p class="ac-unidade" id="ac-unidade" style="display:none"></p>
     </div>
 
     <div class="cards dashboard-cards">
@@ -167,37 +307,790 @@
                 <span id="count-pendentes" class="numero-exibicao">0</span>
             </div>
         </a>
+
+        <a href="#consultas" class="card-link" id="ac-card-consultas">
+            <div class="card">
+                <h3>Consultas agendadas</h3>
+                <span id="count-consultas" class="numero-exibicao">0</span>
+            </div>
+        </a>
     </div>
 
-    <a href="index.html" onclick="logout()"><input type="button" class="sairmenu" value="Sair"></a>
+    <div class="ac-quick">
+        <h2>Ações rápidas</h2>
+        <div class="ac-quick-grid">
+            <a href="cadfam.html" class="ac-quick-btn">➕ Cadastrar nova família</a>
+            <a href="vispen.html" class="ac-quick-btn">📝 Lançar relatório de visita</a>
+            <button type="button" class="ac-quick-btn" data-ac-abrir="consultas">📅 Agenda de consultas</button>
+            <button type="button" class="ac-quick-btn" data-ac-abrir="relatorios">📊 Relatórios (XML / PDF)</button>
+            <button type="button" class="ac-quick-btn" data-ac-abrir="opcoes">⚙️ Opções da conta</button>
+        </div>
+    </div>
+
+    <!-- ══ MODAL: CONSULTAS ══ -->
+    <div class="ac-overlay" id="ac-modal-consultas">
+        <div class="ac-modal" role="dialog" aria-modal="true" aria-labelledby="ac-t-consultas">
+            <div class="ac-modal-top">
+                <div>
+                    <h3 id="ac-t-consultas">Consultas</h3>
+                    <div class="ac-sub">Todas as famílias da sua microárea. Agende a data da consulta de cada paciente.</div>
+                </div>
+                <button type="button" class="ac-x" data-ac-fechar aria-label="Fechar">×</button>
+            </div>
+
+            <div class="ac-filtros">
+                <button type="button" class="ac-pill" id="ac-pill-todas" data-filtro="todas">Todos</button>
+                <button type="button" class="ac-pill warn" id="ac-pill-agendar" data-filtro="agendar">A agendar</button>
+                <button type="button" class="ac-pill" id="ac-pill-agendado" data-filtro="agendado">Agendados</button>
+            </div>
+
+            <div class="ac-stats">
+                <div class="ac-stat"><b id="ac-c-total">0</b><span>Pacientes</span></div>
+                <div class="ac-stat"><b id="ac-c-agendar">0</b><span>A agendar</span></div>
+                <div class="ac-stat"><b id="ac-c-agendados">0</b><span>Agendados</span></div>
+            </div>
+
+            <div class="ac-field">
+                <input type="text" id="ac-c-busca" placeholder="🔍 Buscar por paciente, responsável ou endereço..." autocomplete="off">
+            </div>
+
+            <form class="ac-form" id="ac-c-form" novalidate>
+                <h4 id="ac-c-form-titulo">Agendar consulta</h4>
+                <div class="ac-sub" id="ac-c-form-sub" style="margin-bottom:14px"></div>
+                <input type="hidden" id="ac-c-fam">
+                <input type="hidden" id="ac-c-idx">
+                <div class="ac-row">
+                    <div class="ac-field">
+                        <label for="ac-c-status">Status *</label>
+                        <select id="ac-c-status">
+                            <option value="agendado">Agendado (com data definida)</option>
+                            <option value="agendar">A agendar (aguardando vaga)</option>
+                        </select>
+                    </div>
+                    <div class="ac-field">
+                        <label for="ac-c-data">Data da consulta <span id="ac-c-data-obrig">*</span></label>
+                        <input type="date" id="ac-c-data">
+                    </div>
+                    <div class="ac-field">
+                        <label for="ac-c-hora">Horário</label>
+                        <input type="time" id="ac-c-hora">
+                    </div>
+                </div>
+                <div class="ac-row">
+                    <div class="ac-field">
+                        <label for="ac-c-tipo">Tipo de atendimento *</label>
+                        <select id="ac-c-tipo">
+                            <option>Clínica Geral</option>
+                            <option>Enfermagem</option>
+                            <option>Odontologia</option>
+                            <option>Pré-natal</option>
+                            <option value="Puericultura">Puericultura (criança)</option>
+                            <option>Hiperdia (Hipertensão/Diabetes)</option>
+                            <option>Saúde Mental</option>
+                            <option>Exames / Coleta</option>
+                            <option>Vacinação</option>
+                            <option>Encaminhamento a Especialista</option>
+                        </select>
+                    </div>
+                    <div class="ac-field">
+                        <label for="ac-c-local">Local / Unidade</label>
+                        <input type="text" id="ac-c-local" placeholder="Ex: UBS Central" maxlength="80">
+                    </div>
+                </div>
+                <div class="ac-field">
+                    <label for="ac-c-obs">Observações</label>
+                    <textarea id="ac-c-obs" rows="2" maxlength="300" placeholder="Ex: paciente precisa de transporte, levar cartão SUS..."></textarea>
+                </div>
+                <div class="ac-actions">
+                    <button type="button" class="ac-btn ac-ghost" id="ac-c-cancelar-form">Cancelar</button>
+                    <button type="submit" class="ac-btn ac-green">Salvar agendamento</button>
+                </div>
+            </form>
+
+            <div id="ac-c-lista"></div>
+        </div>
+    </div>
+
+    <!-- ══ MODAL: RELATÓRIOS ══ -->
+    <div class="ac-overlay" id="ac-modal-relatorios">
+        <div class="ac-modal" role="dialog" aria-modal="true" aria-labelledby="ac-t-relatorios">
+            <div class="ac-modal-top">
+                <div>
+                    <h3 id="ac-t-relatorios">Relatórios</h3>
+                    <div class="ac-sub">Gere e exporte seus relatórios em XML ou PDF.</div>
+                </div>
+                <button type="button" class="ac-x" data-ac-fechar aria-label="Fechar">×</button>
+            </div>
+
+            <div class="ac-rel">
+                <h4>Relatório mensal de visitas</h4>
+                <div class="ac-sub" style="margin-bottom:12px">Selecione o mês e exporte as visitas realizadas.</div>
+                <div class="ac-row">
+                    <div class="ac-field">
+                        <label for="ac-r-mes">Mês</label>
+                        <select id="ac-r-mes">
+                            <option value="1">Janeiro</option><option value="2">Fevereiro</option>
+                            <option value="3">Março</option><option value="4">Abril</option>
+                            <option value="5">Maio</option><option value="6">Junho</option>
+                            <option value="7">Julho</option><option value="8">Agosto</option>
+                            <option value="9">Setembro</option><option value="10">Outubro</option>
+                            <option value="11">Novembro</option><option value="12">Dezembro</option>
+                        </select>
+                    </div>
+                    <div class="ac-field">
+                        <label for="ac-r-ano">Ano</label>
+                        <input type="number" id="ac-r-ano" min="2020" max="2099">
+                    </div>
+                </div>
+                <div class="ac-actions" style="justify-content:flex-start;margin-top:0">
+                    <button type="button" class="ac-btn ac-ghost" id="ac-rv-prev">👁 Visualizar</button>
+                    <button type="button" class="ac-btn ac-primary" id="ac-rv-xml">⬇ Exportar XML</button>
+                    <button type="button" class="ac-btn ac-green" id="ac-rv-pdf">📄 Exportar PDF</button>
+                </div>
+                <div class="ac-prev" id="ac-rv-box"><p id="ac-rv-resumo"></p><div id="ac-rv-lista"></div></div>
+                <a href="relatoriomensal.html" class="ac-link">Ver relatório mensal detalhado →</a>
+            </div>
+
+            <div class="ac-rel">
+                <h4>Relatório de famílias</h4>
+                <div class="ac-sub" style="margin-bottom:12px">Todas as famílias cadastradas por você, com os integrantes e condições de saúde.</div>
+                <div class="ac-actions" style="justify-content:flex-start;margin-top:0">
+                    <button type="button" class="ac-btn ac-ghost" id="ac-rf-prev">👁 Visualizar</button>
+                    <button type="button" class="ac-btn ac-primary" id="ac-rf-xml">⬇ Exportar XML</button>
+                    <button type="button" class="ac-btn ac-green" id="ac-rf-pdf">📄 Exportar PDF</button>
+                </div>
+                <div class="ac-prev" id="ac-rf-box"><p id="ac-rf-resumo"></p><div id="ac-rf-lista"></div></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══ MODAL: OPÇÕES ══ -->
+    <div class="ac-overlay" id="ac-modal-opcoes">
+        <div class="ac-modal" role="dialog" aria-modal="true" aria-labelledby="ac-t-opcoes" style="max-width:560px">
+            <div class="ac-modal-top">
+                <div>
+                    <h3 id="ac-t-opcoes">Opções da conta</h3>
+                    <div class="ac-sub">Atualize seus dados de contato e sua senha.</div>
+                </div>
+                <button type="button" class="ac-x" data-ac-fechar aria-label="Fechar">×</button>
+            </div>
+
+            <div class="ac-aviso" id="ac-o-aviso" style="display:none">
+                Esta é uma conta padrão do sistema e não pode ser editada aqui. Peça ao gerente para cadastrar seu usuário.
+            </div>
+
+            <div class="ac-sec">
+                <h4>Dados pessoais</h4>
+                <div class="ac-field">
+                    <label for="ac-o-nome">Nome completo</label>
+                    <input type="text" id="ac-o-nome" maxlength="60" placeholder="Nome completo">
+                </div>
+                <div class="ac-row">
+                    <div class="ac-field">
+                        <label for="ac-o-tel">Telefone</label>
+                        <input type="tel" id="ac-o-tel" maxlength="15" placeholder="(XX) XXXXX-XXXX">
+                    </div>
+                    <div class="ac-field">
+                        <label for="ac-o-email">E-mail</label>
+                        <input type="email" id="ac-o-email" placeholder="seu@email.com">
+                    </div>
+                </div>
+                <div class="ac-actions"><button type="button" class="ac-btn ac-primary" id="ac-o-salvar">Salvar dados</button></div>
+                <p class="ac-msg" id="ac-o-msg-dados" role="status"></p>
+            </div>
+
+            <div class="ac-sec">
+                <h4>Alterar senha</h4>
+                <div class="ac-field">
+                    <label for="ac-o-atual">Senha atual</label>
+                    <div class="ac-pw"><input type="password" id="ac-o-atual" autocomplete="current-password"><button type="button" data-ver="ac-o-atual" aria-label="Mostrar senha">👁</button></div>
+                </div>
+                <div class="ac-row">
+                    <div class="ac-field">
+                        <label for="ac-o-nova">Nova senha</label>
+                        <div class="ac-pw"><input type="password" id="ac-o-nova" placeholder="Mínimo 8 caracteres" autocomplete="new-password"><button type="button" data-ver="ac-o-nova" aria-label="Mostrar senha">👁</button></div>
+                    </div>
+                    <div class="ac-field">
+                        <label for="ac-o-conf">Confirmar nova senha</label>
+                        <div class="ac-pw"><input type="password" id="ac-o-conf" placeholder="Repita a nova senha" autocomplete="new-password"><button type="button" data-ver="ac-o-conf" aria-label="Mostrar senha">👁</button></div>
+                    </div>
+                </div>
+                <div class="ac-actions"><button type="button" class="ac-btn ac-primary" id="ac-o-senha">Alterar senha</button></div>
+                <p class="ac-msg" id="ac-o-msg-senha" role="status"></p>
+            </div>
+        </div>
+    </div>
+
+
+    <a href="index.html" onclick="sessionStorage.clear()"><input type="button" class="sairmenu" value="Sair"></a>
 
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const nomeSalvo = sessionStorage.getItem('nomeUsuario');
-            const loginSalvo = sessionStorage.getItem('loginUsuario'); // Pega o login (ex: acs1)
+        (function () {
+            'use strict';
 
-            if (nomeSalvo && loginSalvo) {
-                document.getElementById('nome-exibicao').textContent = "| Bem-vindo, " + nomeSalvo;
-                document.getElementById('nome-dashboard').textContent = nomeSalvo;
+            var MESES = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+            var login = sessionStorage.getItem('loginUsuario');
+            var nomeSessao = sessionStorage.getItem('nomeUsuario');
+            var filtroCons = 'todas';
 
-                // BUSCA DADOS INDIVIDUAIS: Usamos o login no nome da chave
-                const familias = localStorage.getItem(loginSalvo + '_totalFamilias') || 0;
-                const visitas = localStorage.getItem(loginSalvo + '_totalVisitas') || 0;
-                const pendentes = localStorage.getItem(loginSalvo + '_totalPendentes') || 0;
-
-                // Aplica na tela
-                document.getElementById('count-familias').textContent = familias;
-                document.getElementById('count-visitas').textContent = visitas;
-                document.getElementById('count-pendentes').textContent = pendentes;
-            } else {
-                window.location.href = "index.html"; 
+            // ── utilidades ────────────────────────────────────────────
+            function $(id) { return document.getElementById(id); }
+            function esc(s) {
+                return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+                    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+                });
             }
-        });
-    
-        function logout() {
-            sessionStorage.removeItem('nomeUsuario');
-        }
+            function xmlEsc(s) {
+                return String(s == null ? '' : s)
+                    .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '')
+                    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;').replace(/'/g, '&apos;');
+            }
+            function toast(tipo, titulo, msg) {
+                if (typeof showToast === 'function') showToast(tipo, titulo, msg);
+                else alert(titulo + ': ' + msg);
+            }
+            function lerJSON(chave, padrao) {
+                try { var v = JSON.parse(localStorage.getItem(chave)); return v == null ? padrao : v; }
+                catch (e) { return padrao; }
+            }
+            function fmtISO(d) { return d ? String(d).split('-').reverse().join('/') : ''; }
+            function sexoTexto(s) { return s === 'M' ? 'Masculino' : s === 'F' ? 'Feminino' : '—'; }
+
+            function getFamilias()  { return lerJSON(login + '_lista_familias', []); }
+            function getVisitas()   { return lerJSON(login + '_historico_visitas', []); }
+            function getConsultas() { return lerJSON(login + '_consultas_agenda', []); }
+            function setConsultas(l) { localStorage.setItem(login + '_consultas_agenda', JSON.stringify(l)); }
+
+            // Registro do agente cadastrado (contas padrão acs1..acs5 não existem no localStorage)
+            function getAgente() {
+                var lista = lerJSON('agentesSaude', []);
+                var idx = lista.findIndex(function (a) { return (a.usuario || a.login) === login; });
+                return { lista: lista, idx: idx, dados: idx === -1 ? null : lista[idx] };
+            }
+
+            function condicoesDe(m) {
+                return [
+                    m.hipertenso && 'Hipertenso', m.diabetico && 'Diabético', m.gestante && 'Gestante',
+                    m.vacina && 'Vacina atrasada', m.idoso && 'Idoso', m.deficiente && 'Deficiente',
+                    m.crianca && 'Criança', m.tuberculoso && 'Tuberculoso', m.hanseniase && 'Hanseníase'
+                ].filter(Boolean);
+            }
+
+            // ── modais ────────────────────────────────────────────────
+            function acAbrir(nome) {
+                if (nome === 'opcoes') preencherOpcoes();
+                if (nome === 'consultas') renderConsultas();
+                $('ac-modal-' + nome).classList.add('open');
+                document.body.style.overflow = 'hidden';
+            }
+            function acFechar() {
+                document.querySelectorAll('.ac-overlay.open').forEach(function (m) { m.classList.remove('open'); });
+                document.body.style.overflow = '';
+                fecharFormConsulta();
+                if (window.location.hash) history.replaceState(null, '', window.location.pathname + window.location.search);
+            }
+            function abrirPorHash() {
+                var h = window.location.hash.replace('#', '');
+                if (['consultas', 'relatorios', 'opcoes'].indexOf(h) !== -1) acAbrir(h);
+            }
+
+            // ── painel (contadores calculados, como no 2.0) ───────────
+            function contarAgendadas() {
+                var fams = getFamilias();
+                return getConsultas().filter(function (c) {
+                    return c.status === 'agendado' && c.data && fams.some(function (f) {
+                        return String(f.id) === String(c.familiaId) && (f.membros || [])[c.membroIdx];
+                    });
+                }).length;
+            }
+
+            function atualizarPainel() {
+                var fams = getFamilias(), vis = getVisitas();
+                var pendentes = fams.filter(function (f) {
+                    return !vis.some(function (v) { return String(v.idFamilia) === String(f.id); });
+                }).length;
+
+                $('count-familias').textContent = fams.length;
+                $('count-visitas').textContent = vis.length;
+                $('count-pendentes').textContent = pendentes;
+                $('count-consultas').textContent = contarAgendadas();
+
+                // Mantém os contadores gravados em sincronia (gerente/admin leem esses valores)
+                localStorage.setItem(login + '_totalFamilias', fams.length);
+                localStorage.setItem(login + '_totalVisitas', vis.length);
+                localStorage.setItem(login + '_totalPendentes', pendentes);
+            }
+
+            function mostrarUnidade() {
+                var ag = getAgente().dados;
+                var partes = [];
+                if (ag && ag.unidadeSaude) partes.push('Unidade: ' + ag.unidadeSaude);
+                if (ag && ag.area) partes.push('Área: ' + ag.area);
+                if (ag && ag.matricula) partes.push('Matrícula: ' + ag.matricula);
+                var el = $('ac-unidade');
+                if (partes.length) { el.textContent = partes.join(' | '); el.style.display = ''; }
+            }
+
+            // ══ CONSULTAS ═════════════════════════════════════════════
+            function buscarConsulta(famId, idx) {
+                return getConsultas().find(function (c) {
+                    return String(c.familiaId) === String(famId) && Number(c.membroIdx) === Number(idx);
+                }) || null;
+            }
+            function statusPaciente(famId, idx) {
+                var c = buscarConsulta(famId, idx);
+                return (c && c.status === 'agendado' && c.data) ? 'agendado' : 'agendar';
+            }
+
+            function renderConsultas() {
+                var cont = $('ac-c-lista');
+                var termo = ($('ac-c-busca').value || '').toLowerCase().trim();
+                var fams = getFamilias();
+
+                ['todas', 'agendar', 'agendado'].forEach(function (f) {
+                    $('ac-pill-' + f).classList.toggle('on', filtroCons === f);
+                });
+
+                var total = 0, agendados = 0;
+                fams.forEach(function (f) {
+                    (f.membros || []).forEach(function (m, i) {
+                        total++;
+                        if (statusPaciente(f.id, i) === 'agendado') agendados++;
+                    });
+                });
+                $('ac-c-total').textContent = total;
+                $('ac-c-agendados').textContent = agendados;
+                $('ac-c-agendar').textContent = total - agendados;
+
+                if (fams.length === 0) {
+                    cont.innerHTML = '<div class="ac-vazio"><strong>Nenhuma família cadastrada</strong><br>Cadastre famílias para começar a agendar consultas.</div>';
+                    return;
+                }
+
+                var html = '';
+                fams.forEach(function (fam) {
+                    var membros = fam.membros || [];
+                    var visiveis = membros
+                        .map(function (m, i) { return { m: m, i: i, status: statusPaciente(fam.id, i) }; })
+                        .filter(function (x) { return filtroCons === 'todas' || x.status === filtroCons; })
+                        .filter(function (x) {
+                            if (!termo) return true;
+                            return ((x.m.nome || '') + ' ' + (fam.primeiroMembro || '') + ' ' + (fam.endereco || '')).toLowerCase().indexOf(termo) !== -1;
+                        });
+                    if (!visiveis.length) return;
+
+                    var agFam = membros.filter(function (m, i) { return statusPaciente(fam.id, i) === 'agendado'; }).length;
+
+                    var cards = visiveis.map(function (x) {
+                        var c = buscarConsulta(fam.id, x.i);
+                        var ag = x.status === 'agendado';
+                        var attrs = 'data-fam="' + esc(fam.id) + '" data-idx="' + x.i + '"';
+                        var badge = ag ? '<span class="ac-badge ac-ok">✓ Agendado</span>' : '<span class="ac-badge ac-warn">● A agendar</span>';
+                        var detalhe = ag
+                            ? '<div class="ac-det ac-det-ok"><strong>📅 ' + esc(fmtISO(c.data)) + (c.hora ? ' às ' + esc(c.hora) : '') + '</strong>' +
+                              '<span>' + esc(c.tipo || 'Consulta') + (c.local ? ' — ' + esc(c.local) : '') + '</span>' +
+                              (c.obs ? '<em>"' + esc(c.obs) + '"</em>' : '') + '</div>'
+                            : '<div class="ac-det"><em>' + (c && c.obs ? esc(c.obs) : 'Sem data definida. Clique em "Agendar consulta" para marcar.') + '</em></div>';
+                        var botoes = ag
+                            ? '<div class="ac-mem-btns"><button type="button" class="ac-btn ac-ghost" data-acao="agendar" ' + attrs + '>Reagendar</button>' +
+                              '<button type="button" class="ac-btn ac-red" data-acao="cancelar" ' + attrs + '>Cancelar</button></div>'
+                            : '<button type="button" class="ac-btn ac-green" data-acao="agendar" ' + attrs + '>Agendar consulta</button>';
+                        return '<div class="ac-mem"><div class="ac-mem-top"><div><strong>' + esc(x.m.nome || 'Sem nome') + '</strong>' +
+                               '<small>' + (x.m.nascimento ? 'Nasc.: ' + esc(x.m.nascimento) : '') + '</small></div>' + badge + '</div>' +
+                               detalhe + botoes + '</div>';
+                    }).join('');
+
+                    html += '<div class="ac-fam"><div class="ac-fam-head"><strong>Responsável: ' + esc(fam.primeiroMembro) + '</strong>' +
+                            '<div><span class="ac-badge ac-ok">' + agFam + ' agendado(s)</span> <span class="ac-badge ac-warn">' + (membros.length - agFam) + ' a agendar</span></div></div>' +
+                            '<div class="ac-fam-end">📍 ' + esc(fam.endereco) + '</div><div class="ac-mems">' + cards + '</div></div>';
+                });
+
+                cont.innerHTML = html || '<div class="ac-vazio"><strong>Nenhum paciente encontrado</strong><br>Ajuste a busca ou troque o filtro de status.</div>';
+            }
+
+            function ajustarCamposConsulta() {
+                var ag = $('ac-c-status').value === 'agendado';
+                $('ac-c-data-obrig').textContent = ag ? '*' : '(opcional)';
+            }
+
+            function abrirFormConsulta(famId, idx) {
+                var fam = getFamilias().find(function (f) { return String(f.id) === String(famId); });
+                var membro = fam && (fam.membros || [])[idx];
+                if (!membro) return;
+                var ex = buscarConsulta(famId, idx);
+                var ag = getAgente().dados;
+
+                $('ac-c-fam').value = famId;
+                $('ac-c-idx').value = idx;
+                $('ac-c-form-titulo').textContent = (ex && ex.status === 'agendado') ? 'Reagendar consulta' : 'Agendar consulta';
+                $('ac-c-form-sub').textContent = 'Paciente: ' + (membro.nome || 'Sem nome') + ' — Família de ' + (fam.primeiroMembro || '');
+                $('ac-c-status').value = ex ? ex.status : 'agendado';
+                $('ac-c-data').value = (ex && ex.data) ? ex.data : new Date().toISOString().split('T')[0];
+                $('ac-c-hora').value = (ex && ex.hora) || '';
+                $('ac-c-tipo').value = (ex && ex.tipo) || 'Clínica Geral';
+                $('ac-c-local').value = (ex && ex.local) || (ag && ag.unidadeSaude) || '';
+                $('ac-c-obs').value = (ex && ex.obs) || '';
+                ajustarCamposConsulta();
+
+                var form = $('ac-c-form');
+                form.style.display = 'block';
+                form.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+
+            function fecharFormConsulta() { $('ac-c-form').style.display = 'none'; }
+
+            function salvarConsulta(e) {
+                e.preventDefault();
+                var famId = $('ac-c-fam').value;
+                var idx = Number($('ac-c-idx').value);
+                var status = $('ac-c-status').value;
+                var data = $('ac-c-data').value;
+
+                if (status === 'agendado' && !data) {
+                    toast('warning', 'Data obrigatória', 'Informe a data da consulta para marcar como agendada.');
+                    return;
+                }
+                var fam = getFamilias().find(function (f) { return String(f.id) === String(famId); });
+                var membro = fam && (fam.membros || [])[idx];
+                if (!membro) { toast('error', 'Paciente não encontrado', 'Não foi possível localizar este integrante.'); return; }
+
+                var reg = {
+                    familiaId: fam.id, membroIdx: idx, paciente: membro.nome || '',
+                    status: status,
+                    data: status === 'agendado' ? data : '',
+                    hora: status === 'agendado' ? $('ac-c-hora').value : '',
+                    tipo: $('ac-c-tipo').value, local: $('ac-c-local').value.trim(), obs: $('ac-c-obs').value.trim(),
+                    criadoEm: new Date().toISOString()
+                };
+                var lista = getConsultas();
+                var pos = lista.findIndex(function (c) { return String(c.familiaId) === String(famId) && Number(c.membroIdx) === idx; });
+                if (pos !== -1) lista[pos] = reg; else lista.push(reg);
+                setConsultas(lista);
+
+                toast('success', status === 'agendado' ? 'Consulta agendada' : 'Atualizado',
+                    status === 'agendado'
+                        ? 'Consulta de ' + (reg.paciente || 'paciente') + ' agendada para ' + fmtISO(data) + (reg.hora ? ' às ' + reg.hora : '') + '.'
+                        : (reg.paciente || 'Paciente') + ' marcado como "a agendar".');
+
+                fecharFormConsulta();
+                atualizarPainel();
+                renderConsultas();
+            }
+
+            function cancelarConsulta(famId, idx) {
+                var c = buscarConsulta(famId, idx);
+                if (!c) return;
+                var executar = function () {
+                    setConsultas(getConsultas().filter(function (x) {
+                        return !(String(x.familiaId) === String(famId) && Number(x.membroIdx) === Number(idx));
+                    }));
+                    toast('warning', 'Agendamento cancelado', 'O paciente voltou para "A agendar".');
+                    atualizarPainel();
+                    renderConsultas();
+                };
+                var msg = 'Cancelar a consulta de "' + (c.paciente || 'paciente') + '" marcada para ' + fmtISO(c.data) + '? O paciente voltará para "A agendar".';
+                if (typeof ssConfirm === 'function') {
+                    ssConfirm({ titulo: 'Cancelar consulta', subtitulo: 'O paciente voltará para "A agendar".', mensagem: msg, tipo: 'danger', textoBotao: 'Cancelar consulta', onConfirm: executar });
+                } else if (confirm(msg)) { executar(); }
+            }
+
+            // ══ RELATÓRIOS ════════════════════════════════════════════
+            function parseDataVisita(s) {
+                if (!s) return null;
+                var p = String(s).split('/');
+                if (p.length === 3) {
+                    var d = new Date(parseInt(p[2], 10), parseInt(p[1], 10) - 1, parseInt(p[0], 10));
+                    return isNaN(d.getTime()) ? null : d;
+                }
+                var iso = new Date(s);
+                return isNaN(iso.getTime()) ? null : iso;
+            }
+            function isoData(d) {
+                return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+            }
+
+            function periodo() {
+                var mes = parseInt($('ac-r-mes').value, 10);
+                var ano = parseInt($('ac-r-ano').value, 10);
+                if (!ano || ano < 2000 || ano > 2099) { toast('warning', 'Ano inválido', 'Informe um ano entre 2000 e 2099.'); return null; }
+                return { mes: mes, ano: ano };
+            }
+            function visitasDoMes(mes, ano) {
+                return getVisitas()
+                    .map(function (v) { return { v: v, d: parseDataVisita(v.dataVisita) }; })
+                    .filter(function (x) { return x.d && x.d.getMonth() === mes - 1 && x.d.getFullYear() === ano; })
+                    .sort(function (a, b) { return a.d - b.d; });
+            }
+            function cabecalhoAgente() {
+                var ag = getAgente().dados || {};
+                return { nome: nomeSessao, login: login, unidade: ag.unidadeSaude || '', area: ag.area || '' };
+            }
+
+            function previewVisitas() {
+                var p = periodo(); if (!p) return;
+                var lista = visitasDoMes(p.mes, p.ano);
+                $('ac-rv-resumo').textContent = lista.length + ' visita(s) em ' + MESES[p.mes - 1] + '/' + p.ano;
+                $('ac-rv-lista').innerHTML = lista.length
+                    ? lista.map(function (x) {
+                        return '<div class="ac-li"><span>' + esc(x.d.toLocaleDateString('pt-BR')) + ' — ' + esc(x.v.nomeFamilia || 'N/A') + '</span><b>' + esc(x.v.desfecho || '') + '</b></div>';
+                    }).join('')
+                    : '<div class="ac-vazio" style="padding:10px">Nenhuma visita encontrada neste período.</div>';
+                $('ac-rv-box').style.display = 'block';
+            }
+
+            function xmlVisitas() {
+                var p = periodo(); if (!p) return;
+                var lista = visitasDoMes(p.mes, p.ano), a = cabecalhoAgente();
+                var xml = '<?xml version="1.0" encoding="UTF-8"?>\n<relatorioVisitas>\n' +
+                    '  <agente>' + xmlEsc(a.nome) + '</agente>\n  <login>' + xmlEsc(a.login) + '</login>\n' +
+                    '  <unidade>' + xmlEsc(a.unidade) + '</unidade>\n  <area>' + xmlEsc(a.area) + '</area>\n' +
+                    '  <periodo>' + MESES[p.mes - 1] + '/' + p.ano + '</periodo>\n  <totalVisitas>' + lista.length + '</totalVisitas>\n  <visitas>\n';
+                lista.forEach(function (x) {
+                    xml += '    <visita>\n      <data>' + isoData(x.d) + '</data>\n      <familia>' + xmlEsc(x.v.nomeFamilia) + '</familia>\n' +
+                           '      <endereco>' + xmlEsc(x.v.endereco) + '</endereco>\n      <motivo>' + xmlEsc(x.v.motivo) + '</motivo>\n' +
+                           '      <desfecho>' + xmlEsc(x.v.desfecho) + '</desfecho>\n      <relatorio>' + xmlEsc(x.v.relatorio) + '</relatorio>\n    </visita>\n';
+                });
+                xml += '  </visitas>\n</relatorioVisitas>';
+                baixarXML(xml, 'visitas_' + String(p.mes).padStart(2, '0') + '_' + p.ano + '_' + login + '.xml');
+            }
+
+            function pdfVisitas() {
+                var p = periodo(); if (!p) return;
+                var lista = visitasDoMes(p.mes, p.ano), a = cabecalhoAgente();
+                var linhas = lista.length ? lista.map(function (x) {
+                    return '<tr><td>' + esc(x.d.toLocaleDateString('pt-BR')) + '</td><td>' + esc(x.v.nomeFamilia || '—') + '</td><td>' +
+                           esc(x.v.motivo || '—') + '</td><td>' + esc(x.v.desfecho || '—') + '</td><td>' + esc(x.v.relatorio || '—') + '</td></tr>';
+                }).join('') : '<tr><td colspan="5" style="text-align:center;color:#94a3b8;font-style:italic">Nenhuma visita registrada neste período.</td></tr>';
+                var corpo = '<div class="cabecalho"><div><h1>Relatório Mensal de Visitas Domiciliares</h1>' +
+                    '<p>Agente: <strong>' + esc(a.nome) + '</strong> &nbsp;|&nbsp; Unidade: <strong>' + esc(a.unidade || '—') + '</strong></p>' +
+                    '<p>Área: ' + esc(a.area || '—') + '</p></div><span class="badge">' + MESES[p.mes - 1] + ' / ' + p.ano + '</span></div>' +
+                    '<h2>Visitas realizadas (' + lista.length + ')</h2><table><thead><tr><th>Data</th><th>Família</th><th>Motivo</th><th>Desfecho</th><th>Relatório</th></tr></thead><tbody>' + linhas + '</tbody></table>';
+                abrirPDF(corpo, 'Visitas ' + MESES[p.mes - 1] + ' ' + p.ano + ' — ' + a.nome);
+            }
+
+            function previewFamilias() {
+                var fams = getFamilias();
+                $('ac-rf-resumo').textContent = fams.length + ' família(s) cadastrada(s)';
+                $('ac-rf-lista').innerHTML = fams.length
+                    ? fams.map(function (f) {
+                        return '<div class="ac-li"><span>' + esc(f.primeiroMembro) + '</span><b>' + (f.membros || []).length + ' membro(s)</b></div>';
+                    }).join('')
+                    : '<div class="ac-vazio" style="padding:10px">Nenhuma família cadastrada.</div>';
+                $('ac-rf-box').style.display = 'block';
+            }
+
+            function xmlFamilias() {
+                var fams = getFamilias(), a = cabecalhoAgente();
+                var xml = '<?xml version="1.0" encoding="UTF-8"?>\n<relatorioFamilias>\n' +
+                    '  <agente>' + xmlEsc(a.nome) + '</agente>\n  <login>' + xmlEsc(a.login) + '</login>\n' +
+                    '  <unidade>' + xmlEsc(a.unidade) + '</unidade>\n  <area>' + xmlEsc(a.area) + '</area>\n' +
+                    '  <totalFamilias>' + fams.length + '</totalFamilias>\n  <familias>\n';
+                fams.forEach(function (f) {
+                    var e = f.enderecoDetalhes || {};
+                    xml += '    <familia>\n      <responsavel>' + xmlEsc(f.primeiroMembro) + '</responsavel>\n      <dataCadastro>' + xmlEsc(f.data) + '</dataCadastro>\n' +
+                           '      <endereco>' + xmlEsc(f.endereco) + '</endereco>\n      <logradouro>' + xmlEsc(e.logradouro) + '</logradouro>\n      <numero>' + xmlEsc(e.numero) + '</numero>\n' +
+                           '      <complemento>' + xmlEsc(e.complemento) + '</complemento>\n      <bairro>' + xmlEsc(e.bairro) + '</bairro>\n      <cidade>' + xmlEsc(e.cidade) + '</cidade>\n' +
+                           '      <uf>' + xmlEsc(e.uf) + '</uf>\n      <cep>' + xmlEsc(e.cep) + '</cep>\n      <membros>\n';
+                    (f.membros || []).forEach(function (m) {
+                        xml += '        <membro>\n          <nome>' + xmlEsc(m.nome) + '</nome>\n          <nascimento>' + xmlEsc(m.nascimento) + '</nascimento>\n' +
+                               '          <sexo>' + xmlEsc(m.sexo) + '</sexo>\n          <cpf>' + xmlEsc(m.cpf) + '</cpf>\n          <celular>' + xmlEsc(m.celular) + '</celular>\n' +
+                               '          <hipertenso>' + (m.hipertenso ? 'sim' : 'nao') + '</hipertenso>\n          <diabetico>' + (m.diabetico ? 'sim' : 'nao') + '</diabetico>\n' +
+                               '          <gestante>' + (m.gestante ? 'sim' : 'nao') + '</gestante>\n          <vacinaAtrasada>' + (m.vacina ? 'sim' : 'nao') + '</vacinaAtrasada>\n' +
+                               '          <idoso>' + (m.idoso ? 'sim' : 'nao') + '</idoso>\n          <deficiente>' + (m.deficiente ? 'sim' : 'nao') + '</deficiente>\n' +
+                               '          <crianca>' + (m.crianca ? 'sim' : 'nao') + '</crianca>\n          <tuberculose>' + (m.tuberculoso ? 'sim' : 'nao') + '</tuberculose>\n' +
+                               '          <hanseniase>' + (m.hanseniase ? 'sim' : 'nao') + '</hanseniase>\n        </membro>\n';
+                    });
+                    xml += '      </membros>\n    </familia>\n';
+                });
+                xml += '  </familias>\n</relatorioFamilias>';
+                baixarXML(xml, 'familias_' + login + '.xml');
+            }
+
+            function pdfFamilias() {
+                var fams = getFamilias(), a = cabecalhoAgente();
+                var blocos = fams.length ? fams.map(function (f) {
+                    var linhas = (f.membros || []).map(function (m) {
+                        return '<tr><td>' + esc(m.nome) + '</td><td>' + esc(m.nascimento || '—') + '</td><td>' + sexoTexto(m.sexo) + '</td><td>' +
+                               esc(m.cpf || '—') + '</td><td>' + esc(m.celular || '—') + '</td><td>' + esc(condicoesDe(m).join(', ') || '—') + '</td></tr>';
+                    }).join('');
+                    return '<div class="familia-bloco"><div class="familia-titulo">Responsável: ' + esc(f.primeiroMembro) + '</div>' +
+                           '<div class="familia-end"><strong>Endereço:</strong> ' + esc(f.endereco) + ' &nbsp;|&nbsp; Cadastro: ' + esc(f.data || '—') + '</div>' +
+                           '<table><thead><tr><th>Nome</th><th>Nascimento</th><th>Sexo</th><th>CPF</th><th>Celular</th><th>Condições</th></tr></thead><tbody>' + linhas + '</tbody></table></div>';
+                }).join('') : '<p style="color:#94a3b8;font-style:italic">Nenhuma família cadastrada.</p>';
+                var corpo = '<div class="cabecalho"><div><h1>Relatório de Famílias Cadastradas</h1>' +
+                    '<p>Agente: <strong>' + esc(a.nome) + '</strong> &nbsp;|&nbsp; Unidade: <strong>' + esc(a.unidade || '—') + '</strong></p>' +
+                    '<p>Área: ' + esc(a.area || '—') + '</p></div><span class="badge">' + fams.length + ' família' + (fams.length !== 1 ? 's' : '') + '</span></div>' +
+                    '<h2>Famílias e integrantes</h2>' + blocos;
+                abrirPDF(corpo, 'Famílias Cadastradas — ' + a.nome);
+            }
+
+            function baixarXML(conteudo, nomeArquivo) {
+                var blob = new Blob([conteudo], { type: 'application/xml' });
+                var url = URL.createObjectURL(blob);
+                var a = document.createElement('a');
+                a.href = url; a.download = nomeArquivo;
+                document.body.appendChild(a); a.click(); a.remove();
+                setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+            }
+
+            // Mesmo método do 2.0: abre uma janela de impressão (o navegador salva como PDF)
+            function abrirPDF(corpo, titulo) {
+                var w = window.open('', '_blank');
+                if (!w) { toast('warning', 'Pop-up bloqueado', 'Permita pop-ups para este site e tente novamente.'); return; }
+                w.document.write('<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>' + esc(titulo) + '</title><style>' +
+                    '*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,Helvetica,sans-serif;font-size:11px;color:#1e293b;background:#fff;padding:24px}' +
+                    'h1{font-size:15px;color:#0f172a;margin-bottom:2px}h2{font-size:12px;color:#0f172a;margin:14px 0 6px;border-bottom:1.5px solid #e2e8f0;padding-bottom:4px}' +
+                    '.cabecalho{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #109ea3;padding-bottom:10px;margin-bottom:14px}' +
+                    '.cabecalho p{font-size:10px;color:#475569;margin-top:2px}' +
+                    '.badge{display:inline-block;background:#e6f7f7;color:#0b777a;border:1px solid #b2e5e7;border-radius:6px;padding:2px 8px;font-size:10px;font-weight:700}' +
+                    'table{width:100%;border-collapse:collapse;margin-top:6px}th{background:#f8fafc;color:#475569;font-size:9.5px;text-transform:uppercase;padding:6px 8px;text-align:left;border:1px solid #e2e8f0}' +
+                    'td{padding:6px 8px;border:1px solid #e2e8f0;font-size:10px;color:#334155;vertical-align:top}tr:nth-child(even) td{background:#f8fafc}' +
+                    '.familia-bloco{border:1px solid #e2e8f0;border-radius:8px;padding:10px 12px;margin-bottom:12px;page-break-inside:avoid}' +
+                    '.familia-titulo{font-size:12px;font-weight:700;margin-bottom:2px}.familia-end{font-size:10px;color:#64748b;margin-bottom:8px}' +
+                    '.rodape{margin-top:20px;padding-top:8px;border-top:1px solid #e2e8f0;font-size:9px;color:#94a3b8;display:flex;justify-content:space-between}' +
+                    '@media print{body{padding:12px}}</style></head><body>' + corpo +
+                    '<div class="rodape"><span>SevenSys — Documento gerado automaticamente</span><span>' + esc(new Date().toLocaleString('pt-BR')) + '</span></div>' +
+                    '<script>window.onload=function(){window.print();}<\/script></body></html>');
+                w.document.close();
+            }
+
+            // ══ OPÇÕES DA CONTA ═══════════════════════════════════════
+            function mascaraTel(input) {
+                var v = input.value.replace(/\D/g, '').slice(0, 11);
+                if (v.length > 6) v = '(' + v.slice(0, 2) + ') ' + v.slice(2, 7) + '-' + v.slice(7);
+                else if (v.length > 2) v = '(' + v.slice(0, 2) + ') ' + v.slice(2);
+                else if (v.length > 0) v = '(' + v;
+                input.value = v;
+            }
+            function msgOpc(id, texto, ok) {
+                var el = $(id);
+                el.textContent = texto;
+                el.className = 'ac-msg ' + (ok ? 'ok' : 'erro');
+                clearTimeout(el._t);
+                el._t = setTimeout(function () { el.textContent = ''; }, 4000);
+            }
+
+            function preencherOpcoes() {
+                var ag = getAgente().dados;
+                var editavel = !!ag;
+                $('ac-o-aviso').style.display = editavel ? 'none' : 'block';
+                $('ac-o-nome').value = (ag && ag.nome) || nomeSessao || '';
+                $('ac-o-tel').value = (ag && ag.telefone) || '';
+                $('ac-o-email').value = (ag && ag.email) || '';
+                ['ac-o-atual', 'ac-o-nova', 'ac-o-conf'].forEach(function (id) { $(id).value = ''; $(id).type = 'password'; });
+                ['ac-o-nome', 'ac-o-tel', 'ac-o-email', 'ac-o-atual', 'ac-o-nova', 'ac-o-conf', 'ac-o-salvar', 'ac-o-senha'].forEach(function (id) { $(id).disabled = !editavel; });
+            }
+
+            function salvarDados() {
+                var nome = $('ac-o-nome').value.trim().replace(/\s+/g, ' ');
+                var tel = $('ac-o-tel').value.trim();
+                var email = $('ac-o-email').value.trim();
+
+                if (nome.length < 15) return msgOpc('ac-o-msg-dados', 'O nome deve ter no mínimo 15 caracteres.', false);
+                if (tel && !/^\(\d{2}\)\s\d{5}-\d{4}$/.test(tel)) return msgOpc('ac-o-msg-dados', 'Telefone inválido. Use (XX) XXXXX-XXXX.', false);
+                if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return msgOpc('ac-o-msg-dados', 'Informe um e-mail válido.', false);
+
+                var ref = getAgente();
+                if (ref.idx === -1) return msgOpc('ac-o-msg-dados', 'Conta não encontrada para edição.', false);
+                ref.lista[ref.idx].nome = nome;
+                ref.lista[ref.idx].telefone = tel;
+                ref.lista[ref.idx].email = email;
+                localStorage.setItem('agentesSaude', JSON.stringify(ref.lista));
+
+                nomeSessao = nome;
+                sessionStorage.setItem('nomeUsuario', nome);
+                $('nome-exibicao').textContent = '| Bem-vindo, ' + nome;
+                $('nome-dashboard').textContent = nome;
+                msgOpc('ac-o-msg-dados', 'Dados atualizados com sucesso!', true);
+            }
+
+            function alterarSenha() {
+                var atual = $('ac-o-atual').value, nova = $('ac-o-nova').value, conf = $('ac-o-conf').value;
+                var ref = getAgente();
+                if (ref.idx === -1) return msgOpc('ac-o-msg-senha', 'Conta não encontrada para edição.', false);
+                if (atual !== ref.lista[ref.idx].senha) return msgOpc('ac-o-msg-senha', 'Senha atual incorreta.', false);
+                if (nova.length < 8) return msgOpc('ac-o-msg-senha', 'A nova senha deve ter no mínimo 8 caracteres.', false);
+                if (nova === atual) return msgOpc('ac-o-msg-senha', 'A nova senha deve ser diferente da atual.', false);
+                if (nova !== conf) return msgOpc('ac-o-msg-senha', 'As senhas não coincidem.', false);
+
+                ref.lista[ref.idx].senha = nova;
+                localStorage.setItem('agentesSaude', JSON.stringify(ref.lista));
+                ['ac-o-atual', 'ac-o-nova', 'ac-o-conf'].forEach(function (id) { $(id).value = ''; });
+                msgOpc('ac-o-msg-senha', 'Senha alterada com sucesso!', true);
+            }
+
+            // ══ INICIALIZAÇÃO ═════════════════════════════════════════
+            window.logout = function () {
+                sessionStorage.removeItem('nomeUsuario');
+                sessionStorage.removeItem('loginUsuario');
+            };
+
+            document.addEventListener('DOMContentLoaded', function () {
+                if (!nomeSessao || !login) { window.location.href = 'index.html'; return; }
+
+                $('nome-exibicao').textContent = '| Bem-vindo, ' + nomeSessao;
+                $('nome-dashboard').textContent = nomeSessao;
+                mostrarUnidade();
+                atualizarPainel();
+
+                var agora = new Date();
+                $('ac-r-mes').value = String(agora.getMonth() + 1);
+                $('ac-r-ano').value = agora.getFullYear();
+
+                // abrir / fechar modais
+                document.querySelectorAll('[data-ac-abrir]').forEach(function (b) {
+                    b.addEventListener('click', function () { acAbrir(b.getAttribute('data-ac-abrir')); });
+                });
+                document.querySelectorAll('[data-ac-fechar]').forEach(function (b) { b.addEventListener('click', acFechar); });
+                document.querySelectorAll('.ac-overlay').forEach(function (o) {
+                    o.addEventListener('click', function (e) { if (e.target === o) acFechar(); });
+                });
+                document.addEventListener('keydown', function (e) {
+                    if (e.key === 'Escape' && document.querySelector('.ac-overlay.open')) acFechar();
+                });
+                $('ac-card-consultas').addEventListener('click', function (e) { e.preventDefault(); acAbrir('consultas'); });
+                window.addEventListener('hashchange', abrirPorHash);
+
+                // consultas
+                document.querySelectorAll('.ac-pill').forEach(function (p) {
+                    p.addEventListener('click', function () { filtroCons = p.getAttribute('data-filtro'); renderConsultas(); });
+                });
+                $('ac-c-busca').addEventListener('input', renderConsultas);
+                $('ac-c-status').addEventListener('change', ajustarCamposConsulta);
+                $('ac-c-form').addEventListener('submit', salvarConsulta);
+                $('ac-c-cancelar-form').addEventListener('click', fecharFormConsulta);
+                $('ac-c-lista').addEventListener('click', function (e) {
+                    var b = e.target.closest('button[data-acao]');
+                    if (!b) return;
+                    var fam = b.getAttribute('data-fam'), idx = b.getAttribute('data-idx');
+                    if (b.getAttribute('data-acao') === 'agendar') abrirFormConsulta(fam, idx);
+                    else cancelarConsulta(fam, idx);
+                });
+
+                // relatórios
+                $('ac-rv-prev').addEventListener('click', previewVisitas);
+                $('ac-rv-xml').addEventListener('click', xmlVisitas);
+                $('ac-rv-pdf').addEventListener('click', pdfVisitas);
+                $('ac-rf-prev').addEventListener('click', previewFamilias);
+                $('ac-rf-xml').addEventListener('click', xmlFamilias);
+                $('ac-rf-pdf').addEventListener('click', pdfFamilias);
+
+                // opções
+                $('ac-o-tel').addEventListener('input', function () { mascaraTel(this); });
+                $('ac-o-salvar').addEventListener('click', salvarDados);
+                $('ac-o-senha').addEventListener('click', alterarSenha);
+                document.querySelectorAll('[data-ver]').forEach(function (b) {
+                    b.addEventListener('click', function () {
+                        var inp = $(b.getAttribute('data-ver'));
+                        inp.type = inp.type === 'password' ? 'text' : 'password';
+                    });
+                });
+
+                abrirPorHash();
+            });
+        })();
     </script>
 </body>
 </html>

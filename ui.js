@@ -175,12 +175,11 @@
                             ['gerentedash.html#relatorios', '▣', 'Relatórios']
                         ]
                         : [
-                            ['acsarea.html', '▦', 'Dashboard'],
-                            ['cadfam.html', '＋', 'Cadastrar família'],
-                            ['familiascadastradas.html', '⌂', 'Famílias cadastradas'],
-                            ['vispen.html', '◷', 'Visitas pendentes'],
-                            ['visfeita.html', '✓', 'Visitas realizadas'],
-                            ['relatoriomensal.html', '▣', 'Relatório mensal']
+                            ['acsarea.html', '▦', 'Início'],
+                            ['familiascadastradas.html', '⌂', 'Famílias'],
+                            ['acsarea.html#consultas', '◷', 'Consultas'],
+                            ['vispen.html', '✓', 'Visitas'],
+                            ['acsarea.html#relatorios', '▣', 'Relatórios']
                         ];
 
                 const menu = document.createElement('aside');
@@ -206,7 +205,7 @@
                         '<div class="ss-options-title">Opções</div>' +
                         '<div class="ss-options-body"></div>' +
                     '</div>' +
-                    '<nav class="ss-menu-exit"><a href="login.html"><span class="ss-menu-icon">↪</span><span>Sair do painel</span></a></nav>';
+                    '<nav class="ss-menu-exit"><a href="login.html" onclick="sessionStorage.clear()"><span class="ss-menu-icon">↪</span><span>Sair do painel</span></a></nav>';
 
                 const menuInferior = document.createElement('nav');
                 menuInferior.className = 'ss-bottom-menu';
@@ -221,7 +220,7 @@
                     return '<a' + ativo + ' href="' + item[0] + '"><span class="ss-menu-icon">' + item[1] + '</span><span>' + item[2] + '</span></a>';
                 }).join('') +
                     '<a href="#opcoes" data-ss-options><span class="ss-menu-icon">⚙</span><span>Opções</span></a>' +
-                    '<a href="login.html"><span class="ss-menu-icon">↪</span><span>Sair</span></a>' +
+                    '<a href="login.html" onclick="sessionStorage.clear()"><span class="ss-menu-icon">↪</span><span>Sair</span></a>' +
                     '<div class="ss-options-panel ss-bottom-options" data-ss-options-panel aria-hidden="true">' +
                         '<div class="ss-options-title">Opções</div>' +
                         '<div class="ss-options-body"></div>' +
