@@ -1,0 +1,457 @@
+<!doctype html>
+<html lang="pt-BR" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ACS Conecta - Login</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: { colors: {
+        // Mesma paleta do painel-acs.html e do gerencia.html
+        slate: { 50:'#f4f7fb', 100:'#e8eef0', 200:'#dde4e6', 300:'#9aa7ad', 400:'#7f8c8d', 500:'#7f8c8d',
+                 600:'#44545b', 700:'#44545b', 800:'#16203b', 900:'#0c1220', 950:'#050814' },
+        emerald: { 50:'#e6f7f7', 100:'#cdeff0', 200:'#b2e5e7', 300:'#5fe6eb', 400:'#1ec2c7', 500:'#109ea3',
+                   600:'#109ea3', 700:'#0b777a', 800:'#085f62', 900:'#133b3c', 950:'#0c2a2b' },
+        red:     { 500:'#e74c3c', 600:'#e74c3c', 700:'#c0392b' },
+        amber:   { 500:'#f39c12', 600:'#d98a0b' }
+      } } }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style id="tema-login">
+    html, body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    body {
+      background-color: #f4f7fb;
+      background-image: url("img/trasno.png");
+      background-size: cover; background-position: center;
+      background-attachment: fixed; background-repeat: no-repeat;
+    }
+    #app { min-height: 100vh; }
+    .login-card {
+      background: rgba(255,255,255,0.96) !important;
+      border: 1px solid #dde4e6 !important;
+      border-top: 5px solid #109ea3 !important;
+      box-shadow: 0 18px 38px rgba(0,0,0,0.12) !important;
+      max-width: 22rem !important;
+    }
+    .login-logo { display:flex; justify-content:center; padding-bottom:16px; margin-bottom:18px; border-bottom:1px solid #dde4e6; }
+    .login-logo img { width:100%; max-width:7.8rem; height:auto; object-fit:contain; }
+    .login-titulo { color:#109ea3; }
+    input[type="checkbox"] { accent-color:#109ea3; }
+    input:focus { border-color:#109ea3 !important; }
+    .login-card button[type="submit"], .login-card .btn-prim { box-shadow:0 6px 14px rgba(16,158,163,0.28); }
+    .foto-lado { display:none; width:17.5rem; height:17.5rem; object-fit:cover; border-radius:1.25rem;
+      border:1px solid #dde4e6; box-shadow:0 18px 38px rgba(0,0,0,0.18); flex-shrink:0; }
+    @media (min-width:1024px) { #app { gap:3rem; } .foto-lado { display:block; } }
+    @media (min-width:1280px) { #app { gap:4.5rem; } .foto-lado { width:20rem; height:20rem; } }
+    .toast-item { animation: toastIn .25s ease; }
+    @keyframes toastIn { from { opacity:0; transform:translateY(-8px);} to { opacity:1; transform:none; } }
+  </style>
+ </head>
+ <body class="h-full text-slate-900">
+  <div id="toastContainer" class="fixed top-4 left-1/2 -translate-x-1/2 z-[200] flex flex-col gap-2 w-full max-w-xs px-4"></div>
+
+  <div id="app" class="h-full w-full flex login-container items-center justify-center p-4">
+   <img src="img/imagem_acs.jpg" alt="Agentes Comunitários de Saúde em campo" class="foto-lado">
+
+   <div class="login-card w-full max-w-xs bg-white rounded-2xl p-6 border border-slate-200 shadow-2xl" id="loginCard">
+    <div class="login-logo"><img src="img/logosemfundo.png" alt="ACS Conecta"></div>
+
+    <h1 class="login-titulo text-2xl font-800 text-center mb-1">Bem-vindo</h1>
+    <p class="text-slate-500 text-xs text-center mb-6">Central do ACS</p>
+
+    <form class="space-y-4 flex flex-col">
+     <div>
+      <label for="username" class="block text-xs font-600 text-slate-600 mb-1">Usuário</label> 
+      <input type="text" id="username" placeholder="Digite seu usuário" class="w-full px-3 py-2.5 rounded-xl bg-slate-100 border border-slate-200 text-slate-900 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm transition-all">
+     </div>
+
+     <div>
+      <label for="password" class="block text-xs font-600 text-slate-600 mb-1">Senha</label> 
+      <input type="password" id="password" placeholder="Digite sua senha" class="w-full px-3 py-2.5 rounded-xl bg-slate-100 border border-slate-200 text-slate-900 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm transition-all">
+     </div>
+
+     <div class="flex items-center gap-2">
+      <input type="checkbox" id="remember" class="w-4 h-4 rounded accent-emerald-500 bg-slate-100 border-slate-200"> 
+      <label for="remember" class="text-xs text-slate-500">Lembrar de mim</label>
+     </div>
+
+     <button type="submit" class="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-700 text-sm transition-colors duration-200 transform hover:-translate-y-0.5 mt-2">Entrar</button>
+    </form>
+
+    <div class="mt-5 text-center">
+     <p class="text-slate-500 text-xs">Esqueceu sua senha? <a href="#" class="text-emerald-600 hover:text-emerald-700 font-600 transition-colors">Recuperar</a></p>
+    </div>
+
+    <div class="mt-4 pt-4 border-t border-slate-200 flex flex-col gap-2">
+     <button type="button" onclick="abrirModalSenha()" class="w-full py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-900 font-600 text-sm transition-colors duration-200 flex items-center justify-center gap-2 transform hover:-translate-y-0.5">
+      <i data-lucide="shield-check" style="width:16px;height:16px;" class="text-emerald-600"></i>
+      Área Gerencial
+     </button>
+     <div class="flex gap-2">
+      <button type="button" onclick="abrirModalQuemSomos()" class="flex-1 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-900 font-600 text-sm transition-colors duration-200 flex items-center justify-center gap-2 transform hover:-translate-y-0.5">
+       <i data-lucide="info" style="width:16px;height:16px;" class="text-emerald-600"></i>
+       Quem Somos
+      </button>
+      <button type="button" onclick="abrirModalSuporte()" class="flex-1 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-900 font-600 text-sm transition-colors duration-200 flex items-center justify-center gap-2 transform hover:-translate-y-0.5">
+       <i data-lucide="life-buoy" style="width:16px;height:16px;" class="text-emerald-600"></i>
+       Suporte
+      </button>
+     </div>
+    </div>
+
+    <div class="mt-6 pt-4 border-t border-slate-200 text-center">
+     <p class="text-[10px] text-slate-500">© 2026 ACS Conecta.</p>
+    </div>
+   </div>
+
+   <!-- Card de Verificação em 2 Etapas (2FA) -->
+   <div id="card2FA" class="hidden login-card w-full max-w-xs bg-white rounded-2xl p-6 border border-slate-200 shadow-2xl">
+    <div class="login-logo"><img src="img/logosemfundo.png" alt="ACS Conecta"></div>
+
+    <h1 class="login-titulo text-xl font-800 text-center mb-1">Verificação de Segurança</h1>
+    <p class="text-slate-500 text-xs text-center mb-1">Responda a pergunta abaixo para confirmar sua identidade</p>
+    <p id="tentativas2FA" class="text-slate-400 text-[11px] text-center mb-5">Tentativa 1 de 3</p>
+
+    <div class="space-y-4">
+     <div>
+      <label class="block text-xs font-600 text-slate-600 mb-1" id="pergunta2FA">Qual o nome da sua mãe?</label>
+      <input type="text" id="resposta2FA" placeholder="Digite sua resposta"
+       onkeydown="if(event.key==='Enter') verificarResposta2FA()"
+       class="w-full px-3 py-2.5 rounded-xl bg-slate-100 border border-slate-200 text-slate-900 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm transition-all">
+     </div>
+
+     <button type="button" onclick="verificarResposta2FA()" class="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-700 text-sm transition-colors duration-200 transform hover:-translate-y-0.5">Confirmar</button>
+     <button type="button" onclick="cancelar2FA()" class="w-full py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-600 font-600 text-sm transition-colors">Voltar ao Login</button>
+    </div>
+   </div>
+
+   <img src="img/acsmulher600.jpg" alt="Agentes Comunitárias de Saúde atendendo na comunidade" class="foto-lado">
+
+  </div>
+
+  <div id="modalSenha" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="w-full max-w-xs bg-white rounded-2xl p-6 border border-slate-200 shadow-2xl">
+      <div class="flex items-center gap-3 mb-5">
+        <div class="w-10 h-10 bg-emerald-500/15 rounded-xl flex items-center justify-center">
+          <i data-lucide="shield-check" style="width:20px;height:20px;" class="text-emerald-600"></i>
+        </div>
+        <div>
+          <p class="font-700 text-slate-900 text-sm">Área Gerencial</p>
+          <p class="text-slate-500 text-xs">Digite o usuário e a senha de acesso</p>
+        </div>
+      </div>
+      <div class="space-y-3">
+        <input type="text" id="usuarioGerencial" placeholder="Usuário" autocomplete="username"
+          onkeydown="if(event.key==='Enter') document.getElementById('senhaGerencial').focus()"
+          class="w-full px-3 py-2.5 rounded-xl bg-slate-100 border border-slate-200 text-slate-900 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm transition-all">
+        <div class="relative">
+          <input type="password" id="senhaGerencial" placeholder="Senha" autocomplete="current-password"
+            onkeydown="if(event.key==='Enter') confirmarSenha()"
+            class="w-full px-3 py-2.5 rounded-xl bg-slate-100 border border-slate-200 text-slate-900 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm transition-all pr-10">
+          <button type="button" onclick="toggleSenhaVisivel()" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-600 transition-colors">
+            <i id="iconOlho" data-lucide="eye" style="width:16px;height:16px;"></i>
+          </button>
+        </div>
+      </div>
+      <p id="erroSenha" class="text-red-500 text-xs mt-2 hidden">Usuário ou senha incorretos. Tente novamente.</p>
+      <div class="flex gap-2 mt-5">
+        <button onclick="fecharModalSenha()" class="flex-1 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-600 font-600 text-sm transition-colors">Cancelar</button>
+        <button onclick="confirmarSenha()" class="flex-1 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-700 text-sm transition-colors">Entrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Quem Somos -->
+  <div id="modalQuemSomos" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="w-full max-w-sm bg-white rounded-2xl p-6 border border-slate-200 shadow-2xl max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center gap-3 mb-5">
+        <div class="w-10 h-10 bg-emerald-500/15 rounded-xl flex items-center justify-center flex-shrink-0">
+          <i data-lucide="info" style="width:20px;height:20px;" class="text-emerald-600"></i>
+        </div>
+        <div>
+          <p class="font-700 text-slate-900 text-sm">Quem Somos</p>
+          <p class="text-slate-500 text-xs">Conheça o Seven Sys</p>
+        </div>
+      </div>
+
+      <div class="space-y-4 text-sm">
+        <div>
+          <h3 class="font-700 text-slate-900 mb-1">O que é o Seven Sys?</h3>
+          <p class="text-slate-500 text-xs leading-relaxed">O Seven Sys é uma plataforma desenvolvida para modernizar e otimizar a rotina do Agente Comunitário de Saúde (ACS), transformando o trabalho em um processo digital ágil e eficiente.</p>
+        </div>
+
+        <div>
+          <h3 class="font-700 text-slate-900 mb-1">Transformando a Gestão da Saúde</h3>
+          <p class="text-slate-500 text-xs leading-relaxed">Unimos tecnologia com a realidade das comunidades para oferecer uma solução com inteligência e cuidado.</p>
+        </div>
+
+        <div>
+          <h3 class="font-700 text-slate-900 mb-2">Destaques da Plataforma</h3>
+          <div class="space-y-2">
+            <div class="flex items-center gap-2 bg-slate-100 rounded-xl px-3 py-2">
+              <i data-lucide="smartphone" style="width:15px;height:15px;" class="text-emerald-600 flex-shrink-0"></i>
+              <div>
+                <span class="text-slate-900 font-600 text-xs">Mobilidade Total</span>
+                <p class="text-slate-500 text-xs">Use no celular ou tablet.</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2 bg-slate-100 rounded-xl px-3 py-2">
+              <i data-lucide="wifi-off" style="width:15px;height:15px;" class="text-amber-600 flex-shrink-0"></i>
+              <div>
+                <span class="text-slate-900 font-600 text-xs">Offline</span>
+                <p class="text-slate-500 text-xs">Funciona sem internet.</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2 bg-slate-100 rounded-xl px-3 py-2">
+              <i data-lucide="map-pin" style="width:15px;height:15px;" class="text-emerald-600 flex-shrink-0"></i>
+              <div>
+                <span class="text-slate-900 font-600 text-xs">Geolocalização</span>
+                <p class="text-slate-500 text-xs">Planeje rotas.</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2 bg-slate-100 rounded-xl px-3 py-2">
+              <i data-lucide="bar-chart-2" style="width:15px;height:15px;" class="text-emerald-600 flex-shrink-0"></i>
+              <div>
+                <span class="text-slate-900 font-600 text-xs">Indicadores</span>
+                <p class="text-slate-500 text-xs">Dados em tempo real.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button onclick="fecharModalQuemSomos()" class="w-full mt-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-700 text-sm transition-colors">Fechar</button>
+    </div>
+  </div>
+
+  <!-- Modal Suporte -->
+  <div id="modalSuporte" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="w-full max-w-xs bg-white rounded-2xl p-6 border border-slate-200 shadow-2xl">
+      <div class="flex items-center gap-3 mb-5">
+        <div class="w-10 h-10 bg-emerald-500/15 rounded-xl flex items-center justify-center flex-shrink-0">
+          <i data-lucide="life-buoy" style="width:20px;height:20px;" class="text-emerald-600"></i>
+        </div>
+        <div>
+          <p class="font-700 text-slate-900 text-sm">Suporte</p>
+          <p class="text-slate-500 text-xs">Entre em contato conosco</p>
+        </div>
+      </div>
+
+      <div class="space-y-3">
+        <a href="tel:+5521999999999" class="flex items-center gap-3 bg-slate-100 hover:bg-slate-200 border border-slate-200 rounded-xl px-4 py-3 transition-colors group">
+          <i data-lucide="phone" style="width:16px;height:16px;" class="text-emerald-600 flex-shrink-0"></i>
+          <div>
+            <p class="text-xs text-slate-500 font-600">Telefone</p>
+            <p class="text-slate-900 text-sm font-700">(21) 99999-9999</p>
+          </div>
+        </a>
+        <a href="https://wa.me/5521999999999" target="_blank" class="flex items-center gap-3 bg-slate-100 hover:bg-slate-200 border border-slate-200 rounded-xl px-4 py-3 transition-colors group">
+          <i data-lucide="message-circle" style="width:16px;height:16px;" class="text-emerald-600 flex-shrink-0"></i>
+          <div>
+            <p class="text-xs text-slate-500 font-600">WhatsApp</p>
+            <p class="text-slate-900 text-sm font-700">(21) 99999-9999</p>
+          </div>
+        </a>
+        <a href="mailto:suporte@sevensys.com.br" class="flex items-center gap-3 bg-slate-100 hover:bg-slate-200 border border-slate-200 rounded-xl px-4 py-3 transition-colors">
+          <i data-lucide="mail" style="width:16px;height:16px;" class="text-emerald-600 flex-shrink-0"></i>
+          <div>
+            <p class="text-xs text-slate-500 font-600">E-mail</p>
+            <p class="text-slate-900 text-sm font-700">suporte@sevensys.com.br</p>
+          </div>
+        </a>
+      </div>
+
+      <button onclick="fecharModalSuporte()" class="w-full mt-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-700 text-sm transition-colors">Fechar</button>
+    </div>
+  </div>
+
+<script>
+  lucide.createIcons();
+
+  function mostrarToast(mensagem, tipo = 'success') {
+    const container = document.getElementById('toastContainer');
+    if (!container) return;
+    const estilos = {
+      success: { bg: 'bg-emerald-600', icon: 'check-circle' },
+      error: { bg: 'bg-red-600', icon: 'x-circle' },
+      warning: { bg: 'bg-amber-500', icon: 'alert-triangle' },
+      info: { bg: 'bg-emerald-600', icon: 'info' }
+    };
+    const cfg = estilos[tipo] || estilos.info;
+    const toast = document.createElement('div');
+    toast.className = `toast-item ${cfg.bg} text-white text-sm font-600 rounded-xl shadow-2xl px-4 py-3 flex items-center gap-2`;
+    toast.innerHTML = `<i data-lucide="${cfg.icon}" style="width:16px;height:16px;" class="flex-shrink-0"></i><span>${mensagem}</span>`;
+    container.appendChild(toast);
+    lucide.createIcons();
+    setTimeout(() => {
+      toast.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+      toast.style.opacity = '0';
+      toast.style.transform = 'translateY(-8px)';
+      setTimeout(() => toast.remove(), 300);
+    }, 3500);
+  }
+
+  function abrirModalSenha() {
+    document.getElementById('usuarioGerencial').value = '';
+    document.getElementById('senhaGerencial').value = '';
+    document.getElementById('erroSenha').classList.add('hidden');
+    document.getElementById('modalSenha').classList.remove('hidden');
+    setTimeout(() => document.getElementById('usuarioGerencial').focus(), 50);
+  }
+
+  function fecharModalSenha() {
+    document.getElementById('modalSenha').classList.add('hidden');
+  }
+
+  // Função auxiliar para falar com o servidor (login.php)
+  async function api(acao, dados = {}) {
+    try {
+      const r = await fetch('login.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ acao, ...dados })
+      });
+      return await r.json();
+    } catch (e) {
+      return { ok: false, erro: 'Não foi possível conectar ao servidor.' };
+    }
+  }
+
+  async function confirmarSenha() {
+    const usuarioDigitado = document.getElementById('usuarioGerencial').value.trim();
+    const senhaDigitada = document.getElementById('senhaGerencial').value;
+
+    // A validação (admin ou gerente) agora é feita no servidor, contra o MySQL.
+    const r = await api('login', { login: usuarioDigitado, senha: senhaDigitada, area: 'gerencia' });
+
+    if (r.ok) {
+      window.location.href = r.destino;
+    } else {
+      document.getElementById('erroSenha').textContent = r.erro || 'Usuário ou senha incorretos. Tente novamente.';
+      document.getElementById('erroSenha').classList.remove('hidden');
+      document.getElementById('senhaGerencial').value = '';
+      document.getElementById('senhaGerencial').focus();
+    }
+  }
+
+  function toggleSenhaVisivel() {
+    const input = document.getElementById('senhaGerencial');
+    const icon = document.getElementById('iconOlho');
+    if (input.type === 'password') {
+      input.type = 'text';
+      icon.setAttribute('data-lucide', 'eye-off');
+    } else {
+      input.type = 'password';
+      icon.setAttribute('data-lucide', 'eye');
+    }
+    lucide.createIcons();
+  }
+
+  // Fechar clicando fora do modal
+  document.getElementById('modalSenha').addEventListener('click', function(e) {
+    if (e.target === this) fecharModalSenha();
+  });
+  document.getElementById('modalQuemSomos').addEventListener('click', function(e) {
+    if (e.target === this) fecharModalQuemSomos();
+  });
+  document.getElementById('modalSuporte').addEventListener('click', function(e) {
+    if (e.target === this) fecharModalSuporte();
+  });
+
+  function abrirModalQuemSomos() {
+    document.getElementById('modalQuemSomos').classList.remove('hidden');
+    lucide.createIcons();
+  }
+  function fecharModalQuemSomos() {
+    document.getElementById('modalQuemSomos').classList.add('hidden');
+  }
+  function abrirModalSuporte() {
+    document.getElementById('modalSuporte').classList.remove('hidden');
+    lucide.createIcons();
+  }
+  function fecharModalSuporte() {
+    document.getElementById('modalSuporte').classList.add('hidden');
+  }
+
+  // ── Autenticação em 2 Fatores (2FA) ──
+  // A pergunta é sorteada e a resposta é conferida no servidor (login.php);
+  // nenhum dado pessoal do agente chega ao navegador antes da verificação.
+  let tentativas2FA = 0;
+
+  function iniciar2FA(textoPergunta) {
+    tentativas2FA = 0;
+    document.getElementById('pergunta2FA').innerText = textoPergunta;
+    document.getElementById('resposta2FA').value = '';
+    document.getElementById('tentativas2FA').innerText = `Tentativa ${tentativas2FA + 1} de 3`;
+
+    document.getElementById('loginCard').classList.add('hidden');
+    document.getElementById('card2FA').classList.remove('hidden');
+    setTimeout(() => document.getElementById('resposta2FA').focus(), 50);
+  }
+
+  // TEMPORÁRIO: o painel-acs.html ainda guarda famílias/visitas/consultas no localStorage e lê o agente
+  // de lá. Esta ponte copia o agente (já validado no servidor) para o formato antigo.
+  // Remover quando o painel do agente for migrado para o MySQL.
+  function ponteAgenteLocal(ag) {
+    const ler = k => { try { return JSON.parse(localStorage.getItem(k)) || []; } catch (e) { return []; } };
+    ag.familias = ler('familias').filter(f => f.agenteLogin === ag.login).length;
+    ag.visitas = ler('visitas_historico').filter(v => v.agenteLogin === ag.login).length;
+    ag.consultas = 0;
+    const lista = ler('agentes').filter(a => a.login !== ag.login);
+    lista.push(ag);
+    localStorage.setItem('agentes', JSON.stringify(lista));
+    localStorage.setItem('agente_sessao', JSON.stringify(ag));
+  }
+
+  async function verificarResposta2FA() {
+    const r = await api('2fa', { resposta: document.getElementById('resposta2FA').value });
+
+    if (r.ok) {
+      if (r.agente) ponteAgenteLocal(r.agente);
+      window.location.href = r.destino;
+      return;
+    }
+
+    if (r.bloqueado) {
+      mostrarToast(r.erro || '3 tentativas sem sucesso! Favor realizar Login novamente.', 'error');
+      cancelar2FA();
+      return;
+    }
+
+    tentativas2FA = r.tentativas || (tentativas2FA + 1);
+    mostrarToast(r.erro || 'Resposta incorreta.', 'warning');
+    document.getElementById('resposta2FA').value = '';
+    document.getElementById('resposta2FA').focus();
+    document.getElementById('tentativas2FA').innerText = `Tentativa ${tentativas2FA + 1} de 3`;
+  }
+
+  function cancelar2FA() {
+    tentativas2FA = 0;
+    document.getElementById('card2FA').classList.add('hidden');
+    document.getElementById('loginCard').classList.remove('hidden');
+    document.getElementById('username').value = '';
+    document.getElementById('password').value = '';
+    setTimeout(() => document.getElementById('username').focus(), 50);
+  }
+
+  document.querySelector('form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const r = await api('login', {
+      login: document.getElementById('username').value.trim(),
+      senha: document.getElementById('password').value,
+      area: 'agente'
+    });
+
+    if (r.ok && r.etapa === '2fa') {
+      iniciar2FA(r.pergunta);
+    } else {
+      mostrarToast(r.erro || 'Usuário ou senha incorretos!', 'error');
+    }
+  });
+</script>
+ </body>
+</html>

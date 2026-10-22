@@ -1,0 +1,2710 @@
+<!doctype html>
+<html lang="pt-BR" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ACS Conecta - Painel do Agente</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: { extend: { colors: {
+        // Paleta do projeto 1.0 (SevenSys)
+        slate: { 50:'#f4f7fb', 100:'#e8eef0', 200:'#dde4e6', 300:'#9aa7ad', 400:'#7f8c8d', 500:'#7f8c8d',
+                 600:'#44545b', 700:'#44545b', 800:'#16203b', 900:'#0c1220', 950:'#050814' },
+        emerald: { 50:'#e6f7f7', 100:'#cdeff0', 200:'#b2e5e7', 300:'#5fe6eb', 400:'#1ec2c7', 500:'#109ea3',
+                   600:'#109ea3', 700:'#0b777a', 800:'#085f62', 900:'#133b3c', 950:'#0c2a2b' },
+        blue:    { 400:'#82c7ff', 500:'#4c7dd2', 600:'#007bff', 700:'#0056b3', 800:'#004494' },
+        violet:  { 500:'#8a63d2', 600:'#6f42c1', 700:'#5a32a3', 800:'#472880' },
+        red:     { 50:'#fdecea', 100:'#fad4d0', 200:'#f5aaa3', 300:'#ff9b92', 400:'#ff6b5e', 500:'#e74c3c',
+                   600:'#e74c3c', 700:'#c0392b', 800:'#962d22', 900:'#6b211a', 950:'#3f130f' },
+        amber:   { 50:'#fef5e1', 100:'#fde8b8', 200:'#fbd78a', 300:'#f8c25c', 400:'#f5b041', 500:'#f39c12',
+                   600:'#d98a0b', 700:'#b9770e', 800:'#7a4a06', 900:'#5a3705', 950:'#3a2303' },
+        green:   { 50:'#e9f7ef', 100:'#d0f0de', 200:'#a3e0bd', 300:'#6fcf97', 400:'#3ddc84', 500:'#27ae60',
+                   600:'#27ae60', 700:'#1e8449', 800:'#186a3b', 900:'#124d2b', 950:'#0b2e19' }
+      } } }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style id="paleta-1-0">
+    /* Cores do projeto 1.0 que não cabem numa escala do Tailwind */
+    .toggle-checkbox:checked + .toggle-label { background-color: #109ea3; }
+    input[type="checkbox"], input[type="radio"] { accent-color: #109ea3; }
+  </style>
+
+  <style id="tema-1-0">
+    /* ===== Visual do 1.0: fundo, menu lateral e cards ===== */
+    :root:not(.dark) body {
+      background-color: #f4f7fb;
+      background-image: url("img/trasno.png");
+      background-size: cover; background-position: center;
+      background-attachment: fixed; background-repeat: no-repeat;
+    }
+    :root:not(.dark) .bg-white { background-color: rgba(255,255,255,0.96); }
+
+    /* Menu lateral */
+    aside {
+      width: 14.875rem !important; padding: 26px 18px !important;
+      background: rgba(255,255,255,0.96) !important;
+      border-right: 1px solid #dde4e6 !important;
+      box-shadow: 2px 0 12px rgba(0,0,0,0.06);
+    }
+    .ss-brand { display:flex; align-items:center; justify-content:center;
+      padding:0 0 16px; margin-bottom:14px; border-bottom:1px solid #dde4e6; }
+    .ss-brand img { width:100%; max-width:7.8rem; height:auto; object-fit:contain; }
+    .ss-title { padding:0 14px 16px; margin-bottom:14px; border-bottom:1px solid #dde4e6;
+      color:#7f8c8d; font-size:.78rem; font-weight:700; letter-spacing:.7px; text-transform:uppercase; }
+    aside nav { display:grid; gap:7px; align-content:start; }
+    aside nav > * { margin-top:0 !important; }
+    aside nav > a, aside nav > button {
+      display:flex; align-items:center; gap:12px; padding:12px 14px !important;
+      border-radius:9px !important; font-size:.88rem; font-weight:600;
+      color:#2c3e50 !important; background:transparent !important; text-align:left;
+    }
+    aside nav > a:hover, aside nav > button:hover,
+    aside nav > a.bg-slate-800, aside nav > a[href="#"] {
+      background:#e6f7f7 !important; color:#0b777a !important;
+    }
+    aside nav svg { stroke:#109ea3 !important; }
+    aside > div:last-child { border-top:1px solid #dde4e6 !important; padding-top:18px !important; }
+    aside > div:last-child a, aside > div:last-child button {
+      color:#e74c3c !important; background:transparent !important;
+      justify-content:flex-start !important; font-weight:600;
+    }
+    aside > div:last-child a:hover, aside > div:last-child button:hover { background:#fdecea !important; }
+    aside > div:last-child svg { stroke:#e74c3c !important; }
+
+    /* Cards de estatística */
+    .ss-stat {
+      display:flex; flex-direction:column; transition:transform .2s;
+      background:rgba(255,255,255,0.96) !important;
+      border:1px solid rgba(16,158,163,0.12) !important;
+      border-top:5px solid #109ea3 !important;
+      border-radius:16px !important;
+      box-shadow:0 16px 34px rgba(15,23,42,0.11) !important;
+    }
+    .ss-stat:hover { transform:translateY(-4px); }
+    .ss-stat > .flex.items-center.justify-between { display:none; }
+    .ss-stat .uppercase { order:1; color:#7f8c8d !important; margin:0 0 6px !important; }
+    .ss-stat .text-3xl { order:2; color:#109ea3 !important; font-size:2.4rem; line-height:1; }
+    .ss-stat.ss-center { align-items:center; justify-content:center; text-align:center; min-height:170px; }
+    .ss-stat.ss-center .uppercase { color:#2c3e50 !important; text-transform:none; font-size:1rem; letter-spacing:0; margin-bottom:14px !important; }
+    .ss-stat.ss-center .text-3xl { font-size:2.8rem; }
+
+    /* Boas-vindas e ações rápidas (painel do agente) */
+    #boasVindas { color:#109ea3 !important; }
+    #home h3 + .grid > * {
+      border:1px solid #e2eaed !important; border-left:4px solid #109ea3 !important;
+      border-radius:12px !important; background:rgba(255,255,255,0.96) !important;
+    }
+    #home h3 + .grid > * > div { background:#e6f7f7 !important; }
+    #home h3 + .grid > * svg { stroke:#109ea3 !important; }
+    :root:not(.dark) #home .bg-slate-900.rounded-2xl.p-6 {
+      background:transparent !important; border:none !important; box-shadow:none !important; padding-left:0; padding-right:0;
+    }
+
+    /* Modo escuro (azul-marinho do 1.0) */
+    :root.dark aside { background:#0c1220 !important; border-right-color:#24344f !important; }
+    :root.dark .ss-brand, :root.dark .ss-title, :root.dark aside > div:last-child { border-color:#24344f !important; }
+    :root.dark aside nav > a, :root.dark aside nav > button { color:#e2e8f0 !important; }
+    :root.dark aside nav > a:hover, :root.dark aside nav > button:hover,
+    :root.dark aside nav > a.bg-slate-800, :root.dark aside nav > a[href="#"] { background:#16203b !important; color:#5fe6eb !important; }
+    :root.dark aside nav svg { stroke:#1ec2c7 !important; }
+    :root.dark .ss-stat { background:#0c1220 !important; border-color:rgba(30,194,199,0.2) !important; border-top-color:#1ec2c7 !important; box-shadow:0 18px 38px rgba(0,0,0,0.3) !important; }
+    :root.dark .ss-stat .text-3xl, :root.dark #boasVindas { color:#1ec2c7 !important; }
+    :root.dark .ss-stat .uppercase, :root.dark .ss-stat.ss-center .uppercase { color:#e2e8f0 !important; }
+    :root.dark #home h3 + .grid > * { background:#0c1220 !important; border-color:#24344f !important; border-left-color:#1ec2c7 !important; }
+    :root.dark #home h3 + .grid > * > div { background:#133b3c !important; }
+  </style>
+
+  <style id="fonte-ajuste">
+    .ss-fonte-btn { display:inline-flex; align-items:center; justify-content:center; flex-shrink:0;
+      min-width:30px; height:30px; padding:0 6px; border-radius:999px; border:1px solid #dde4e6;
+      background:rgba(255,255,255,0.96); color:#2c3e50; font-weight:700; font-size:.8rem; line-height:1; cursor:pointer;
+      transition:border-color .2s, color .2s; }
+    .ss-fonte-btn:hover { border-color:#109ea3; color:#109ea3; }
+    aside > div:last-child .ss-fonte-btn { color:#2c3e50 !important; background:rgba(255,255,255,0.96) !important;
+      justify-content:center !important; border-radius:999px !important; padding:0 6px !important; }
+    aside > div:last-child .ss-fonte-btn:hover { background:#e6f7f7 !important; color:#109ea3 !important; }
+    :root.dark .ss-fonte-btn, :root.dark aside > div:last-child .ss-fonte-btn { background:#0c1220 !important; border-color:#24344f; color:#e2e8f0 !important; }
+    :root.dark .ss-fonte-btn:hover, :root.dark aside > div:last-child .ss-fonte-btn:hover { border-color:#1ec2c7; color:#1ec2c7 !important; background:#16203b !important; }
+  </style>
+  <script>
+    /* Tamanho da fonte (A- / A+): escala o rem da página; vale para as duas páginas e fica salvo. */
+    (function () {
+      try { var p = parseInt(localStorage.getItem('ss_fonte') || '100', 10);
+            if (p >= 80 && p <= 140) document.documentElement.style.fontSize = p + '%'; } catch (e) {}
+    })();
+    function ssFonte(dir) {
+      var p = 100;
+      try { p = parseInt(localStorage.getItem('ss_fonte') || '100', 10) || 100; } catch (e) {}
+      p = Math.min(140, Math.max(80, p + dir * 10));
+      document.documentElement.style.fontSize = p + '%';
+      try { localStorage.setItem('ss_fonte', String(p)); } catch (e) {}
+    }
+  </script>
+</head>
+<body class="h-full bg-slate-950 text-slate-100 flex flex-col md:flex-row overflow-hidden">
+
+  <div id="toastContainer" class="fixed top-4 left-1/2 -translate-x-1/2 md:left-auto md:right-4 md:translate-x-0 z-[200] flex flex-col gap-2 w-full max-w-xs px-4 md:px-0"></div>
+
+  <aside class="w-64 bg-slate-900 border-r border-white/10 p-6 hidden md:flex flex-col flex-shrink-0">
+    <div class="ss-brand"><img src="img/logosemfundo.png" alt="ACS Conecta"></div>
+    <div class="ss-title">Área ACS</div>
+    <span id="nomeUnidadeSide" class="hidden"></span>
+    
+    <nav class="space-y-2 flex-1">
+      <a href="#home" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left hover:bg-slate-800 transition-colors">
+        <i data-lucide="layout-dashboard" style="width:18px;height:18px;"></i> Início
+      </a>
+      <a href="#families" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left hover:bg-slate-800 transition-colors">
+        <i data-lucide="users" style="width:18px;height:18px;"></i> Famílias
+      </a>
+      <a href="#appointments" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left hover:bg-slate-800 transition-colors">
+        <i data-lucide="calendar" style="width:18px;height:18px;"></i> Consultas
+      </a>
+      <a href="#visits" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left hover:bg-slate-800 transition-colors">
+        <i data-lucide="home" style="width:18px;height:18px;"></i> Visitas
+      </a>
+      <a href="#relatorios" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left hover:bg-slate-800 transition-colors">
+        <i data-lucide="file-bar-chart" style="width:18px;height:18px;"></i> Relatórios
+      </a>
+      <a href="#opcoes" class="nav-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left hover:bg-slate-800 transition-colors">
+        <i data-lucide="settings" style="width:18px;height:18px;"></i> Opções
+      </a>
+    </nav>
+
+    <div class="border-t border-white/10 pt-4">
+      <p class="text-xs text-slate-400 font-600 mb-2" id="nomeAcsSide">Nome do Agente</p>
+      <div class="flex items-center gap-1.5"><button onclick="sairAgente()" class="flex-1 min-w-0 flex items-center gap-2 px-3 py-2.5 rounded-xl bg-white/5 text-slate-300 hover:bg-red-600/20 hover:text-red-400 transition-colors font-600 text-sm justify-center">
+        <i data-lucide="log-out" style="width:16px;height:16px;"></i> Sair
+      </button><button type="button" class="ss-fonte-btn" onclick="ssFonte(-1)" aria-label="Diminuir fonte" title="Diminuir fonte">A-</button><button type="button" class="ss-fonte-btn" onclick="ssFonte(1)" aria-label="Aumentar fonte" title="Aumentar fonte">A+</button></div>
+    </div>
+  </aside>
+
+  <header class="md:hidden bg-slate-900 border-b border-white/10 p-4 flex items-center justify-between shadow-lg">
+    <div class="flex items-center gap-2">
+      <img src="img/logosemfundo.png" alt="ACS Conecta" style="height:38px;width:auto;">
+      <span class="font-800 text-sm">ACS Conecta</span>
+    </div>
+    <div class="flex items-center gap-2"><button type="button" class="ss-fonte-btn" onclick="ssFonte(-1)" aria-label="Diminuir fonte" title="Diminuir fonte">A-</button><button type="button" class="ss-fonte-btn" onclick="ssFonte(1)" aria-label="Aumentar fonte" title="Aumentar fonte">A+</button><button onclick="sairAgente()" class="text-slate-400 hover:text-red-400">
+      <i data-lucide="log-out" style="width:18px;height:18px;"></i>
+    </button></div>
+  </header>
+
+  <main class="flex-1 overflow-y-auto no-scrollbar pb-24 md:pb-8">
+    <div class="p-4 md:p-8 max-w-6xl mx-auto space-y-6">
+      
+      <!-- Avisos de consultas (amanhã / presença pendente) -->
+      <div id="avisosConsultas" class="space-y-3"></div>
+
+      <section id="home" class="content-section space-y-6">
+        <div class="bg-white/5 p-6 rounded-2xl border border-white/10">
+          <h2 class="text-2xl md:text-3xl font-800 text-white tracking-tight" id="boasVindas">Bem-vindo(a)!</h2>
+          <p class="text-slate-400 text-sm mt-1" id="infoUnidade">Carregando unidade...</p>
+        </div>
+        
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <a href="#families" class="ss-stat ss-center bg-slate-900 rounded-2xl p-5 border border-white/10 shadow-sm hover:border-blue-500/50 hover:bg-slate-800 transition-all cursor-pointer block group">
+            <div class="flex items-center justify-between mb-3">
+              <div class="w-10 h-10 bg-blue-500/10 rounded-xl flex items-center justify-center group-hover:bg-blue-500/20 transition-colors">
+                <i data-lucide="users" class="text-blue-400"></i>
+              </div>
+              <i data-lucide="chevron-right" class="text-slate-600 group-hover:text-blue-400 transition-colors" style="width:16px;height:16px;"></i>
+            </div>
+            <p class="text-3xl font-800 text-white" id="acsFamilias">0</p>
+            <p class="text-xs text-slate-400 uppercase tracking-wider font-700 mt-1">Minhas Famílias</p>
+          </a>
+          
+          <a href="#appointments" class="ss-stat ss-center bg-slate-900 rounded-2xl p-5 border border-white/10 shadow-sm hover:border-amber-500/50 hover:bg-slate-800 transition-all cursor-pointer block group">
+            <div class="flex items-center justify-between mb-3">
+              <div class="w-10 h-10 bg-amber-500/10 rounded-xl flex items-center justify-center group-hover:bg-amber-500/20 transition-colors">
+                <i data-lucide="calendar" class="text-amber-400"></i>
+              </div>
+              <i data-lucide="chevron-right" class="text-slate-600 group-hover:text-amber-400 transition-colors" style="width:16px;height:16px;"></i>
+            </div>
+            <p class="text-3xl font-800 text-white" id="acsConsultas">0</p>
+            <p class="text-xs text-slate-400 uppercase tracking-wider font-700 mt-1">Consultas Agendadas</p>
+          </a>
+
+          <button onclick="abrirVisitasPendentes()" class="ss-stat ss-center bg-slate-900 rounded-2xl p-5 border border-white/10 shadow-sm hover:border-red-500/50 hover:bg-slate-800 transition-all cursor-pointer block group w-full text-left">
+            <div class="flex items-center justify-between mb-3">
+              <div class="w-10 h-10 bg-red-500/10 rounded-xl flex items-center justify-center group-hover:bg-red-500/20 transition-colors">
+                <i data-lucide="clock" class="text-red-400"></i>
+              </div>
+              <i data-lucide="chevron-right" class="text-slate-600 group-hover:text-red-400 transition-colors" style="width:16px;height:16px;"></i>
+            </div>
+            <p class="text-3xl font-800 text-white" id="acsVisitasPendentes">0</p>
+            <p class="text-xs text-slate-400 uppercase tracking-wider font-700 mt-1">Visitas Pendentes</p>
+          </button>
+          
+          <a href="#visits" class="ss-stat ss-center bg-slate-900 rounded-2xl p-5 border border-white/10 shadow-sm hover:border-emerald-500/50 hover:bg-slate-800 transition-all cursor-pointer block group">
+            <div class="flex items-center justify-between mb-3">
+              <div class="w-10 h-10 bg-emerald-500/10 rounded-xl flex items-center justify-center group-hover:bg-emerald-500/20 transition-colors">
+                <i data-lucide="home" class="text-emerald-400"></i>
+              </div>
+              <i data-lucide="chevron-right" class="text-slate-600 group-hover:text-emerald-400 transition-colors" style="width:16px;height:16px;"></i>
+            </div>
+            <p class="text-3xl font-800 text-white" id="acsVisitas">0</p>
+            <p class="text-xs text-slate-400 uppercase tracking-wider font-700 mt-1">Visitas Realizadas</p>
+          </a>
+        </div>
+
+        <div class="bg-slate-900 rounded-2xl p-6 border border-white/10">
+          <h3 class="font-800 text-lg text-white mb-4">Ações rápidas</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <button onclick="openFamilyRegistration()" class="flex items-center gap-3 p-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-all text-left group w-full">
+              <div class="w-8 h-8 bg-blue-500/10 rounded-lg flex items-center justify-center group-hover:bg-blue-500/20">
+                <i data-lucide="user-plus" class="text-blue-400 w-4 h-4"></i>
+              </div>
+              <span class="text-sm font-600 text-slate-200">Cadastrar nova família</span>
+            </button>
+            
+            <a href="#visits" class="flex items-center gap-3 p-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-all text-left group">
+              <div class="w-8 h-8 bg-emerald-500/10 rounded-lg flex items-center justify-center group-hover:bg-emerald-500/20">
+                <i data-lucide="clipboard-list" class="text-emerald-400 w-4 h-4"></i>
+              </div>
+              <span class="text-sm font-600 text-slate-200">Lançar relatórios de visitas</span>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <section id="families" class="content-section hidden space-y-6">
+        
+        <div id="familyListHeader" class="flex items-center justify-between">
+          <h2 class="text-2xl font-800 text-white tracking-tight">Famílias Cadastradas</h2>
+          <button id="btnToggleForm" onclick="prepareNewFamilyForm()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-xl font-700 text-sm transition-all flex items-center gap-2">
+            <i data-lucide="plus" style="width:16px;height:16px;"></i> Nova Família
+          </button>
+        </div>
+
+        <div id="familyFormContainer" class="bg-slate-900 rounded-2xl border border-white/10 p-6 hidden">
+          <div class="flex items-center justify-between mb-4 pb-2 border-b border-white/5">
+            <h3 id="formTitle" class="text-lg font-800 text-white flex items-center gap-2">
+              <i data-lucide="file-text" class="text-emerald-400"></i> Ficha de Cadastro Familiar e Territorial
+            </h3>
+            <button type="button" onclick="showOnlyList()" class="text-xs text-slate-400 hover:text-white flex items-center gap-1 bg-white/5 px-3 py-1.5 rounded-lg border border-white/10 transition-colors">
+              <i data-lucide="arrow-left" style="width:12px;height:12px;"></i> Voltar para a Listagem
+            </button>
+          </div>
+
+          <form id="familyForm" onsubmit="saveFamily(event)" class="space-y-6">
+            <input type="hidden" id="editProntuarioId" value="">
+
+            <div class="bg-white/5 p-4 rounded-xl border border-white/5 space-y-4">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <h4 class="text-xs font-800 text-emerald-400 uppercase tracking-wider">1. Localização e Identificação Territorial</h4>
+                <div class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-3 py-1 rounded-lg text-xs font-700 flex items-center gap-1.5 self-start sm:self-auto">
+                  <i data-lucide="fingerprint" class="w-3.5 h-3.5"></i>
+                  Prontuário: <span id="lblProntuarioAuto">--.---</span>
+                </div>
+              </div>
+              
+              <div class="grid grid-cols-1 sm:grid-cols-12 gap-4">
+                <div class="sm:col-span-3">
+                  <label for="cep" class="block text-xs font-600 text-slate-300 mb-1 flex items-center justify-between">
+                    <span>CEP</span>
+                    <span id="cepStatus" class="text-[10px] font-700 text-slate-500 italic">Buscar automático</span>
+                  </label>
+                  <input type="text" id="cep" placeholder="00000-000" maxlength="9" oninput="buscarCep(this)" class="w-full px-3 py-2.5 rounded-xl bg-slate-950 border border-white/10 text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm font-700 tracking-wide text-center transition-all">
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-12 gap-4">
+                <div class="sm:col-span-6">
+                  <label for="logradouro" class="block text-xs font-600 text-slate-300 mb-1">Logradouro (Rua, Av, Beco) *</label>
+                  <input type="text" id="logradouro" placeholder="Nome da rua" class="w-full px-3 py-2.5 rounded-xl bg-slate-950 border border-white/10 text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm transition-all" required>
+                </div>
+                <div class="sm:col-span-2">
+                  <label for="numCasa" class="block text-xs font-600 text-slate-300 mb-1">Número *</label>
+                  <input type="text" id="numCasa" placeholder="Ex: 145" class="w-full px-3 py-2.5 rounded-xl bg-slate-950 border border-white/10 text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm transition-all" required>
+                </div>
+                <div class="sm:col-span-4">
+                  <label for="complemento" class="block text-xs font-600 text-slate-300 mb-1">Complemento</label>
+                  <input type="text" id="complemento" placeholder="Apt, Bloco, Fundos, Proximo a..." class="w-full px-3 py-2.5 rounded-xl bg-slate-950 border border-white/10 text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm transition-all">
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-12 gap-4">
+                <div class="sm:col-span-5">
+                  <label for="bairro" class="block text-xs font-600 text-slate-300 mb-1">Bairro *</label>
+                  <input type="text" id="bairro" placeholder="Ex: Centro" class="w-full px-3 py-2.5 rounded-xl bg-slate-950 border border-white/10 text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm transition-all" required>
+                </div>
+                <div class="sm:col-span-5">
+                  <label for="cidade" class="block text-xs font-600 text-slate-300 mb-1">Cidade / Distrito *</label>
+                  <input type="text" id="cidade" placeholder="Nome da localidade" class="w-full px-3 py-2.5 rounded-xl bg-slate-950 border border-white/10 text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm transition-all" required>
+                </div>
+                <div class="sm:col-span-2">
+                  <label for="uf" class="block text-xs font-600 text-slate-300 mb-1 text-center">UF *</label>
+                  <input type="text" id="uf" placeholder="EX" maxlength="2" class="w-full px-2 py-2.5 rounded-xl bg-slate-950 border border-white/10 text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm uppercase text-center font-700 transition-all" required>
+                </div>
+              </div>
+            </div>
+
+            <div class="space-y-4">
+              <div class="flex items-center justify-between">
+                <h4 class="text-xs font-800 text-emerald-400 uppercase tracking-wider">2. Componentes / Membros da Família</h4>
+              </div>
+              
+              <div id="membrosContainer" class="space-y-4"></div>
+              
+              <div class="flex justify-start pt-2">
+                <button type="button" onclick="addMemberRow()" class="bg-white/5 hover:bg-white/10 text-emerald-400 border border-emerald-500/30 px-4 py-2.5 rounded-xl text-xs font-700 transition-colors flex items-center gap-1.5 shadow-sm">
+                  <i data-lucide="user-plus" style="width:14px;height:14px;"></i> Adicionar Membro
+                </button>
+              </div>
+            </div>
+
+            <div class="flex justify-end gap-3 pt-4 border-t border-white/5">
+              <button type="button" onclick="showOnlyList()" class="px-4 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white font-600 text-sm transition-all">Cancelar</button>
+              <button type="submit" id="btnSubmitForm" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-700 text-sm transition-all">Salvar Ficha Familiar</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="space-y-3" id="listaFamiliasContainer"></div>
+      </section>
+
+      <section id="appointments" class="content-section hidden space-y-6">
+
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <h2 class="text-2xl font-800 text-white tracking-tight">Consultas</h2>
+            <p class="text-slate-400 text-sm mt-1">Todas as famílias cadastradas na sua microárea. Agende a data da consulta de cada paciente.</p>
+          </div>
+          <div class="flex gap-2 self-start sm:self-auto flex-shrink-0 flex-wrap">
+            <button id="btnConsTodas" onclick="filtrarConsultas('todas')" class="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-700 transition-colors border bg-emerald-600 border-emerald-600 text-white">
+              <i data-lucide="list" style="width:14px;height:14px;"></i> Todos
+            </button>
+            <button id="btnConsAgendar" onclick="filtrarConsultas('agendar')" class="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-700 transition-colors border bg-white/5 border-white/10 text-slate-300 hover:bg-white/10">
+              <i data-lucide="calendar-plus" style="width:14px;height:14px;"></i> A agendar
+            </button>
+            <button id="btnConsAgendado" onclick="filtrarConsultas('agendado')" class="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-700 transition-colors border bg-white/5 border-white/10 text-slate-300 hover:bg-white/10">
+              <i data-lucide="calendar-check" style="width:14px;height:14px;"></i> Agendados
+            </button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-3">
+          <div class="bg-slate-900 rounded-2xl p-4 border border-white/10">
+            <p class="text-2xl font-800 text-white" id="consTotalPacientes">0</p>
+            <p class="text-[10px] sm:text-xs text-slate-400 uppercase tracking-wider font-700 mt-0.5">Pacientes</p>
+          </div>
+          <div class="bg-slate-900 rounded-2xl p-4 border border-amber-500/20">
+            <p class="text-2xl font-800 text-amber-400" id="consTotalAgendar">0</p>
+            <p class="text-[10px] sm:text-xs text-slate-400 uppercase tracking-wider font-700 mt-0.5">A agendar</p>
+          </div>
+          <div class="bg-slate-900 rounded-2xl p-4 border border-emerald-500/20">
+            <p class="text-2xl font-800 text-emerald-400" id="consTotalAgendados">0</p>
+            <p class="text-[10px] sm:text-xs text-slate-400 uppercase tracking-wider font-700 mt-0.5">Agendados</p>
+          </div>
+        </div>
+
+        <div class="relative">
+          <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" style="width:16px;height:16px;"></i>
+          <input type="text" id="buscaConsulta" oninput="carregarPainelConsultas()" placeholder="Buscar por paciente, responsável, prontuário ou rua..." class="w-full pl-10 pr-3 py-2.5 rounded-xl bg-slate-950 border border-white/10 text-white placeholder:text-slate-600 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all">
+        </div>
+
+        <div id="consultaFormContainer" class="bg-slate-900 rounded-2xl border border-white/10 p-6 hidden space-y-4">
+          <h3 id="consultaFormTitle" class="text-lg font-800 text-white flex items-center gap-2">
+            <i data-lucide="calendar-plus" class="text-emerald-400"></i> Agendar Consulta
+          </h3>
+          <p class="text-xs text-slate-400 -mt-2" id="consultaFormSubtitulo"></p>
+
+          <form id="consultaForm" onsubmit="salvarConsulta(event)" class="space-y-4">
+            <input type="hidden" id="consultaProntuario" value="">
+            <input type="hidden" id="consultaMembroIdx" value="">
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div>
+                <label for="consultaStatus" class="block text-xs font-600 text-slate-300 mb-1">Status *</label>
+                <select id="consultaStatus" onchange="ajustarCamposConsulta()" class="w-full px-3 py-2 bg-slate-950 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" required>
+                  <option value="agendado">Agendado (com data definida)</option>
+                  <option value="agendar">A agendar (aguardando vaga)</option>
+                </select>
+              </div>
+              <div>
+                <label for="consultaData" class="block text-xs font-600 text-slate-300 mb-1">Data da Consulta <span id="consultaDataObrig">*</span></label>
+                <input type="date" id="consultaData" class="w-full px-3 py-2 bg-slate-950 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" required>
+              </div>
+              <div>
+                <label for="consultaHora" class="block text-xs font-600 text-slate-300 mb-1">Horário</label>
+                <input type="time" id="consultaHora" class="w-full px-3 py-2 bg-slate-950 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label for="consultaTipo" class="block text-xs font-600 text-slate-300 mb-1">Tipo de Atendimento *</label>
+                <select id="consultaTipo" class="w-full px-3 py-2 bg-slate-950 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" required>
+                  <option value="Clínica Geral">Clínica Geral</option>
+                  <option value="Enfermagem">Enfermagem</option>
+                  <option value="Odontologia">Odontologia</option>
+                  <option value="Pré-natal">Pré-natal</option>
+                  <option value="Puericultura">Puericultura (criança)</option>
+                  <option value="Hiperdia (Hipertensão/Diabetes)">Hiperdia (Hipertensão/Diabetes)</option>
+                  <option value="Saúde Mental">Saúde Mental</option>
+                  <option value="Exames / Coleta">Exames / Coleta</option>
+                  <option value="Vacinação">Vacinação</option>
+                  <option value="Encaminhamento a Especialista">Encaminhamento a Especialista</option>
+                </select>
+              </div>
+              <div>
+                <label for="consultaLocal" class="block text-xs font-600 text-slate-300 mb-1">Local / Unidade</label>
+                <input type="text" id="consultaLocal" placeholder="Ex: UBS Central" class="w-full px-3 py-2 bg-slate-950 border border-white/10 rounded-xl text-white placeholder:text-slate-600 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+              </div>
+            </div>
+
+            <div>
+              <label for="consultaObs" class="block text-xs font-600 text-slate-300 mb-1">Observações</label>
+              <textarea id="consultaObs" rows="2" placeholder="Ex: paciente precisa de transporte, levar cartão SUS..." class="w-full px-3 py-2 bg-slate-950 border border-white/10 rounded-xl text-white placeholder:text-slate-600 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"></textarea>
+            </div>
+
+            <div class="flex justify-end gap-3 pt-2">
+              <button type="button" onclick="fecharFormConsulta()" class="px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl font-600 text-xs transition-colors">Cancelar</button>
+              <button type="submit" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-700 text-xs transition-colors">Salvar Agendamento</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="space-y-3" id="listaConsultasFamilias"></div>
+      </section>
+
+      <section id="visits" class="content-section hidden space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <h2 class="text-2xl font-800 text-white tracking-tight" id="visitsTitulo">Controle de Visitas Domiciliares</h2>
+            <p class="text-slate-400 text-sm mt-1" id="visitsSubtitulo">Gerencie relatórios e realize o mapeamento das visitas territoriais da sua microárea.</p>
+          </div>
+          <div class="flex gap-2 self-start sm:self-auto flex-shrink-0">
+            <button id="btnFiltroTodas" onclick="verTodasVisitas()" class="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-700 transition-colors border bg-emerald-600 border-emerald-600 text-white">
+              <i data-lucide="list" style="width:14px;height:14px;"></i> Todas as visitas
+            </button>
+            <button id="btnFiltroPendentes" onclick="abrirVisitasPendentes()" class="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-700 transition-colors border bg-white/5 border-white/10 text-slate-300 hover:bg-white/10">
+              <i data-lucide="clock" style="width:14px;height:14px;"></i> Ver pendentes
+            </button>
+          </div>
+        </div>
+
+        <div id="visitFormContainer" class="bg-slate-900 rounded-2xl border border-white/10 p-6 hidden space-y-4">
+          <h3 id="visitFormTitle" class="text-lg font-800 text-white flex items-center gap-2">
+            <i data-lucide="clipboard-list" class="text-emerald-400"></i> Registrar Relatório de Visita Domiciliar
+          </h3>
+          <form id="visitForm" onsubmit="saveVisitReport(event)" class="space-y-4">
+            <input type="hidden" id="visitProntuarioTarget" value="">
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div>
+                <label for="visitDate" class="block text-xs font-600 text-slate-300 mb-1">Data da Visita *</label>
+                <input type="date" id="visitDate" class="w-full px-3 py-2 bg-slate-950 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" required>
+              </div>
+              <div>
+                <label for="visitReason" class="block text-xs font-600 text-slate-300 mb-1">Motivo Principal *</label>
+                <select id="visitReason" class="w-full px-3 py-2 bg-slate-950 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" required>
+                  <option value="">Selecione o Motivo</option>
+                  <option value="Cadastramento / Atualização">Cadastramento / Atualização</option>
+                  <option value="Acompanhamento de Rotina">Acompanhamento de Rotina</option>
+                  <option value="Busca Ativa (Vacina/Consultas)">Busca Ativa (Vacina/Consultas)</option>
+                  <option value="Egresso de Internação">Egresso de Internação</option>
+                  <option value="Acompanhamento Gestacional / Puerpério">Acompanhamento Gestacional / Puerpério</option>
+                </select>
+              </div>
+              <div>
+                <label for="visitOutcome" class="block text-xs font-600 text-slate-300 mb-1">Desfecho / Status *</label>
+                <select id="visitOutcome" class="w-full px-3 py-2 bg-slate-950 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" required>
+                  <option value="Realizada">Visita Realizada com Sucesso</option>
+                  <option value="Recusada">Visita Recusada pelo Morador</option>
+                  <option value="Ausente">Morador Ausente / Casa Fechada</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label for="visitNotes" class="block text-xs font-600 text-slate-300 mb-1">Notas e Observações Clínicas/Territoriais</label>
+              <textarea id="visitNotes" rows="3" placeholder="Descreva os principais pontos observados" class="w-full px-3 py-2 bg-slate-950 border border-white/10 rounded-xl text-white placeholder:text-slate-600 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"></textarea>
+            </div>
+
+            <div class="flex justify-end gap-3 pt-2">
+              <button type="button" onclick="closeVisitForm()" class="px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl font-600 text-xs transition-colors">Cancelar</button>
+              <button type="submit" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-700 text-xs transition-colors">Finalizar Relatório</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="space-y-3" id="listaVisitasFamilias"></div>
+      </section>
+
+      <!-- ═══ SEÇÃO RELATÓRIOS ═══════════════════════════════════════════════ -->
+      <section id="relatorios" class="content-section hidden space-y-6">
+
+        <div class="bg-white/5 p-6 rounded-2xl border border-white/10">
+          <h2 class="text-2xl font-800 text-white tracking-tight">Relatórios</h2>
+          <p class="text-slate-400 text-sm mt-1">Gere e exporte seus relatórios em XML ou PDF.</p>
+        </div>
+
+        <!-- Relatório Mensal de Visitas -->
+        <div class="bg-slate-900 rounded-2xl border border-white/10 p-6 space-y-4">
+          <div class="flex items-center gap-3 mb-1">
+            <div class="w-9 h-9 bg-emerald-500/10 rounded-xl flex items-center justify-center flex-shrink-0">
+              <i data-lucide="calendar-check" class="text-emerald-400" style="width:18px;height:18px;"></i>
+            </div>
+            <div>
+              <h3 class="font-800 text-white text-base">Relatório Mensal de Visitas</h3>
+              <p class="text-slate-400 text-xs">Selecione o mês e exporte as visitas realizadas.</p>
+            </div>
+          </div>
+
+          <div class="flex flex-col sm:flex-row gap-3">
+            <div class="flex-1">
+              <label class="block text-xs font-700 uppercase tracking-wider text-slate-400 mb-1">Mês</label>
+              <select id="relMes" class="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 [&>option]:text-black [&>option]:bg-white">
+                <option value="01">Janeiro</option><option value="02">Fevereiro</option>
+                <option value="03">Março</option><option value="04">Abril</option>
+                <option value="05">Maio</option><option value="06">Junho</option>
+                <option value="07">Julho</option><option value="08">Agosto</option>
+                <option value="09">Setembro</option><option value="10">Outubro</option>
+                <option value="11">Novembro</option><option value="12">Dezembro</option>
+              </select>
+            </div>
+            <div class="flex-1">
+              <label class="block text-xs font-700 uppercase tracking-wider text-slate-400 mb-1">Ano</label>
+              <input type="number" id="relAno" min="2020" max="2099" class="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+            </div>
+          </div>
+
+          <div id="previewVisitas" class="bg-white/[0.03] border border-white/5 rounded-xl p-4 text-sm text-slate-400 hidden">
+            <p id="resumoVisitas" class="text-white font-700 mb-2"></p>
+            <div id="listaPreviewVisitas" class="space-y-1 text-xs max-h-48 overflow-y-auto"></div>
+          </div>
+
+          <div class="flex gap-2">
+            <button onclick="previewRelatorioVisitas()" class="flex-1 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 font-700 text-sm transition-colors flex items-center justify-center gap-2">
+              <i data-lucide="eye" style="width:15px;height:15px;"></i> Visualizar
+            </button>
+            <button onclick="exportarVisitasXML()" class="flex-1 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-700 text-sm transition-colors flex items-center justify-center gap-2">
+              <i data-lucide="download" style="width:15px;height:15px;"></i> Exportar XML
+            </button>
+            <button onclick="exportarVisitasPDF()" class="flex-1 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-700 text-sm transition-colors flex items-center justify-center gap-2">
+              <i data-lucide="file-text" style="width:15px;height:15px;"></i> Exportar PDF
+            </button>
+          </div>
+        </div>
+
+        <!-- Relatório de Famílias -->
+        <div class="bg-slate-900 rounded-2xl border border-white/10 p-6 space-y-4">
+          <div class="flex items-center gap-3 mb-1">
+            <div class="w-9 h-9 bg-blue-500/10 rounded-xl flex items-center justify-center flex-shrink-0">
+              <i data-lucide="users" class="text-blue-400" style="width:18px;height:18px;"></i>
+            </div>
+            <div>
+              <h3 class="font-800 text-white text-base">Relatório de Famílias Cadastradas</h3>
+              <p class="text-slate-400 text-xs">Exporte todas as famílias e seus membros.</p>
+            </div>
+          </div>
+
+          <div id="previewFamilias" class="bg-white/[0.03] border border-white/5 rounded-xl p-4 text-sm text-slate-400 hidden">
+            <p id="resumoFamilias" class="text-white font-700 mb-2"></p>
+            <div id="listaPreviewFamilias" class="space-y-1 text-xs max-h-48 overflow-y-auto"></div>
+          </div>
+
+          <div class="flex gap-2">
+            <button onclick="previewRelatorioFamilias()" class="flex-1 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 font-700 text-sm transition-colors flex items-center justify-center gap-2">
+              <i data-lucide="eye" style="width:15px;height:15px;"></i> Visualizar
+            </button>
+            <button onclick="exportarFamiliasXML()" class="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-700 text-sm transition-colors flex items-center justify-center gap-2">
+              <i data-lucide="download" style="width:15px;height:15px;"></i> Exportar XML
+            </button>
+            <button onclick="exportarFamiliasPDF()" class="flex-1 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-700 text-sm transition-colors flex items-center justify-center gap-2">
+              <i data-lucide="file-text" style="width:15px;height:15px;"></i> Exportar PDF
+            </button>
+          </div>
+        </div>
+
+        <!-- Relatório de Consultas Agendadas -->
+        <div class="bg-slate-900 rounded-2xl border border-white/10 p-6 space-y-4">
+          <div class="flex items-center gap-3 mb-1">
+            <div class="w-9 h-9 bg-amber-500/10 rounded-xl flex items-center justify-center flex-shrink-0">
+              <i data-lucide="calendar" class="text-amber-400" style="width:18px;height:18px;"></i>
+            </div>
+            <div>
+              <h3 class="font-800 text-white text-base">Relatório de Consultas Agendadas</h3>
+              <p class="text-slate-400 text-xs">Consultas do mês, com situação de presença e telefone do paciente.</p>
+            </div>
+          </div>
+
+          <div class="flex flex-col sm:flex-row gap-3">
+            <div class="flex-1">
+              <label class="block text-xs font-700 uppercase tracking-wider text-slate-400 mb-1">Mês</label>
+              <select id="relMesCons" class="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-white text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 [&>option]:text-black [&>option]:bg-white">
+                <option value="01">Janeiro</option><option value="02">Fevereiro</option>
+                <option value="03">Março</option><option value="04">Abril</option>
+                <option value="05">Maio</option><option value="06">Junho</option>
+                <option value="07">Julho</option><option value="08">Agosto</option>
+                <option value="09">Setembro</option><option value="10">Outubro</option>
+                <option value="11">Novembro</option><option value="12">Dezembro</option>
+              </select>
+            </div>
+            <div class="flex-1">
+              <label class="block text-xs font-700 uppercase tracking-wider text-slate-400 mb-1">Ano</label>
+              <input type="number" id="relAnoCons" min="2020" max="2099" class="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-white text-sm focus:outline-none focus:ring-2 focus:ring-amber-500">
+            </div>
+            <div class="flex-1">
+              <label class="block text-xs font-700 uppercase tracking-wider text-slate-400 mb-1">Situação</label>
+              <select id="relStatusCons" class="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-white text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 [&>option]:text-black [&>option]:bg-white">
+                <option value="todas">Todas</option>
+                <option value="aguardando">Aguardando consulta</option>
+                <option value="compareceu">Compareceu</option>
+                <option value="faltou">Faltou</option>
+                <option value="sem_registro">Sem registro de presença</option>
+              </select>
+            </div>
+          </div>
+
+          <div id="previewConsultas" class="bg-white/[0.03] border border-white/5 rounded-xl p-4 text-sm text-slate-400 hidden">
+            <p id="resumoConsultas" class="text-white font-700 mb-1"></p>
+            <p id="detalheResumoConsultas" class="text-xs text-slate-400 mb-2"></p>
+            <div id="listaPreviewConsultas" class="space-y-1 text-xs max-h-48 overflow-y-auto"></div>
+          </div>
+
+          <div class="flex gap-2">
+            <button onclick="previewRelatorioConsultas()" class="flex-1 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 font-700 text-sm transition-colors flex items-center justify-center gap-2">
+              <i data-lucide="eye" style="width:15px;height:15px;"></i> Visualizar
+            </button>
+            <button onclick="exportarConsultasXML()" class="flex-1 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-700 text-sm transition-colors flex items-center justify-center gap-2">
+              <i data-lucide="download" style="width:15px;height:15px;"></i> Exportar XML
+            </button>
+            <button onclick="exportarConsultasPDF()" class="flex-1 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-700 text-sm transition-colors flex items-center justify-center gap-2">
+              <i data-lucide="file-text" style="width:15px;height:15px;"></i> Exportar PDF
+            </button>
+          </div>
+        </div>
+
+      </section>
+
+    </div>
+  </main>
+
+  <!-- ═══ MODAL / SECTION OPÇÕES ═══════════════════════════════════════════ -->
+  <!-- Overlay -->
+  <div id="opcoesOverlay" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-40" onclick="fecharOpcoes()"></div>
+
+  <!-- Painel deslizante da direita -->
+  <div id="opcoesPanel"
+    class="fixed top-0 right-0 h-full w-full max-w-sm bg-slate-900 border-l border-white/10 z-50 flex flex-col shadow-2xl translate-x-full transition-transform duration-300 ease-in-out overflow-y-auto">
+
+    <!-- Cabeçalho do painel -->
+    <div class="flex items-center justify-between p-5 border-b border-white/10 flex-shrink-0">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 bg-emerald-500/15 rounded-xl flex items-center justify-center">
+          <i data-lucide="settings" style="width:18px;height:18px;" class="text-emerald-400"></i>
+        </div>
+        <span class="font-800 text-base text-white">Opções</span>
+      </div>
+      <button onclick="fecharOpcoes()" class="text-slate-400 hover:text-white transition-colors p-1">
+        <i data-lucide="x" style="width:20px;height:20px;"></i>
+      </button>
+    </div>
+
+    <div class="flex-1 p-5 space-y-5 pb-28 md:pb-5">
+
+      <!-- ── Meus Dados ── -->
+      <div class="bg-slate-800/60 rounded-2xl border border-white/10 p-5 space-y-4">
+        <div class="flex items-center gap-2 pb-2 border-b border-white/5">
+          <i data-lucide="user" style="width:16px;height:16px;" class="text-blue-400"></i>
+          <h3 class="font-800 text-sm text-white">Meus Dados</h3>
+        </div>
+
+        <div>
+          <label class="block text-xs font-600 text-slate-300 mb-1">Nome completo</label>
+          <input type="text" id="opt_nome" placeholder="Nome completo" readonly tabindex="-1"
+            title="O nome só pode ser alterado pela gerência."
+            class="w-full px-3 py-2.5 rounded-xl bg-white/[0.02] border border-white/5 text-slate-400 cursor-not-allowed focus:outline-none text-sm transition-all">
+          <p class="text-[11px] text-slate-500 mt-1">O nome só pode ser alterado pela gerência.</p>
+        </div>
+        <div>
+          <label class="block text-xs font-600 text-slate-300 mb-1">Celular</label>
+          <input type="tel" id="opt_phone" oninput="optMaskPhone(this)" maxlength="15" placeholder="(XX) XXXXX-XXXX"
+            class="w-full px-3 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm transition-all">
+        </div>
+        <div>
+          <label class="block text-xs font-600 text-slate-300 mb-1">Email</label>
+          <input type="email" id="opt_email" placeholder="seu@email.com"
+            class="w-full px-3 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm transition-all">
+        </div>
+
+        <p id="opt_msgDados" class="text-xs hidden"></p>
+        <button onclick="optSalvarDados()"
+          class="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-700 text-sm transition-all transform hover:scale-105">
+          Salvar dados
+        </button>
+      </div>
+
+      <!-- ── Alterar Senha ── -->
+      <div class="bg-slate-800/60 rounded-2xl border border-white/10 p-5 space-y-4">
+        <div class="flex items-center gap-2 pb-2 border-b border-white/5">
+          <i data-lucide="lock" style="width:16px;height:16px;" class="text-amber-400"></i>
+          <h3 class="font-800 text-sm text-white">Alterar Senha</h3>
+        </div>
+
+        <div class="relative">
+          <label class="block text-xs font-600 text-slate-300 mb-1">Senha atual</label>
+          <input type="password" id="opt_senhaAtual" placeholder="Senha atual"
+            class="w-full px-3 py-2.5 pr-10 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm transition-all">
+          <button type="button" onclick="optToggleVer('opt_senhaAtual','opt_olho1')"
+            class="absolute right-3 bottom-2.5 text-slate-500 hover:text-slate-300 transition-colors">
+            <i id="opt_olho1" data-lucide="eye" style="width:15px;height:15px;"></i>
+          </button>
+        </div>
+        <div class="relative">
+          <label class="block text-xs font-600 text-slate-300 mb-1">Nova senha</label>
+          <input type="password" id="opt_senhaNova" placeholder="Mínimo 6 caracteres"
+            class="w-full px-3 py-2.5 pr-10 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm transition-all">
+          <button type="button" onclick="optToggleVer('opt_senhaNova','opt_olho2')"
+            class="absolute right-3 bottom-2.5 text-slate-500 hover:text-slate-300 transition-colors">
+            <i id="opt_olho2" data-lucide="eye" style="width:15px;height:15px;"></i>
+          </button>
+        </div>
+        <div class="relative">
+          <label class="block text-xs font-600 text-slate-300 mb-1">Confirmar nova senha</label>
+          <input type="password" id="opt_senhaConfirm" placeholder="Repita a nova senha"
+            class="w-full px-3 py-2.5 pr-10 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm transition-all">
+          <button type="button" onclick="optToggleVer('opt_senhaConfirm','opt_olho3')"
+            class="absolute right-3 bottom-2.5 text-slate-500 hover:text-slate-300 transition-colors">
+            <i id="opt_olho3" data-lucide="eye" style="width:15px;height:15px;"></i>
+          </button>
+        </div>
+
+        <p id="opt_msgSenha" class="text-xs hidden"></p>
+        <button onclick="optAlterarSenha()"
+          class="w-full py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-700 text-sm transition-all transform hover:scale-105">
+          Alterar senha
+        </button>
+      </div>
+
+      <!-- ── Tema ── -->
+      <div class="bg-slate-800/60 rounded-2xl border border-white/10 p-5">
+        <div class="flex items-center gap-2 pb-2 border-b border-white/5 mb-4">
+          <i data-lucide="sun-moon" style="width:16px;height:16px;" class="text-emerald-400"></i>
+          <h3 class="font-800 text-sm text-white">Tema</h3>
+        </div>
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-600 text-white" id="opt_temaLabel">Modo escuro</p>
+            <p class="text-xs text-slate-400" id="opt_temaDesc">Toque para modo claro</p>
+          </div>
+          <div onclick="optToggleTema()" id="opt_temaPill"
+            style="width:68px;height:34px;border-radius:999px;padding:3px;display:flex;align-items:center;cursor:pointer;transition:background 0.25s;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);">
+            <span id="opt_temaDot"
+              style="width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.15);transition:transform 0.25s,background 0.25s;transform:translateX(0);">
+              <i id="opt_temaIcon" data-lucide="moon" style="width:14px;height:14px;color:#9aa7ad;"></i>
+            </span>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /p-5 -->
+  </div><!-- /opcoesPanel -->
+
+  <script>
+    /* ── estilos modo claro ── */
+    const optEstiloClaro = `
+      body.bg-slate-950 { background:#f4f7fb url("img/trasno.png") center / cover no-repeat fixed !important; }
+      aside, header, nav.opt-bottomnav { background:rgba(255,255,255,0.96) !important; border-color:#dde4e6 !important; }
+      .bg-slate-950:not(body) { background:#eef4f5 !important; }
+      .bg-slate-900 { background:rgba(255,255,255,0.96) !important; }
+      .bg-slate-800,.bg-slate-800\\/60 { background:#e8eef0 !important; }
+      .bg-white\\/5 { background:rgba(0,0,0,0.04) !important; }
+      .bg-white\\/10 { background:rgba(0,0,0,0.06) !important; }
+      .border-white\\/10 { border-color:rgba(0,0,0,0.1) !important; }
+      .border-white\\/5 { border-color:rgba(0,0,0,0.06) !important; }
+      .text-white { color:#2c3e50 !important; }
+      .text-slate-100,.text-slate-200 { color:#2c3e50 !important; }
+      .text-slate-300 { color:#44545b !important; }
+      .text-slate-400 { color:#667780 !important; }
+      .text-slate-500,.text-slate-600 { color:#7f8c8d !important; }
+      input,select,textarea { color:#2c3e50 !important; background:rgba(0,0,0,0.04) !important; border-color:rgba(0,0,0,0.12) !important; }
+      input::placeholder,textarea::placeholder { color:#7f8c8d !important; }
+      #opcoesPanel { background:#ffffff !important; border-color:rgba(0,0,0,0.1) !important; }
+      #opcoesPanel .bg-slate-800\\/60 { background:rgba(0,0,0,0.03) !important; }
+      /* Alertas de consulta (D-1 e presença) */
+      #avisosConsultas .bg-slate-900\\/80 { background:#ffffff !important; border-color:rgba(2,132,199,0.25) !important; }
+      #avisosConsultas .bg-sky-500\\/10 { background:#e0f2fe !important; border-color:#7dd3fc !important; }
+      #avisosConsultas .bg-amber-500\\/10 { background:#fef5e1 !important; border-color:#f8c25c !important; }
+      #avisosConsultas .text-sky-100 { color:#0c4a6e !important; }
+      #avisosConsultas .text-sky-300, #avisosConsultas .text-sky-400 { color:#0369a1 !important; }
+      #avisosConsultas .text-amber-100 { color:#7a4a06 !important; }
+      #avisosConsultas .text-amber-400 { color:#b9770e !important; }
+      /* Textos claros dentro dos cards de consulta */
+      #listaConsultasFamilias .text-sky-200 { color:#075985 !important; }
+      #listaConsultasFamilias .text-sky-400 { color:#0369a1 !important; }
+      #listaConsultasFamilias .bg-sky-500\\/5 { background:#f0f9ff !important; border-color:#bae6fd !important; }
+      /* Botões coloridos mantêm texto branco */
+      [class*="bg-emerald-6"].text-white, [class*="bg-red-6"].text-white, [class*="bg-sky-6"].text-white,
+      [class*="bg-blue-6"].text-white, [class*="bg-amber-5"].text-white, [class*="bg-amber-6"].text-white { color:#ffffff !important; }
+    `;
+    let optStyleTag = null;
+    let optModoClaro = localStorage.getItem('acs_tema') !== 'escuro';
+
+    function optAplicarTema() {
+      document.documentElement.classList.toggle('dark', !optModoClaro);
+      const dot  = document.getElementById('opt_temaDot');
+      const icon = document.getElementById('opt_temaIcon');
+      const pill = document.getElementById('opt_temaPill');
+      const lbl  = document.getElementById('opt_temaLabel');
+      const desc = document.getElementById('opt_temaDesc');
+      if (optModoClaro) {
+        if (!document.getElementById('opt_style_claro')) {
+          optStyleTag = document.createElement('style');
+          optStyleTag.id = 'opt_style_claro';
+          optStyleTag.textContent = optEstiloClaro;
+          document.head.appendChild(optStyleTag);
+        }
+        dot.style.transform  = 'translateX(34px)';
+        dot.style.background = 'rgba(0,0,0,0.1)';
+        icon.setAttribute('data-lucide','sun'); icon.style.color='#44545b';
+        pill.style.background    = 'rgba(0,0,0,0.06)';
+        pill.style.borderColor   = 'rgba(0,0,0,0.15)';
+        if(lbl)  lbl.textContent  = 'Modo claro';
+        if(desc) desc.textContent = 'Toque para modo escuro';
+      } else {
+        const t = document.getElementById('opt_style_claro');
+        if (t) t.remove(); optStyleTag = null;
+        dot.style.transform  = 'translateX(0)';
+        dot.style.background = 'rgba(255,255,255,0.15)';
+        icon.setAttribute('data-lucide','moon'); icon.style.color='#9aa7ad';
+        pill.style.background  = 'rgba(255,255,255,0.08)';
+        pill.style.borderColor = 'rgba(255,255,255,0.12)';
+        if(lbl)  lbl.textContent  = 'Modo escuro';
+        if(desc) desc.textContent = 'Toque para modo claro';
+      }
+      lucide.createIcons();
+    }
+    optAplicarTema();
+
+    function optToggleTema() {
+      optModoClaro = !optModoClaro;
+      localStorage.setItem('acs_tema', optModoClaro ? 'claro' : 'escuro');
+      optAplicarTema();
+    }
+
+    /* ── abrir / fechar painel ── */
+    function abrirOpcoes() {
+      // preenche campos com dados da sessão
+      if (sessaoAtiva) {
+        document.getElementById('opt_nome').value    = sessaoAtiva.name    || '';
+        document.getElementById('opt_phone').value   = sessaoAtiva.phone   || '';
+        document.getElementById('opt_email').value   = sessaoAtiva.email   || '';
+      }
+      ['opt_senhaAtual','opt_senhaNova','opt_senhaConfirm'].forEach(id => document.getElementById(id).value = '');
+      document.getElementById('opcoesOverlay').classList.remove('hidden');
+      setTimeout(() => document.getElementById('opcoesPanel').style.transform = 'translateX(0)', 10);
+      lucide.createIcons();
+    }
+
+    function fecharOpcoes() {
+      document.getElementById('opcoesPanel').style.transform = 'translateX(100%)';
+      setTimeout(() => document.getElementById('opcoesOverlay').classList.add('hidden'), 300);
+    }
+
+    /* ── intercepta cliques nos links #opcoes ── */
+    document.addEventListener('click', function(e) {
+      const a = e.target.closest('a[href="#opcoes"]');
+      if (a) { e.preventDefault(); abrirOpcoes(); }
+    });
+
+    /* ── máscara telefone ── */
+    function optMaskPhone(input) {
+      let v = input.value.replace(/\D/g,'').slice(0,11);
+      if(v.length>6)      v=`(${v.slice(0,2)}) ${v.slice(2,7)}-${v.slice(7)}`;
+      else if(v.length>2) v=`(${v.slice(0,2)}) ${v.slice(2)}`;
+      else if(v.length>0) v=`(${v}`;
+      input.value=v;
+    }
+
+    /* ── toggle ver senha ── */
+    function optToggleVer(inputId, iconId) {
+      const inp  = document.getElementById(inputId);
+      const icon = document.getElementById(iconId);
+      inp.type = inp.type === 'password' ? 'text' : 'password';
+      icon.setAttribute('data-lucide', inp.type === 'password' ? 'eye' : 'eye-off');
+      lucide.createIcons();
+    }
+
+    /* ── feedback ── */
+    function optMsg(elId, texto, ok) {
+      const el = document.getElementById(elId);
+      el.textContent = texto;
+      el.className = 'text-xs mt-1 ' + (ok ? 'text-emerald-400' : 'text-red-400');
+      el.classList.remove('hidden');
+      setTimeout(() => el.classList.add('hidden'), 3500);
+    }
+
+    /* ── salvar dados ── */
+    async function optSalvarDados() {
+      const phone   = document.getElementById('opt_phone').value.trim();
+      const email   = document.getElementById('opt_email').value.trim();
+
+      const phoneRegex = /^\(\d{2}\)\s\d{5}-\d{4}$/;
+      if (!phoneRegex.test(phone)) { optMsg('opt_msgDados','Formato inválido: (XX) XXXXX-XXXX',false); return; }
+
+      const r = await apiServidor('agentes.php', 'minha_conta', { phone, email });
+      if (!r.ok) { optMsg('opt_msgDados', r.erro || 'Não foi possível salvar.', false); return; }
+
+      sessaoAtiva.phone = phone;
+      sessaoAtiva.email = email;
+      localStorage.setItem('agente_sessao', JSON.stringify(sessaoAtiva));
+
+      optMsg('opt_msgDados','Dados atualizados com sucesso!', true);
+    }
+
+    /* ── alterar senha ── */
+    async function optAlterarSenha() {
+      const atual    = document.getElementById('opt_senhaAtual').value;
+      const nova     = document.getElementById('opt_senhaNova').value;
+      const confirma = document.getElementById('opt_senhaConfirm').value;
+
+      if (!atual) { optMsg('opt_msgSenha','Informe a senha atual.',false); return; }
+      if (nova.length < 6) { optMsg('opt_msgSenha','A nova senha deve ter no mínimo 6 caracteres.',false); return; }
+      if (nova !== confirma) { optMsg('opt_msgSenha','As senhas não coincidem.',false); return; }
+
+      const r = await apiServidor('agentes.php', 'minha_senha', { atual, nova });
+      if (!r.ok) { optMsg('opt_msgSenha', r.erro || 'Não foi possível alterar a senha.', false); return; }
+
+      ['opt_senhaAtual','opt_senhaNova','opt_senhaConfirm'].forEach(id => document.getElementById(id).value = '');
+      optMsg('opt_msgSenha','Senha alterada com sucesso!', true);
+    }
+  </script>
+
+  <nav class="opt-bottomnav md:hidden fixed bottom-0 left-0 right-0 bg-slate-900 border-t border-white/10 px-6 py-3 flex justify-between items-center z-50">
+    <a href="#home" class="mobile-nav-btn flex flex-col items-center gap-1 text-slate-400">
+      <i data-lucide="layout-dashboard" style="width:18px;height:18px;"></i>
+      <span class="text-[10px] font-600">Início</span>
+    </a>
+    <a href="#families" class="mobile-nav-btn flex flex-col items-center gap-1 text-slate-400">
+      <i data-lucide="users" style="width:18px;height:18px;"></i>
+      <span class="text-[10px] font-600">Famílias</span>
+    </a>
+    <a href="#appointments" class="mobile-nav-btn flex flex-col items-center gap-1 text-slate-400">
+      <i data-lucide="calendar" style="width:18px;height:18px;"></i>
+      <span class="text-[10px] font-600">Agenda</span>
+    </a>
+    <a href="#visits" class="mobile-nav-btn flex flex-col items-center gap-1 text-slate-400">
+      <i data-lucide="home" style="width:18px;height:18px;"></i>
+      <span class="text-[10px] font-600">Visitas</span>
+    </a>
+    <a href="#relatorios" class="mobile-nav-btn flex flex-col items-center gap-1 text-slate-400">
+      <i data-lucide="file-bar-chart" style="width:18px;height:18px;"></i>
+      <span class="text-[10px] font-600">Relatórios</span>
+    </a>
+    <a href="#opcoes" class="mobile-nav-btn flex flex-col items-center gap-1 text-slate-400">
+      <i data-lucide="settings" style="width:18px;height:18px;"></i>
+      <span class="text-[10px] font-600">Opções</span>
+    </a>
+  </nav>
+
+  <script>
+    // ── Sistema de notificações (toast) ──
+    function mostrarToast(mensagem, tipo = 'success') {
+      const container = document.getElementById('toastContainer');
+      if (!container) return;
+      const estilos = {
+        success: { bg: 'bg-emerald-600', icon: 'check-circle' },
+        error: { bg: 'bg-red-600', icon: 'x-circle' },
+        warning: { bg: 'bg-amber-500', icon: 'alert-triangle' },
+        info: { bg: 'bg-sky-600', icon: 'info' }
+      };
+      const cfg = estilos[tipo] || estilos.info;
+      const toast = document.createElement('div');
+      toast.className = `toast-item ${cfg.bg} text-white text-sm font-600 rounded-xl shadow-2xl px-4 py-3 flex items-center gap-2`;
+      toast.innerHTML = `<i data-lucide="${cfg.icon}" style="width:16px;height:16px;" class="flex-shrink-0"></i><span>${mensagem}</span>`;
+      container.appendChild(toast);
+      lucide.createIcons();
+      setTimeout(() => {
+        toast.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(-8px)';
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    }
+
+    let sessaoAtiva = null;
+    let mContador = 0;
+
+    function updateNavigation() {
+      const hash = window.location.hash || '#home';
+      
+      document.querySelectorAll('.content-section').forEach(section => {
+        section.classList.add('hidden');
+      });
+
+      const activeSection = document.querySelector(hash);
+      if (activeSection) activeSection.classList.remove('hidden');
+
+      const allBtns = document.querySelectorAll('.nav-btn, .mobile-nav-btn');
+      allBtns.forEach(btn => {
+        const isActive = btn.getAttribute('href') === hash;
+        if (btn.classList.contains('nav-btn')) {
+          btn.classList.toggle('bg-slate-800', isActive);
+          btn.classList.toggle('text-white', isActive);
+          btn.classList.toggle('text-slate-400', !isActive);
+        } else {
+          btn.classList.toggle('text-emerald-400', isActive);
+          btn.classList.toggle('text-slate-400', !isActive);
+        }
+      });
+
+      if (hash === '#families') {
+        if (_abrindoCadastro) {
+          _abrindoCadastro = false;
+        } else {
+          showOnlyList();
+        }
+      } else if (hash === '#visits') {
+        carregarPainelVisitas();
+      } else if (hash === '#appointments') {
+        carregarPainelConsultas();
+      }
+    }
+
+    function showOnlyList() {
+      document.getElementById('familyFormContainer').classList.add('hidden');
+      document.getElementById('familyListHeader').classList.remove('hidden');
+      document.getElementById('listaFamiliasContainer').classList.remove('hidden');
+      carregarFamilias();
+    }
+
+    function showOnlyForm() {
+      document.getElementById('familyListHeader').classList.add('hidden');
+      document.getElementById('listaFamiliasContainer').classList.add('hidden');
+      document.getElementById('familyFormContainer').classList.remove('hidden');
+    }
+
+    let _abrindoCadastro = false;
+    let _filtroSoPendentes = false;
+
+    function abrirVisitasPendentes() {
+      _filtroSoPendentes = true;
+      if (window.location.hash === '#visits') {
+        carregarPainelVisitas();
+      } else {
+        window.location.hash = '#visits';
+      }
+    }
+
+    function verTodasVisitas() {
+      _filtroSoPendentes = false;
+      carregarPainelVisitas();
+    }
+
+    // Reseta filtro ao navegar para visitas pelos links normais de menu
+    document.addEventListener('click', function(e) {
+      const a = e.target.closest('a[href="#visits"]');
+      if (a) { _filtroSoPendentes = false; }
+    });
+
+    function openFamilyRegistration() {
+      _abrindoCadastro = true;
+      window.location.hash = '#families';
+      prepareNewFamilyForm();
+    }
+
+    function prepareNewFamilyForm() {
+      document.getElementById('familyForm').reset();
+      document.getElementById('editProntuarioId').value = "";
+      document.getElementById('formTitle').innerHTML = `<i data-lucide="file-text" class="text-emerald-400"></i> Ficha de Cadastro Familiar e Territorial`;
+      document.getElementById('btnSubmitForm').innerText = "Salvar Ficha Familiar";
+      document.getElementById("cepStatus").innerText = "Buscar automático";
+      document.getElementById("cepStatus").className = "text-[10px] font-700 text-slate-500 italic";
+      
+      showOnlyForm();
+      atualizarPreviaProntuario();
+      resetMembrosForm();
+      lucide.createIcons();
+    }
+
+    // Prévia do próximo prontuário (o definitivo é gerado pelo servidor ao salvar)
+    async function atualizarPreviaProntuario() {
+      const isEditing = document.getElementById('editProntuarioId').value;
+      if (isEditing) return;
+      const lbl = document.getElementById('lblProntuarioAuto');
+      lbl.innerText = '...';
+      const r = await apiServidor('familias.php', 'prontuario');
+      lbl.innerText = r.ok ? r.prontuario : '—';
+    }
+
+    // As famílias passam a vir do MySQL. A cópia em localStorage ('familias') é mantida SÓ porque
+    // visitas e consultas ainda leem dela (TEMPORÁRIO, até migrarmos essas partes).
+    function aplicarFamiliasDoServidor(lista) {
+      localStorage.setItem('familias', JSON.stringify(lista));
+      sessaoAtiva.familias = lista.length;
+      localStorage.setItem('agente_sessao', JSON.stringify(sessaoAtiva));
+      const el = document.getElementById('acsFamilias');
+      if (el) el.innerText = lista.length;
+    }
+
+    // Idem para as visitas: a fonte é o MySQL; 'visitas_historico' é só a cópia que os relatórios do painel leem.
+    function aplicarVisitasDoServidor(lista) {
+      localStorage.setItem('visitas_historico', JSON.stringify(lista));
+      sessaoAtiva.visitas = lista.length;
+      localStorage.setItem('agente_sessao', JSON.stringify(sessaoAtiva));
+      const el = document.getElementById('acsVisitas');
+      if (el) el.innerText = lista.length;
+    }
+
+    async function sincronizarVisitas() {
+      const r = await apiServidor('visitas.php', 'listar');
+      if (!r.ok) {
+        mostrarToast(r.erro || 'Não foi possível carregar as visitas.', 'error');
+        return false;
+      }
+      aplicarVisitasDoServidor(r.visitas);
+      return true;
+    }
+
+    // Consultas: fonte = MySQL; 'consultas_agenda' / 'consultas_historico' são só a cópia que a tela lê.
+    function aplicarConsultasDoServidor(r) {
+      localStorage.setItem('consultas_agenda', JSON.stringify(r.consultas || []));
+      localStorage.setItem('consultas_historico', JSON.stringify(r.historico || []));
+    }
+
+    async function sincronizarConsultas() {
+      const r = await apiServidor('consultas.php', 'listar');
+      if (!r.ok) {
+        mostrarToast(r.erro || 'Não foi possível carregar as consultas.', 'error');
+        return false;
+      }
+      aplicarConsultasDoServidor(r);
+      return true;
+    }
+
+    async function sincronizarFamilias() {
+      const r = await apiServidor('familias.php', 'listar');
+      if (!r.ok) {
+        mostrarToast(r.erro || 'Não foi possível carregar as famílias.', 'error');
+        return false;
+      }
+      aplicarFamiliasDoServidor(r.familias);
+      return true;
+    }
+
+    function buscarCep(input) {
+      let v = input.value.replace(/\D/g, "");
+      if (v.length > 5) v = v.slice(0, 5) + "-" + v.slice(5, 8);
+      input.value = v;
+
+      const cepLimpo = v.replace("-", "");
+      const statusLabel = document.getElementById("cepStatus");
+
+      if (cepLimpo.length === 8) {
+        statusLabel.innerText = "Buscando...";
+        statusLabel.className = "text-[10px] font-700 text-amber-400 animate-pulse";
+
+        fetch(`https://viacep.com.br/ws/${cepLimpo}/json/`)
+          .then(response => response.json())
+          .then(data => {
+            if (!data.erro) {
+              document.getElementById("logradouro").value = data.logradouro || "";
+              document.getElementById("bairro").value = data.bairro || "";
+              document.getElementById("cidade").value = data.localidade || "";
+              document.getElementById("uf").value = data.uf ? data.uf.toUpperCase() : "";
+              document.getElementById("complemento").value = "";
+              statusLabel.innerText = "Encontrado!";
+              statusLabel.className = "text-[10px] font-700 text-emerald-400";
+              document.getElementById("numCasa").focus();
+            } else {
+              statusLabel.innerText = "Não encontrado";
+              statusLabel.className = "text-[10px] font-700 text-red-400";
+            }
+          })
+          .catch(() => {
+            statusLabel.innerText = "Erro na busca";
+            statusLabel.className = "text-[10px] font-700 text-red-400";
+          });
+      }
+    }
+
+    function addMemberRow(data = null) {
+      mContador++;
+      const container = document.getElementById('membrosContainer');
+      const card = document.createElement('div');
+      card.className = "bg-white/5 p-4 rounded-xl border border-white/10 relative space-y-4 membro-item";
+      card.id = `membro_row_${mContador}`;
+      card.dataset.membroId = (data && data.id) ? data.id : '';   // id no banco ('' = membro novo)
+      
+      card.innerHTML = `
+        <div class="flex justify-between items-center pb-2 border-b border-white/5">
+          <span class="text-xs font-700 text-slate-400">Membro da Família</span>
+          <button type="button" onclick="removeMemberRow('${card.id}')" class="text-red-400 hover:text-red-300 text-xs font-600 flex items-center gap-1">
+            <i data-lucide="trash-2" style="width:12px;height:12px;"></i> Remover
+          </button>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div class="sm:col-span-2">
+            <label class="block text-[11px] font-600 text-slate-400 mb-1">Nome Completo *</label>
+            <input type="text" class="m-nome w-full px-3 py-2 bg-slate-950 border border-white/10 rounded-lg text-white text-xs" required>
+          </div>
+          <div>
+            <label class="block text-[11px] font-600 text-slate-400 mb-1">Data de Nascimento *</label>
+            <input type="date" class="m-nascimento w-full px-3 py-2 bg-slate-950 border border-white/10 rounded-lg text-white text-xs" required>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
+          <div>
+            <label class="block text-[11px] font-600 text-slate-400 mb-1">CPF *</label>
+            <input type="text" oninput="this.value=this.value.replace(/\\D/g,'')" maxlength="11" class="m-cpf w-full px-3 py-2 bg-slate-950 border border-white/10 rounded-lg text-white text-xs" required>
+          </div>
+          <div>
+            <label class="block text-[11px] font-600 text-slate-400 mb-1">Nº Cartão SUS *</label>
+            <input type="text" oninput="this.value=this.value.replace(/\\D/g,'')" maxlength="15" class="m-sus w-full px-3 py-2 bg-slate-950 border border-white/10 rounded-lg text-white text-xs" required>
+          </div>
+          <div>
+            <label class="block text-[11px] font-600 text-slate-400 mb-1">Sexo *</label>
+            <select class="m-sexo w-full px-3 py-2 bg-slate-950 border border-white/10 rounded-lg text-white text-xs" required>
+              <option value="">Selecione</option>
+              <option value="M">Masculino</option>
+              <option value="F">Feminino</option>
+              <option value="O">Outro</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-[11px] font-600 text-slate-400 mb-1">Telefone Contato</label>
+            <input type="tel" placeholder="(XX) XXXXX-XXXX" oninput="maskPhoneInput(this)" class="m-telefone w-full px-3 py-2 bg-slate-950 border border-white/10 rounded-lg text-white text-xs">
+          </div>
+        </div>
+        <div class="bg-slate-950/40 p-3 rounded-xl border border-white/5 space-y-2">
+          <p class="text-[10px] font-800 text-emerald-400 uppercase tracking-wider mb-2">Condições de Mapeamento Clínico</p>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div class="flex items-center justify-between bg-slate-950 p-2 rounded-lg border border-white/5">
+              <span class="text-xs font-600 text-slate-300">Hipertenso</span>
+              <div class="toggle-wrap">
+                <input type="checkbox" id="hip_${mContador}" class="m-hipertenso toggle-checkbox"/>
+                <label for="hip_${mContador}" class="toggle-label"><span class="toggle-dot"></span></label>
+              </div>
+            </div>
+            <div class="flex items-center justify-between bg-slate-950 p-2 rounded-lg border border-white/5">
+              <span class="text-xs font-600 text-slate-300">Diabético</span>
+              <div class="toggle-wrap">
+                <input type="checkbox" id="diab_${mContador}" class="m-diabetico toggle-checkbox"/>
+                <label for="diab_${mContador}" class="toggle-label"><span class="toggle-dot"></span></label>
+              </div>
+            </div>
+            <div class="flex items-center justify-between bg-slate-950 p-2 rounded-lg border border-white/5">
+              <span class="text-xs font-600 text-slate-300">Gestante</span>
+              <div class="toggle-wrap">
+                <input type="checkbox" id="gest_${mContador}" class="m-gestante toggle-checkbox"/>
+                <label for="gest_${mContador}" class="toggle-label"><span class="toggle-dot"></span></label>
+              </div>
+            </div>
+            <div class="flex items-center justify-between bg-slate-950 p-2 rounded-lg border border-white/5">
+              <span class="text-xs font-600 text-slate-300">Vacina Atrasada</span>
+              <div class="toggle-wrap">
+                <input type="checkbox" id="vac_${mContador}" class="m-vacina toggle-checkbox"/>
+                <label for="vac_${mContador}" class="toggle-label"><span class="toggle-dot"></span></label>
+              </div>
+            </div>
+            <div class="flex items-center justify-between bg-slate-950 p-2 rounded-lg border border-white/5">
+              <span class="text-xs font-600 text-slate-300">Tuberculose</span>
+              <div class="toggle-wrap">
+                <input type="checkbox" id="tub_${mContador}" class="m-tuberculose toggle-checkbox"/>
+                <label for="tub_${mContador}" class="toggle-label"><span class="toggle-dot"></span></label>
+              </div>
+            </div>
+            <div class="flex items-center justify-between bg-slate-950 p-2 rounded-lg border border-white/5">
+              <span class="text-xs font-600 text-slate-300">Hanseníase</span>
+              <div class="toggle-wrap">
+                <input type="checkbox" id="han_${mContador}" class="m-hanseniase toggle-checkbox"/>
+                <label for="han_${mContador}" class="toggle-label"><span class="toggle-dot"></span></label>
+              </div>
+            </div>
+            <div class="flex items-center justify-between bg-slate-950 p-2 rounded-lg border border-white/5">
+              <span class="text-xs font-600 text-slate-300">Deficiente Físico</span>
+              <div class="toggle-wrap">
+                <input type="checkbox" id="def_${mContador}" class="m-deficiente toggle-checkbox"/>
+                <label for="def_${mContador}" class="toggle-label"><span class="toggle-dot"></span></label>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      container.appendChild(card);
+      if (data) {
+        card.querySelector('.m-nome').value = data.nome || '';
+        card.querySelector('.m-nascimento').value = data.nascimento || '';
+        card.querySelector('.m-cpf').value = data.cpf || '';
+        card.querySelector('.m-sus').value = data.sus || '';
+        card.querySelector('.m-sexo').value = data.sexo || '';
+        card.querySelector('.m-telefone').value = data.telefone || '';
+        card.querySelector('.m-hipertenso').checked = !!data.hipertenso;
+        card.querySelector('.m-diabetico').checked = !!data.diabetico;
+        card.querySelector('.m-gestante').checked = !!data.gestante;
+        card.querySelector('.m-vacina').checked = !!data.vacinaAtrasada;
+        card.querySelector('.m-tuberculose').checked = !!data.tuberculose;
+        card.querySelector('.m-hanseniase').checked = !!data.hanseniase;
+        card.querySelector('.m-deficiente').checked = !!data.deficienteFisico;
+      }
+      lucide.createIcons();
+    }
+
+    function removeMemberRow(id) {
+      const row = document.getElementById(id);
+      if(row) row.remove();
+    }
+
+    function resetMembrosForm() {
+      document.getElementById('membrosContainer').innerHTML = '';
+      addMemberRow();
+    }
+
+    function maskPhoneInput(input) {
+      let v = input.value.replace(/\D/g, "");
+      if (v.length > 11) v = v.slice(0, 11);
+      if (v.length > 6) v = `(${v.slice(0, 2)}) ${v.slice(2, 7)}-${v.slice(7)}`;
+      else if (v.length > 2) v = `(${v.slice(0, 2)}) ${v.slice(2)}`;
+      else if (v.length > 0) v = `(${v}`;
+      input.value = v;
+    }
+
+    function editarFamilia(prontuarioAlvo) {
+      const familiasGerais = JSON.parse(localStorage.getItem('familias')) || [];
+      const familia = familiasGerais.find(f => f.prontuario === prontuarioAlvo);
+
+      if (!familia) return;
+
+      document.getElementById('editProntuarioId').value = familia.prontuario;
+      document.getElementById('lblProntuarioAuto').innerText = familia.prontuario;
+      document.getElementById('formTitle').innerHTML = `<i data-lucide="edit" class="text-amber-400"></i> Editando Cadastro Familiar — Prontuário Nº ${familia.prontuario}`;
+      document.getElementById('btnSubmitForm').innerText = "Atualizar Ficha Familiar";
+
+      document.getElementById('cep').value = familia.cep || '';
+      document.getElementById('logradouro').value = familia.logradouro;
+      document.getElementById('numCasa').value = familia.numCasa;
+      document.getElementById('complemento').value = familia.complemento || '';
+      document.getElementById('bairro').value = familia.bairro;
+      document.getElementById('cidade').value = familia.cidade;
+      document.getElementById('uf').value = familia.uf;
+
+      const containerMembros = document.getElementById('membrosContainer');
+      containerMembros.innerHTML = '';
+      
+      familia.membros.forEach(membro => addMemberRow(membro));
+
+      showOnlyForm();
+      document.getElementById('familyFormContainer').scrollIntoView({ behavior: 'smooth' });
+      lucide.createIcons();
+    }
+
+    function carregarFamilias() {
+      const familiasGerais = JSON.parse(localStorage.getItem('familias')) || [];
+      const minhasFamilias = familiasGerais.filter(f => f.agenteLogin === sessaoAtiva.login);
+      
+      const container = document.getElementById('listaFamiliasContainer');
+      document.getElementById('acsFamilias').innerText = minhasFamilias.length;
+
+      if(minhasFamilias.length === 0) {
+        container.innerHTML = `
+          <div class="bg-slate-900 rounded-xl p-6 border border-white/10 flex justify-between items-center">
+            <div>
+              <p class="font-600 text-white">Nenhuma família vinculada</p>
+              <p class="text-xs text-slate-400 italic mt-0.5">Clique em "Nova Família" acima para iniciar os registros.</p>
+            </div>
+            <i data-lucide="users" class="text-slate-600"></i>
+          </div>
+        `;
+      } else {
+        container.innerHTML = '';
+        minhasFamilias.forEach(fam => {
+          container.innerHTML += `
+            <div class="bg-slate-900 rounded-xl p-5 border border-white/10 space-y-3 hover:border-emerald-500/20 transition-all">
+              <div class="border-b border-white/5 pb-3">
+                <div class="flex items-start justify-between gap-2">
+                  <h3 class="font-800 text-white text-base flex items-center gap-2 flex-wrap">
+                    ${fam.responsavel}
+                    <span class="text-[11px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2.5 py-0.5 rounded-lg font-700 tracking-wide">Nº ${fam.prontuario}</span>
+                  </h3>
+                  <button onclick="toggleMembros('membros_${fam.prontuario}', this)" class="text-xs font-700 bg-slate-800 hover:bg-slate-700 border border-white/10 text-slate-300 px-2.5 py-1.5 rounded-lg whitespace-nowrap flex-shrink-0 flex items-center gap-1.5 transition-colors">
+                    <i data-lucide="users" style="width:12px;height:12px;"></i>
+                    ${fam.membros.length} ${fam.membros.length === 1 ? 'Morador' : 'Moradores'}
+                    <i data-lucide="chevron-down" style="width:12px;height:12px;" class="toggle-chevron transition-transform"></i>
+                  </button>
+                </div>
+                <p class="text-xs text-slate-400 mt-1 flex items-center gap-1 flex-wrap">
+                  <i data-lucide="map-pin" style="width:13px;height:13px;" class="text-emerald-400"></i>
+                  ${fam.logradouro}, Nº ${fam.numCasa} ${fam.complemento ? `(${fam.complemento})` : ''} — Bairro: ${fam.bairro} — ${fam.cidade} / ${fam.uf}
+                </p>
+                <div class="flex gap-2 mt-3">
+                  <button onclick="editarFamilia('${fam.prontuario}')" class="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-700 bg-white/5 hover:bg-amber-500/20 text-slate-300 hover:text-amber-400 border border-white/10 transition-all">
+                    <i data-lucide="pencil" style="width:13px;height:13px;"></i> Editar Ficha
+                  </button>
+                  <button onclick="excluirFamilia('${fam.prontuario}', '${fam.responsavel}')" class="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-700 bg-red-500/20 hover:bg-red-500/40 text-red-400 border border-red-500/30 transition-all">
+                    <i data-lucide="trash-2" style="width:13px;height:13px;"></i> Excluir
+                  </button>
+                </div>
+              </div>
+              <div id="membros_${fam.prontuario}" class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1 hidden">
+                ${fam.membros.map(m => {
+                  let badgesSaude = '';
+                  if(m.nascimento) {
+                    const hoje = new Date();
+                    const nasc = new Date(m.nascimento);
+                    const idade = hoje.getFullYear() - nasc.getFullYear() - (hoje < new Date(hoje.getFullYear(), nasc.getMonth(), nasc.getDate()) ? 1 : 0);
+                    if(idade >= 60) badgesSaude += `<span class="bg-orange-500/10 text-orange-400 border border-orange-500/20 px-1.5 py-0.5 rounded text-[9px] font-700">Idoso(a)</span> `;
+                    if(idade < 12) badgesSaude += `<span class="bg-pink-500/10 text-pink-400 border border-pink-500/20 px-1.5 py-0.5 rounded text-[9px] font-700">Criança</span> `;
+                  }
+                  if(m.hipertenso) badgesSaude += `<span class="bg-red-500/10 text-red-400 border border-red-500/20 px-1.5 py-0.5 rounded text-[9px] font-700">Hipertensão</span> `;
+                  if(m.diabetico) badgesSaude += `<span class="bg-blue-500/10 text-blue-400 border border-blue-500/20 px-1.5 py-0.5 rounded text-[9px] font-700">Diabetes</span> `;
+                  if(m.gestante) badgesSaude += `<span class="bg-purple-500/10 text-purple-400 border border-purple-500/20 px-1.5 py-0.5 rounded text-[9px] font-700">Gestante</span> `;
+                  if(m.vacinaAtrasada) badgesSaude += `<span class="bg-amber-500/10 text-amber-400 border border-amber-500/20 px-1.5 py-0.5 rounded text-[9px] font-700">Vacina de risco</span>`;
+                  if(m.tuberculose) badgesSaude += ` <span class="bg-yellow-500/10 text-yellow-400 border border-yellow-500/20 px-1.5 py-0.5 rounded text-[9px] font-700">Tuberculose</span>`;
+                  if(m.hanseniase) badgesSaude += ` <span class="bg-teal-500/10 text-teal-400 border border-teal-500/20 px-1.5 py-0.5 rounded text-[9px] font-700">Hanseníase</span>`;
+                  if(m.deficienteFisico) badgesSaude += ` <span class="bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 px-1.5 py-0.5 rounded text-[9px] font-700">Def. Físico</span>`;
+                  return `
+                    <div class="bg-white/[0.02] border border-white/5 p-3 rounded-lg text-xs flex flex-col justify-between space-y-2">
+                      <div>
+                        <p class="font-700 text-slate-200">${m.nome}</p>
+                        <p class="text-[10px] text-slate-400 mt-0.5">SUS: ${m.sus} | CPF: ${m.cpf}</p>
+                        <p class="text-[10px] text-slate-400 mt-0.5 flex flex-wrap gap-x-2">
+                          ${m.nascimento ? `<span>Nasc.: ${m.nascimento.split('-').reverse().join('/')}</span>` : ''}
+                          ${m.sexo ? `<span>Sexo: ${m.sexo}</span>` : ''}
+                          ${m.telefone ? `<span>Tel.: ${m.telefone}</span>` : ''}
+                        </p>
+                      </div>
+                      ${badgesSaude ? `<div class="flex flex-wrap gap-1 pt-1 border-t border-white/5">${badgesSaude}</div>` : ''}
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+          `;
+        });
+      }
+      lucide.createIcons();
+    }
+
+    function toggleMembros(id, btn) {
+      const el = document.getElementById(id);
+      const chevron = btn.querySelector('.toggle-chevron');
+      const aberto = !el.classList.contains('hidden');
+      if (aberto) {
+        el.classList.add('hidden');
+        chevron.style.transform = '';
+      } else {
+        el.classList.remove('hidden');
+        chevron.style.transform = 'rotate(180deg)';
+      }
+    }
+
+    let salvandoFamilia = false;
+
+    async function saveFamily(event) {
+      event.preventDefault();
+      if (salvandoFamilia) return;
+
+      const editProntuarioId = document.getElementById('editProntuarioId').value;
+      const membrosColetados = [];
+
+      for (let item of document.querySelectorAll('.membro-item')) {
+        membrosColetados.push({
+          id: item.dataset.membroId ? Number(item.dataset.membroId) : null,
+          nome: item.querySelector('.m-nome').value,
+          nascimento: item.querySelector('.m-nascimento').value,
+          cpf: item.querySelector('.m-cpf').value,
+          sus: item.querySelector('.m-sus').value,
+          sexo: item.querySelector('.m-sexo').value,
+          telefone: item.querySelector('.m-telefone').value,
+          hipertenso: item.querySelector('.m-hipertenso').checked,
+          diabetico: item.querySelector('.m-diabetico').checked,
+          gestante: item.querySelector('.m-gestante').checked,
+          vacinaAtrasada: item.querySelector('.m-vacina').checked,
+          tuberculose: item.querySelector('.m-tuberculose').checked,
+          hanseniase: item.querySelector('.m-hanseniase').checked,
+          deficienteFisico: item.querySelector('.m-deficiente').checked
+        });
+      }
+
+      const btn = document.getElementById('btnSubmitForm');
+      salvandoFamilia = true;
+      btn.disabled = true;
+      const r = await apiServidor('familias.php', 'salvar', {
+        prontuario: editProntuarioId,
+        cep: document.getElementById('cep').value,
+        logradouro: document.getElementById('logradouro').value,
+        numCasa: document.getElementById('numCasa').value,
+        complemento: document.getElementById('complemento').value,
+        bairro: document.getElementById('bairro').value,
+        cidade: document.getElementById('cidade').value,
+        uf: document.getElementById('uf').value,
+        membros: membrosColetados
+      });
+      salvandoFamilia = false;
+      btn.disabled = false;
+
+      if (!r.ok) {
+        mostrarToast(r.erro || 'Não foi possível salvar a ficha.', 'error');
+        return;
+      }
+
+      aplicarFamiliasDoServidor(r.familias);
+      await sincronizarConsultas();
+      atualizarContadorConsultas();
+      mostrarToast(r.criada
+        ? `Ficha territorial cadastrada! Prontuário: ${r.prontuario}`
+        : 'Ficha territorial atualizada com sucesso!', 'success');
+      calcularVisitasPendentes();
+      showOnlyList();
+    }
+
+    function calcularVisitasPendentes() {
+      const familias = (JSON.parse(localStorage.getItem('familias')) || []).filter(f => f.agenteLogin === sessaoAtiva.login);
+      const visitas = JSON.parse(localStorage.getItem('visitas_historico')) || [];
+      const pendentes = familias.filter(f => !visitas.some(v => v.prontuario === f.prontuario)).length;
+      document.getElementById('acsVisitasPendentes').innerText = pendentes;
+      return pendentes;
+    }
+
+    function carregarPainelVisitas() {
+      const familiasGerais = JSON.parse(localStorage.getItem('familias')) || [];
+      const minhasFamilias = familiasGerais.filter(f => f.agenteLogin === sessaoAtiva.login);
+      const visitasGerais = JSON.parse(localStorage.getItem('visitas_historico')) || [];
+      
+      // Atualizar cabeçalho e botões conforme filtro
+      const titulo = document.getElementById('visitsTitulo');
+      const subtitulo = document.getElementById('visitsSubtitulo');
+      const btnTodas = document.getElementById('btnFiltroTodas');
+      const btnPendentes = document.getElementById('btnFiltroPendentes');
+      if (_filtroSoPendentes) {
+        titulo.innerText = 'Visitas Pendentes';
+        subtitulo.innerText = 'Famílias que ainda não receberam nenhuma visita registrada.';
+        btnPendentes.className = 'flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-700 transition-colors border bg-red-600 border-red-600 text-white';
+        btnTodas.className = 'flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-700 transition-colors border bg-white/5 border-white/10 text-slate-300 hover:bg-white/10';
+      } else {
+        titulo.innerText = 'Controle de Visitas Domiciliares';
+        subtitulo.innerText = 'Gerencie relatórios e realize o mapeamento das visitas territoriais da sua microárea.';
+        btnTodas.className = 'flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-700 transition-colors border bg-emerald-600 border-emerald-600 text-white';
+        btnPendentes.className = 'flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-700 transition-colors border bg-white/5 border-white/10 text-slate-300 hover:bg-white/10';
+      }
+
+      // Aplicar filtro de pendentes se necessário
+      const familiasFiltradas = _filtroSoPendentes
+        ? minhasFamilias.filter(f => !visitasGerais.some(v => v.prontuario === f.prontuario))
+        : minhasFamilias;
+
+      const container = document.getElementById('listaVisitasFamilias');
+      
+      if(minhasFamilias.length === 0) {
+        container.innerHTML = `
+          <div class="bg-slate-900 rounded-xl p-8 text-center text-slate-400 border border-white/10">
+            Cadastre famílias na aba anterior para habilitar os relatórios de visita domiciliar.
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = '';
+
+      if(familiasFiltradas.length === 0) {
+        container.innerHTML = `
+          <div class="bg-slate-900 rounded-xl p-8 text-center text-slate-400 border border-white/10">
+            <i data-lucide="check-circle-2" class="text-emerald-400 mx-auto mb-2" style="width:28px;height:28px;"></i>
+            <p class="font-700 text-white text-sm">Nenhuma visita pendente!</p>
+            <p class="text-xs mt-1">Todas as famílias já possuem visita registrada.</p>
+          </div>
+        `;
+        lucide.createIcons();
+        return;
+      }
+
+      familiasFiltradas.forEach(fam => {
+        const visitasDaFamilia = visitasGerais.filter(v => v.prontuario === fam.prontuario);
+        
+        let statusBadge = '';
+        let historicoListaHtml = '';
+
+        if(visitasDaFamilia.length === 0) {
+          statusBadge = `<span class="bg-red-500/10 text-red-400 border border-red-500/20 text-[10px] font-800 uppercase px-2.5 py-1 rounded-xl flex items-center gap-1"><span class="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse"></span> Pendente de Relatório</span>`;
+          historicoListaHtml = `<p class="text-xs text-slate-500 italic p-1">Nenhuma visita cadastrada para esta residência até o momento.</p>`;
+        } else {
+          const ultimaVisita = visitasDaFamilia[visitasDaFamilia.length - 1];
+          statusBadge = `<span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] font-800 uppercase px-2.5 py-1 rounded-xl flex items-center gap-1">Última visita: ${ultimaVisita.data.split('-').reverse().join('/')}</span>`;
+          
+          historicoListaHtml = `
+            <div class="space-y-2 mt-2">
+              <p class="text-[10px] uppercase font-700 tracking-wider text-slate-500">Histórico de Linha do Tempo</p>
+              <div class="max-h-28 overflow-y-auto space-y-2 pr-2 no-scrollbar">
+                ${visitasDaFamilia.map((v, idx) => `
+                  <div class="bg-slate-950/40 border border-white/5 p-2 rounded-lg text-xs space-y-1">
+                    <div class="flex justify-between items-center text-[10px]">
+                      <span class="font-700 text-slate-300">${v.data.split('-').reverse().join('/')} — ${v.motivo}</span>
+                      <div class="flex items-center gap-1.5">
+                        <span class="font-800 px-1.5 rounded text-[9px] ${v.desfecho === 'Realizada' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-amber-500/10 text-amber-400'}">${v.desfecho}</span>
+                        <button onclick="excluirVisita(${v.id})" class="text-slate-600 hover:text-red-400 transition-colors" title="Excluir visita">
+                          <i data-lucide="trash-2" style="width:11px;height:11px;"></i>
+                        </button>
+                      </div>
+                    </div>
+                    ${v.notas ? `<p class="text-slate-400 italic text-[11px] leading-relaxed">"${v.notas}"</p>` : ''}
+                  </div>
+                `).reverse().join('')}
+              </div>
+            </div>
+          `;
+        }
+
+        container.innerHTML += `
+          <div class="bg-slate-900 border border-white/10 rounded-2xl p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div class="space-y-1 flex-1">
+              <div class="flex items-center gap-3 flex-wrap">
+                <h4 class="font-800 text-white text-base">${fam.responsavel}</h4>
+                <span class="text-xs bg-slate-800 text-slate-400 font-700 px-2 py-0.5 rounded-lg border border-white/5">Nº ${fam.prontuario}</span>
+                ${statusBadge}
+              </div>
+              <p class="text-xs text-slate-400">${fam.logradouro}, Nº ${fam.numCasa} — Bairro: ${fam.bairro}</p>
+              ${historicoListaHtml}
+            </div>
+            
+            <div class="self-end md:self-center flex-shrink-0">
+              <button onclick="openVisitForm('${fam.prontuario}', '${fam.responsavel}')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-700 text-xs px-4 py-2.5 rounded-xl flex items-center gap-1.5 transition-all shadow-md">
+                <i data-lucide="file-plus" style="width:14px;height:14px;"></i> Registrar Visita
+              </button>
+            </div>
+          </div>
+        `;
+      });
+
+      lucide.createIcons();
+    }
+
+    function openVisitForm(prontuario, responsavel) {
+      document.getElementById('visitProntuarioTarget').value = prontuario;
+      document.getElementById('visitFormTitle').innerHTML = `<i data-lucide="file-plus" class="text-emerald-400"></i> Lançar Relatório de Visita — Casa de ${responsavel}`;
+      
+      const d = new Date();
+      const hoje = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+      document.getElementById('visitDate').value = hoje;
+      document.getElementById('visitReason').value = "";
+      document.getElementById('visitOutcome').value = "Realizada";
+      document.getElementById('visitNotes').value = "";
+
+      document.getElementById('visitFormContainer').classList.remove('hidden');
+      document.getElementById('visitFormContainer').scrollIntoView({ behavior: 'smooth' });
+      lucide.createIcons();
+    }
+
+    function closeVisitForm() {
+      document.getElementById('visitFormContainer').classList.add('hidden');
+    }
+
+    let salvandoVisita = false;
+
+    async function saveVisitReport(event) {
+      event.preventDefault();
+      if (salvandoVisita) return;
+
+      salvandoVisita = true;
+      const r = await apiServidor('visitas.php', 'salvar', {
+        prontuario: document.getElementById('visitProntuarioTarget').value,
+        data: document.getElementById('visitDate').value,
+        motivo: document.getElementById('visitReason').value,
+        desfecho: document.getElementById('visitOutcome').value,
+        notas: document.getElementById('visitNotes').value
+      });
+      salvandoVisita = false;
+
+      if (!r.ok) {
+        mostrarToast(r.erro || 'Não foi possível salvar a visita.', 'error');
+        return;
+      }
+
+      aplicarVisitasDoServidor(r.visitas);
+      mostrarToast('Relatório de Visita Domiciliar salvo com sucesso!', 'success');
+      closeVisitForm();
+      calcularVisitasPendentes();
+      carregarPainelVisitas();
+    }
+
+
+    /* ═══ AGENDA DE CONSULTAS ══════════════════════════════════════════ */
+    // Registro salvo em localStorage['consultas_agenda']:
+    // { agenteLogin, prontuario, membroIdx, paciente, status: 'agendado'|'agendar',
+    //   data, hora, tipo, local, obs, criadoEm }
+
+    let _filtroConsultas = 'todas';
+
+    function getConsultas() {
+      return JSON.parse(localStorage.getItem('consultas_agenda')) || [];
+    }
+
+    function setConsultas(lista) {
+      localStorage.setItem('consultas_agenda', JSON.stringify(lista));
+    }
+
+    function buscarConsulta(prontuario, membroIdx) {
+      return getConsultas().find(c =>
+        c.prontuario === prontuario && Number(c.membroIdx) === Number(membroIdx)
+      ) || null;
+    }
+
+    // Status do paciente: 'agendado' (tem data marcada) ou 'agendar' (pendente)
+    function statusPaciente(prontuario, membroIdx) {
+      const c = buscarConsulta(prontuario, membroIdx);
+      return (c && c.status === 'agendado' && c.data) ? 'agendado' : 'agendar';
+    }
+
+    function atualizarContadorConsultas() {
+      if (!sessaoAtiva) return 0;
+      const agendadas = getConsultas().filter(c =>
+        c.agenteLogin === sessaoAtiva.login && c.status === 'agendado' && c.data
+      ).length;
+
+      const el = document.getElementById('acsConsultas');
+      if (el) el.innerText = agendadas;
+
+      sessaoAtiva.consultas = agendadas;
+      localStorage.setItem('agente_sessao', JSON.stringify(sessaoAtiva));
+
+      const agentes = JSON.parse(localStorage.getItem('agentes')) || [];
+      const idx = agentes.findIndex(a => a.login === sessaoAtiva.login);
+      if (idx !== -1) {
+        agentes[idx].consultas = agendadas;
+        localStorage.setItem('agentes', JSON.stringify(agentes));
+      }
+      renderAvisosConsultas();
+      return agendadas;
+    }
+
+    /* ═══ AVISOS (D-1), PRESENÇA E HISTÓRICO ═══════════════════════════ */
+    // Campos extras em consultas_agenda: presenca ('compareceu'|'faltou'), presencaEm (ISO), avisado (bool)
+    // consultas_historico guarda registros com presença que foram substituídos por um reagendamento.
+
+    function escCons(s) {
+      return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function isoLocal(d) {
+      return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    }
+    function hojeISO() { return isoLocal(new Date()); }
+    function amanhaISO() { const d = new Date(); d.setDate(d.getDate()+1); return isoLocal(d); }
+
+    function getHistoricoConsultas() { return JSON.parse(localStorage.getItem('consultas_historico')) || []; }
+    function arquivarConsulta(c) {
+      const h = getHistoricoConsultas();
+      h.push(Object.assign({}, c, { arquivadoEm: new Date().toISOString() }));
+      localStorage.setItem('consultas_historico', JSON.stringify(h));
+    }
+
+    function telefonePaciente(prontuario, membroIdx) {
+      const fam = (JSON.parse(localStorage.getItem('familias')) || []).find(f => f.prontuario === prontuario);
+      if (!fam) return { numero: '', familia: false };
+      const membros = fam.membros || [];
+      const m = membros[membroIdx];
+      if (m && m.telefone) return { numero: m.telefone, familia: false };
+      const outro = membros.find(x => x.telefone);
+      return outro ? { numero: outro.telefone, familia: true, de: outro.nome } : { numero: '', familia: false };
+    }
+    function linkTel(numero) { return 'tel:+55' + String(numero).replace(/\D/g, ''); }
+    function linkWhats(numero, texto) {
+      return 'https://wa.me/55' + String(numero).replace(/\D/g, '') + '?text=' + encodeURIComponent(texto);
+    }
+
+    function minhasConsultasAgendadas() {
+      return getConsultas().filter(c => c.agenteLogin === sessaoAtiva.login && c.status === 'agendado' && c.data);
+    }
+
+    function renderAvisosConsultas() {
+      const box = document.getElementById('avisosConsultas');
+      if (!box || !sessaoAtiva) return;
+      const hoje = hojeISO(), amanha = amanhaISO();
+      const todas = minhasConsultasAgendadas();
+      const paraAvisar = todas.filter(c => c.data === amanha && !c.presenca && !c.avisado)
+        .sort((a, b) => (a.hora || '').localeCompare(b.hora || ''));
+      const semPresenca = todas.filter(c => c.data <= hoje && !c.presenca).length;
+
+      let html = '';
+
+      if (paraAvisar.length) {
+        html += `
+          <div class="bg-sky-500/10 border border-sky-500/30 rounded-2xl p-4 space-y-3">
+            <div class="flex items-center gap-2">
+              <i data-lucide="bell-ring" class="text-sky-400" style="width:18px;height:18px;"></i>
+              <p class="text-sm font-800 text-sky-100">${paraAvisar.length === 1 ? '1 paciente tem' : paraAvisar.length + ' pacientes têm'} consulta amanhã (${fmtData(amanha)}). Avise por telefone.</p>
+            </div>
+            <div class="space-y-2">
+              ${paraAvisar.map(c => {
+                const tel = telefonePaciente(c.prontuario, c.membroIdx);
+                const msg = `Olá, ${c.paciente || ''}! Aqui é ${sessaoAtiva.name}, agente de saúde. Lembrando da sua consulta amanhã (${fmtData(c.data)})${c.hora ? ' às ' + c.hora : ''}${c.local ? ', em ' + c.local : ''}. Pode confirmar presença?`;
+                return `
+                  <div class="bg-slate-900/80 border border-white/10 rounded-xl p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div class="min-w-0">
+                      <p class="text-sm font-700 text-white truncate">${escCons(c.paciente || 'Paciente')}</p>
+                      <p class="text-[11px] text-slate-400">${c.hora ? c.hora + ' — ' : ''}${escCons(c.tipo || 'Consulta')}${c.local ? ' — ' + escCons(c.local) : ''}</p>
+                      ${tel.numero
+                        ? `<p class="text-xs text-sky-300 font-700 mt-1 flex items-center gap-1.5"><i data-lucide="phone" style="width:12px;height:12px;"></i> ${escCons(tel.numero)}${tel.familia ? ` <span class="text-[10px] font-600 text-slate-500">(contato de ${escCons(tel.de || 'familiar')})</span>` : ''}</p>`
+                        : `<p class="text-xs text-amber-400 mt-1">Sem telefone cadastrado. Faça uma visita ou atualize o cadastro da família.</p>`}
+                    </div>
+                    <div class="flex gap-2 flex-shrink-0 flex-wrap">
+                      ${tel.numero ? `
+                        <a href="${linkTel(tel.numero)}" class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-[11px] font-700 bg-sky-600 hover:bg-sky-700 text-white transition-colors"><i data-lucide="phone" style="width:12px;height:12px;"></i> Ligar</a>
+                        <a href="${linkWhats(tel.numero, msg)}" target="_blank" rel="noopener" class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-[11px] font-700 bg-emerald-600 hover:bg-emerald-700 text-white transition-colors"><i data-lucide="message-circle" style="width:12px;height:12px;"></i> WhatsApp</a>` : ''}
+                      <button onclick="marcarAvisado('${c.prontuario}', ${c.membroIdx})" class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-[11px] font-700 bg-white/5 hover:bg-white/10 border border-white/10 text-slate-200 transition-colors"><i data-lucide="check" style="width:12px;height:12px;"></i> Já avisei</button>
+                    </div>
+                  </div>`;
+              }).join('')}
+            </div>
+          </div>`;
+      }
+
+      if (semPresenca) {
+        html += `
+          <a href="#appointments" class="flex items-center gap-3 bg-amber-500/10 border border-amber-500/30 rounded-2xl px-4 py-3 hover:bg-amber-500/15 transition-colors">
+            <i data-lucide="user-check" class="text-amber-400 flex-shrink-0" style="width:18px;height:18px;"></i>
+            <span class="text-sm font-700 text-amber-100">${semPresenca === 1 ? '1 consulta aguarda' : semPresenca + ' consultas aguardam'} o registro de presença (hoje ou anteriores).</span>
+            <i data-lucide="chevron-right" class="text-amber-400 ml-auto flex-shrink-0" style="width:16px;height:16px;"></i>
+          </a>`;
+      }
+
+      box.innerHTML = html;
+      if (html) lucide.createIcons();
+    }
+
+    function notificarConsultasAmanha() {
+      if (!sessaoAtiva) return;
+      const n = minhasConsultasAgendadas().filter(c => c.data === amanhaISO() && !c.presenca && !c.avisado).length;
+      if (n) mostrarToast(`${n} paciente(s) com consulta amanhã. Entre em contato para avisar.`, 'info');
+    }
+
+    async function marcarAvisado(prontuario, membroIdx) {
+      const r = await apiServidor('consultas.php', 'avisado', { prontuario, membroIdx });
+      if (!r.ok) { mostrarToast(r.erro || 'Não foi possível registrar o aviso.', 'error'); return; }
+      aplicarConsultasDoServidor(r);
+      renderAvisosConsultas();
+    }
+
+    async function registrarPresenca(prontuario, membroIdx, valor) {
+      const c = buscarConsulta(prontuario, membroIdx);
+      if (!c || !c.data) return;
+      if (c.data > hojeISO()) { mostrarToast('A presença só pode ser registrada a partir do dia da consulta.', 'warning'); return; }
+
+      const r = await apiServidor('consultas.php', 'presenca', { prontuario, membroIdx, valor });
+      if (!r.ok) { mostrarToast(r.erro || 'Não foi possível registrar a presença.', 'error'); return; }
+      aplicarConsultasDoServidor(r);
+
+      mostrarToast(valor === 'compareceu'
+        ? `${c.paciente || 'Paciente'} registrado(a) como compareceu.`
+        : `${c.paciente || 'Paciente'} registrado(a) como faltou.`, valor === 'compareceu' ? 'success' : 'warning');
+      atualizarContadorConsultas();
+      carregarPainelConsultas();
+    }
+
+    async function desfazerPresenca(prontuario, membroIdx) {
+      const r = await apiServidor('consultas.php', 'desfazer_presenca', { prontuario, membroIdx });
+      if (!r.ok) { mostrarToast(r.erro || 'Não foi possível desfazer o registro.', 'error'); return; }
+      aplicarConsultasDoServidor(r);
+      mostrarToast('Registro de presença removido.', 'info');
+      atualizarContadorConsultas();
+      carregarPainelConsultas();
+    }
+
+    function filtrarConsultas(filtro) {
+      _filtroConsultas = filtro;
+      carregarPainelConsultas();
+    }
+
+    function fmtData(d) {
+      return d ? d.split('-').reverse().join('/') : '';
+    }
+
+    function carregarPainelConsultas() {
+      if (!sessaoAtiva) return;
+
+      const familiasGerais = JSON.parse(localStorage.getItem('familias')) || [];
+      const minhasFamilias = familiasGerais.filter(f => f.agenteLogin === sessaoAtiva.login);
+      const container = document.getElementById('listaConsultasFamilias');
+      const termo = (document.getElementById('buscaConsulta').value || '').toLowerCase().trim();
+
+      // Botões de filtro
+      const ativo = 'flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-700 transition-colors border bg-emerald-600 border-emerald-600 text-white';
+      const inativo = 'flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-700 transition-colors border bg-white/5 border-white/10 text-slate-300 hover:bg-white/10';
+      document.getElementById('btnConsTodas').className = _filtroConsultas === 'todas' ? ativo : inativo;
+      document.getElementById('btnConsAgendar').className = _filtroConsultas === 'agendar'
+        ? 'flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-700 transition-colors border bg-amber-500 border-amber-500 text-white' : inativo;
+      document.getElementById('btnConsAgendado').className = _filtroConsultas === 'agendado' ? ativo : inativo;
+
+      // Totais gerais (sem filtro)
+      let totalPacientes = 0, totalAgendados = 0;
+      minhasFamilias.forEach(f => {
+        (f.membros || []).forEach((m, i) => {
+          totalPacientes++;
+          if (statusPaciente(f.prontuario, i) === 'agendado') totalAgendados++;
+        });
+      });
+      document.getElementById('consTotalPacientes').innerText = totalPacientes;
+      document.getElementById('consTotalAgendados').innerText = totalAgendados;
+      document.getElementById('consTotalAgendar').innerText = totalPacientes - totalAgendados;
+
+      if (minhasFamilias.length === 0) {
+        container.innerHTML = `
+          <div class="bg-slate-900 rounded-xl p-8 text-center text-slate-400 border border-white/10">
+            <i data-lucide="users" class="text-slate-600 mx-auto mb-2" style="width:28px;height:28px;"></i>
+            <p class="font-700 text-white text-sm">Nenhuma família cadastrada</p>
+            <p class="text-xs mt-1">Cadastre famílias na aba "Famílias" para começar a agendar consultas.</p>
+          </div>`;
+        lucide.createIcons();
+        return;
+      }
+
+      container.innerHTML = '';
+      let cardsRenderizados = 0;
+
+      minhasFamilias.forEach(fam => {
+        const membros = fam.membros || [];
+
+        // Filtro por status + busca textual
+        const membrosVisiveis = membros
+          .map((m, i) => ({ m, i, status: statusPaciente(fam.prontuario, i) }))
+          .filter(x => _filtroConsultas === 'todas' || x.status === _filtroConsultas)
+          .filter(x => {
+            if (!termo) return true;
+            const alvo = `${x.m.nome || ''} ${fam.responsavel || ''} ${fam.prontuario} ${fam.logradouro || ''} ${fam.bairro || ''}`.toLowerCase();
+            return alvo.includes(termo);
+          });
+
+        if (membrosVisiveis.length === 0) return;
+        cardsRenderizados++;
+
+        const agendadosFam = membros.filter((m, i) => statusPaciente(fam.prontuario, i) === 'agendado').length;
+        const pendentesFam = membros.length - agendadosFam;
+
+        const cardsMembros = membrosVisiveis.map(({ m, i, status }) => {
+          const c = buscarConsulta(fam.prontuario, i);
+          const agendado = status === 'agendado';
+
+          const badge = agendado
+            ? `<span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[9px] font-800 uppercase px-2 py-0.5 rounded-lg flex items-center gap-1 flex-shrink-0"><i data-lucide="check" style="width:10px;height:10px;"></i> Agendado</span>`
+            : `<span class="bg-amber-500/10 text-amber-400 border border-amber-500/20 text-[9px] font-800 uppercase px-2 py-0.5 rounded-lg flex items-center gap-1 flex-shrink-0"><span class="w-1.5 h-1.5 bg-amber-400 rounded-full animate-pulse"></span> Agendar</span>`;
+
+          const detalhe = agendado
+            ? `<div class="bg-emerald-500/5 border border-emerald-500/20 rounded-lg p-2 space-y-0.5">
+                 <p class="text-[11px] font-800 text-emerald-300 flex items-center gap-1.5">
+                   <i data-lucide="calendar-check" style="width:12px;height:12px;"></i>
+                   ${fmtData(c.data)}${c.hora ? ' às ' + c.hora : ''}
+                 </p>
+                 <p class="text-[10px] text-slate-400">${c.tipo || 'Consulta'}${c.local ? ' — ' + c.local : ''}</p>
+                 ${c.obs ? `<p class="text-[10px] text-slate-500 italic">"${c.obs}"</p>` : ''}
+               </div>`
+            : `<div class="bg-white/[0.02] border border-white/5 rounded-lg p-2">
+                 <p class="text-[10px] text-slate-500 italic">
+                   ${c && c.obs ? c.obs : 'Sem data definida. Clique em "Agendar consulta" para marcar.'}
+                 </p>
+               </div>`;
+
+          const botoes = agendado
+            ? `<div class="flex gap-2">
+                 <button onclick="abrirFormConsulta('${fam.prontuario}', ${i})" class="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-[11px] font-700 bg-white/5 hover:bg-amber-500/20 text-slate-300 hover:text-amber-400 border border-white/10 transition-all">
+                   <i data-lucide="pencil" style="width:12px;height:12px;"></i> Reagendar
+                 </button>
+                 <button onclick="cancelarConsulta('${fam.prontuario}', ${i})" class="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-[11px] font-700 bg-red-500/10 hover:bg-red-500/30 text-red-400 border border-red-500/20 transition-all">
+                   <i data-lucide="calendar-x" style="width:12px;height:12px;"></i> Cancelar
+                 </button>
+               </div>`
+            : `<button onclick="abrirFormConsulta('${fam.prontuario}', ${i})" class="w-full flex items-center justify-center gap-1.5 py-2 rounded-xl text-[11px] font-700 bg-emerald-600 hover:bg-emerald-700 text-white transition-all shadow-sm">
+                 <i data-lucide="calendar-plus" style="width:12px;height:12px;"></i> Agendar consulta
+               </button>`;
+
+          // ── Telefone, aviso de amanhã e registro de presença ──
+          let badgeFinal = badge, extra = '', botoesFinal = botoes;
+          if (agendado) {
+            const hoje = hojeISO(), amanha = amanhaISO();
+            const tel = telefonePaciente(fam.prontuario, i);
+            extra += tel.numero
+              ? `<p class="text-[11px] text-slate-300 flex items-center gap-1.5 flex-wrap">
+                   <i data-lucide="phone" style="width:12px;height:12px;" class="text-sky-400"></i>
+                   <a href="${linkTel(tel.numero)}" class="font-700 hover:text-sky-300">${escCons(tel.numero)}</a>
+                   ${tel.familia ? `<span class="text-[10px] text-slate-500">(contato de ${escCons(tel.de || 'familiar')})</span>` : ''}
+                 </p>`
+              : `<p class="text-[11px] text-slate-500 flex items-center gap-1.5"><i data-lucide="phone-off" style="width:12px;height:12px;"></i> Sem telefone cadastrado</p>`;
+
+            if (c.presenca) {
+              const ok = c.presenca === 'compareceu';
+              badgeFinal = ok
+                ? `<span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[9px] font-800 uppercase px-2 py-0.5 rounded-lg flex items-center gap-1 flex-shrink-0"><i data-lucide="user-check" style="width:10px;height:10px;"></i> Compareceu</span>`
+                : `<span class="bg-red-500/10 text-red-400 border border-red-500/20 text-[9px] font-800 uppercase px-2 py-0.5 rounded-lg flex items-center gap-1 flex-shrink-0"><i data-lucide="user-x" style="width:10px;height:10px;"></i> Faltou</span>`;
+              extra += `<div class="flex items-center justify-between gap-2">
+                  <p class="text-[10px] text-slate-500">Presença registrada em ${fmtData((c.presencaEm || '').slice(0,10))}</p>
+                  <button onclick="desfazerPresenca('${fam.prontuario}', ${i})" class="text-[10px] font-700 text-slate-400 hover:text-white underline">Desfazer</button>
+                </div>`;
+              botoesFinal = `<button onclick="abrirFormConsulta('${fam.prontuario}', ${i})" class="w-full flex items-center justify-center gap-1.5 py-2 rounded-xl text-[11px] font-700 ${ok ? 'bg-white/5 text-slate-300 border border-white/10 hover:bg-white/10' : 'bg-amber-500 hover:bg-amber-600 text-white'} transition-all">
+                  <i data-lucide="calendar-plus" style="width:12px;height:12px;"></i> ${ok ? 'Agendar novo retorno' : 'Reagendar consulta'}
+                </button>`;
+            } else if (c.data <= hoje) {
+              const eHoje = c.data === hoje;
+              badgeFinal = eHoje
+                ? `<span class="bg-sky-500/10 text-sky-400 border border-sky-500/20 text-[9px] font-800 uppercase px-2 py-0.5 rounded-lg flex items-center gap-1 flex-shrink-0"><span class="w-1.5 h-1.5 bg-sky-400 rounded-full animate-pulse"></span> Hoje</span>`
+                : `<span class="bg-amber-500/10 text-amber-400 border border-amber-500/20 text-[9px] font-800 uppercase px-2 py-0.5 rounded-lg flex items-center gap-1 flex-shrink-0"><span class="w-1.5 h-1.5 bg-amber-400 rounded-full animate-pulse"></span> Registrar presença</span>`;
+              extra += `<div class="bg-sky-500/5 border border-sky-500/20 rounded-lg p-2 space-y-2">
+                  <p class="text-[11px] font-700 text-sky-200">${eHoje ? 'A consulta é hoje. O paciente compareceu?' : 'A consulta já passou. O paciente compareceu?'}</p>
+                  <div class="flex gap-2">
+                    <button onclick="registrarPresenca('${fam.prontuario}', ${i}, 'compareceu')" class="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-[11px] font-700 bg-emerald-600 hover:bg-emerald-700 text-white transition-all">
+                      <i data-lucide="user-check" style="width:12px;height:12px;"></i> Compareceu
+                    </button>
+                    <button onclick="registrarPresenca('${fam.prontuario}', ${i}, 'faltou')" class="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-[11px] font-700 bg-red-600 hover:bg-red-700 text-white transition-all">
+                      <i data-lucide="user-x" style="width:12px;height:12px;"></i> Faltou
+                    </button>
+                  </div>
+                </div>`;
+            } else if (c.data === amanha) {
+              badgeFinal = `<span class="bg-sky-500/10 text-sky-400 border border-sky-500/20 text-[9px] font-800 uppercase px-2 py-0.5 rounded-lg flex items-center gap-1 flex-shrink-0"><i data-lucide="bell-ring" style="width:10px;height:10px;"></i> Amanhã</span>`;
+            }
+          }
+
+          return `
+            <div class="bg-white/[0.02] border border-white/5 p-3 rounded-lg flex flex-col justify-between gap-2">
+              <div class="flex items-start justify-between gap-2">
+                <div class="min-w-0">
+                  <p class="font-700 text-slate-200 text-xs truncate">${m.nome || 'Sem nome'}</p>
+                  <p class="text-[10px] text-slate-400 mt-0.5">
+                    ${m.nascimento ? 'Nasc.: ' + fmtData(m.nascimento) : ''}${m.sus ? ' | SUS: ' + m.sus : ''}
+                  </p>
+                </div>
+                ${badgeFinal}
+              </div>
+              ${detalhe}
+              ${extra}
+              ${botoesFinal}
+            </div>`;
+        }).join('');
+
+        container.innerHTML += `
+          <div class="bg-slate-900 rounded-2xl p-5 border border-white/10 space-y-3">
+            <div class="border-b border-white/5 pb-3">
+              <div class="flex items-start justify-between gap-2 flex-wrap">
+                <h3 class="font-800 text-white text-base flex items-center gap-2 flex-wrap">
+                  ${fam.responsavel}
+                  <span class="text-[11px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2.5 py-0.5 rounded-lg font-700 tracking-wide">Nº ${fam.prontuario}</span>
+                </h3>
+                <div class="flex items-center gap-2">
+                  <span class="text-[10px] font-800 uppercase px-2 py-1 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">${agendadosFam} agendado(s)</span>
+                  <span class="text-[10px] font-800 uppercase px-2 py-1 rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/20">${pendentesFam} a agendar</span>
+                </div>
+              </div>
+              <p class="text-xs text-slate-400 mt-1 flex items-center gap-1 flex-wrap">
+                <i data-lucide="map-pin" style="width:13px;height:13px;" class="text-emerald-400"></i>
+                ${fam.logradouro}, Nº ${fam.numCasa} — Bairro: ${fam.bairro} — ${fam.cidade} / ${fam.uf}
+              </p>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              ${cardsMembros}
+            </div>
+          </div>`;
+      });
+
+      if (cardsRenderizados === 0) {
+        container.innerHTML = `
+          <div class="bg-slate-900 rounded-xl p-8 text-center text-slate-400 border border-white/10">
+            <i data-lucide="search-x" class="text-slate-600 mx-auto mb-2" style="width:28px;height:28px;"></i>
+            <p class="font-700 text-white text-sm">Nenhum paciente encontrado</p>
+            <p class="text-xs mt-1">Ajuste a busca ou troque o filtro de status.</p>
+          </div>`;
+      }
+
+      lucide.createIcons();
+    }
+
+    function ajustarCamposConsulta() {
+      const agendado = document.getElementById('consultaStatus').value === 'agendado';
+      const campoData = document.getElementById('consultaData');
+      campoData.required = agendado;
+      document.getElementById('consultaDataObrig').innerText = agendado ? '*' : '(opcional)';
+    }
+
+    function abrirFormConsulta(prontuario, membroIdx) {
+      const familias = JSON.parse(localStorage.getItem('familias')) || [];
+      const fam = familias.find(f => f.prontuario === prontuario);
+      if (!fam) return;
+      const membro = (fam.membros || [])[membroIdx];
+      if (!membro) return;
+
+      const existente = buscarConsulta(prontuario, membroIdx);
+
+      document.getElementById('consultaProntuario').value = prontuario;
+      document.getElementById('consultaMembroIdx').value = membroIdx;
+
+      document.getElementById('consultaFormTitle').innerHTML = existente && existente.status === 'agendado'
+        ? `<i data-lucide="pencil" class="text-amber-400"></i> Reagendar Consulta`
+        : `<i data-lucide="calendar-plus" class="text-emerald-400"></i> Agendar Consulta`;
+
+      document.getElementById('consultaFormSubtitulo').innerText =
+        `Paciente: ${membro.nome || 'Sem nome'} — Família de ${fam.responsavel} (Prontuário Nº ${fam.prontuario})`;
+
+      document.getElementById('consultaStatus').value = existente ? existente.status : 'agendado';
+      document.getElementById('consultaData').value = (existente && existente.data) ? existente.data : hojeISO();
+      document.getElementById('consultaHora').value = (existente && existente.hora) ? existente.hora : '';
+      document.getElementById('consultaTipo').value = (existente && existente.tipo) ? existente.tipo : 'Clínica Geral';
+      document.getElementById('consultaLocal').value = (existente && existente.local) ? existente.local : (sessaoAtiva.unit || '');
+      document.getElementById('consultaObs').value = (existente && existente.obs) ? existente.obs : '';
+
+      ajustarCamposConsulta();
+
+      const box = document.getElementById('consultaFormContainer');
+      box.classList.remove('hidden');
+      box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      lucide.createIcons();
+    }
+
+    function fecharFormConsulta() {
+      document.getElementById('consultaFormContainer').classList.add('hidden');
+    }
+
+    let salvandoConsulta = false;
+
+    async function salvarConsulta(event) {
+      event.preventDefault();
+      if (salvandoConsulta) return;
+
+      const prontuario = document.getElementById('consultaProntuario').value;
+      const membroIdx = Number(document.getElementById('consultaMembroIdx').value);
+      const status = document.getElementById('consultaStatus').value;
+      const data = document.getElementById('consultaData').value;
+      const hora = document.getElementById('consultaHora').value;
+
+      if (status === 'agendado' && !data) {
+        mostrarToast('Informe a data da consulta para marcar como agendada.', 'warning');
+        return;
+      }
+
+      const fam = (JSON.parse(localStorage.getItem('familias')) || []).find(f => f.prontuario === prontuario);
+      const paciente = fam && fam.membros[membroIdx] ? fam.membros[membroIdx].nome : '';
+
+      salvandoConsulta = true;
+      const r = await apiServidor('consultas.php', 'salvar', {
+        prontuario, membroIdx, status,
+        data: status === 'agendado' ? data : '',
+        hora: status === 'agendado' ? hora : '',
+        tipo: document.getElementById('consultaTipo').value,
+        local: document.getElementById('consultaLocal').value,
+        obs: document.getElementById('consultaObs').value
+      });
+      salvandoConsulta = false;
+
+      if (!r.ok) {
+        mostrarToast(r.erro || 'Não foi possível salvar a consulta.', 'error');
+        return;
+      }
+      aplicarConsultasDoServidor(r);
+
+      mostrarToast(
+        status === 'agendado'
+          ? `Consulta de ${paciente || 'paciente'} agendada para ${fmtData(data)}${hora ? ' às ' + hora : ''}.`
+          : `Paciente ${paciente || ''} marcado como "a agendar".`,
+        status === 'agendado' ? 'success' : 'info'
+      );
+
+      fecharFormConsulta();
+      atualizarContadorConsultas();
+      carregarPainelConsultas();
+    }
+
+    async function cancelarConsulta(prontuario, membroIdx) {
+      const c = buscarConsulta(prontuario, membroIdx);
+      if (!c) return;
+      if (!confirm(`Cancelar a consulta de "${c.paciente || 'paciente'}" marcada para ${fmtData(c.data)}?\n\nO paciente voltará para o status "Agendar".`)) return;
+
+      const r = await apiServidor('consultas.php', 'cancelar', { prontuario, membroIdx });
+      if (!r.ok) { mostrarToast(r.erro || 'Não foi possível cancelar a consulta.', 'error'); return; }
+      aplicarConsultasDoServidor(r);
+
+      mostrarToast('Agendamento cancelado. Paciente voltou para "Agendar".', 'warning');
+      atualizarContadorConsultas();
+      carregarPainelConsultas();
+    }
+
+    window.addEventListener('hashchange', updateNavigation);
+    
+    async function excluirFamilia(prontuario, responsavel) {
+      if (!confirm('Excluir a família de "' + responsavel + '" (Nº ' + prontuario + ')?\n\nTodas as visitas desta família também serão removidas.')) return;
+
+      const r = await apiServidor('familias.php', 'excluir', { prontuario });
+      if (!r.ok) {
+        mostrarToast(r.erro || 'Não foi possível excluir a família.', 'error');
+        return;
+      }
+      aplicarFamiliasDoServidor(r.familias);
+
+      await sincronizarVisitas();   // as visitas da família já saíram do banco (CASCADE)
+      await sincronizarConsultas();   // as consultas da família também saíram do banco (CASCADE)
+      atualizarContadorConsultas();
+
+      calcularVisitasPendentes();
+      carregarFamilias();
+    }
+
+    async function excluirVisita(id) {
+      if (!confirm('Excluir este registro de visita?')) return;
+      const r = await apiServidor('visitas.php', 'excluir', { id });
+      if (!r.ok) {
+        mostrarToast(r.erro || 'Não foi possível excluir a visita.', 'error');
+        return;
+      }
+      aplicarVisitasDoServidor(r.visitas);
+      calcularVisitasPendentes();
+      carregarPainelVisitas();
+    }
+
+    // Chamada ao servidor (login.php / agentes.php)
+    async function apiServidor(arquivo, acao, dados = {}) {
+      try {
+        const r = await fetch(arquivo, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ acao, ...dados })
+        });
+        return await r.json();
+      } catch (e) {
+        return { ok: false, erro: 'Não foi possível conectar ao servidor.' };
+      }
+    }
+
+    // Encerra a sessão no servidor (PHP) e no navegador
+    async function sairAgente() {
+      localStorage.removeItem('agente_sessao');
+      await apiServidor('login.php', 'logout');
+      window.location.href = 'index.html';
+    }
+
+    window.addEventListener('load', async () => {
+      // A sessão é validada no servidor; o perfil do agente vem do MySQL.
+      const srv = await apiServidor('login.php', 'sessao');
+      if (!srv.ok || !srv.usuario || srv.usuario.perfil !== 'agente' || !srv.agente) {
+        localStorage.removeItem('agente_sessao');
+        window.location.href = 'index.html';
+        return;
+      }
+
+      // TEMPORÁRIO: contadores de famílias/visitas/consultas ainda vêm do localStorage.
+      let local = {};
+      try { local = JSON.parse(localStorage.getItem('agente_sessao')) || {}; } catch (e) { local = {}; }
+      if (local.login !== srv.agente.login) local = {};   // sobra de outro usuário: descarta
+      sessaoAtiva = Object.assign({}, local, srv.agente);
+      delete sessaoAtiva.password;                        // senha nunca fica no navegador
+      localStorage.setItem('agente_sessao', JSON.stringify(sessaoAtiva));
+      await Promise.all([sincronizarFamilias(), sincronizarVisitas(), sincronizarConsultas()]);   // vêm do MySQL
+
+      document.getElementById('boasVindas').innerText = `Bem-vindo(a), ${sessaoAtiva.name}!`;
+      document.getElementById('infoUnidade').innerText = `Unidade: ${sessaoAtiva.unit} | Equipe: ${sessaoAtiva.team || 'Não informada'} | Área: ${sessaoAtiva.area || 'Não informada'}`;
+      document.getElementById('nomeAcsSide').innerText = sessaoAtiva.name;
+      document.getElementById('nomeUnidadeSide').innerText = sessaoAtiva.unit;
+      
+      atualizarContadorConsultas();
+      notificarConsultasAmanha();
+      setInterval(renderAvisosConsultas, 30 * 60 * 1000); // vira o dia sem recarregar
+      document.getElementById('acsVisitas').innerText = sessaoAtiva.visitas || 0;
+      calcularVisitasPendentes();
+
+      // Pré-seleciona mês e ano atual
+      const agora = new Date();
+      document.getElementById('relMes').value = String(agora.getMonth() + 1).padStart(2, '0');
+      document.getElementById('relAno').value = agora.getFullYear();
+      document.getElementById('relMesCons').value = String(agora.getMonth() + 1).padStart(2, '0');
+      document.getElementById('relAnoCons').value = agora.getFullYear();
+
+      showOnlyList();
+      updateNavigation();
+    });
+
+    function getVisitasDoMes(mes, ano) {
+      const todas = JSON.parse(localStorage.getItem('visitas_historico')) || [];
+      return todas.filter(v => {
+        if (v.agenteLogin !== sessaoAtiva.login) return false;
+        const [y, m] = (v.data || '').split('-');
+        return m === mes && y === String(ano);
+      });
+    }
+
+    function previewRelatorioVisitas() {
+      const mes = document.getElementById('relMes').value;
+      const ano = document.getElementById('relAno').value;
+      const visitas = getVisitasDoMes(mes, ano);
+      const nomesMes = ['','Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+
+      document.getElementById('resumoVisitas').innerText = `${visitas.length} visita(s) em ${nomesMes[parseInt(mes)]}/${ano}`;
+      const lista = document.getElementById('listaPreviewVisitas');
+      if (visitas.length === 0) {
+        lista.innerHTML = '<p class="text-slate-500">Nenhuma visita encontrada neste período.</p>';
+      } else {
+        lista.innerHTML = visitas.map(v => `
+          <div class="flex justify-between gap-2 py-1 border-b border-white/5">
+            <span class="text-slate-300">${v.data ? v.data.split('-').reverse().join('/') : '—'} — Prontuário Nº ${v.prontuario}</span>
+            <span class="text-emerald-400 font-700">${v.desfecho || ''}</span>
+          </div>
+        `).join('');
+      }
+      document.getElementById('previewVisitas').classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function exportarVisitasXML() {
+      const mes = document.getElementById('relMes').value;
+      const ano = document.getElementById('relAno').value;
+      const visitas = getVisitasDoMes(mes, ano);
+      const nomesMes = ['','Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+
+      let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
+      xml += `<relatorioVisitas>\n`;
+      xml += `  <agente>${sessaoAtiva.name}</agente>\n`;
+      xml += `  <login>${sessaoAtiva.login}</login>\n`;
+      xml += `  <unidade>${sessaoAtiva.unit}</unidade>\n`;
+      xml += `  <equipe>${sessaoAtiva.team || ''}</equipe>\n`;
+      xml += `  <area>${sessaoAtiva.area || ''}</area>\n`;
+      xml += `  <periodo>${nomesMes[parseInt(mes)]}/${ano}</periodo>\n`;
+      xml += `  <totalVisitas>${visitas.length}</totalVisitas>\n`;
+      xml += `  <visitas>\n`;
+      visitas.forEach(v => {
+        xml += `    <visita>\n`;
+        xml += `      <data>${v.data || ''}</data>\n`;
+        xml += `      <prontuario>${v.prontuario || ''}</prontuario>\n`;
+        xml += `      <motivo>${(v.motivo || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</motivo>\n`;
+        xml += `      <desfecho>${v.desfecho || ''}</desfecho>\n`;
+        xml += `      <notas>${(v.notas || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</notas>\n`;
+        xml += `    </visita>\n`;
+      });
+      xml += `  </visitas>\n`;
+      xml += `</relatorioVisitas>`;
+
+      baixarXML(xml, `visitas_${mes}_${ano}_${sessaoAtiva.login}.xml`);
+    }
+
+    function previewRelatorioFamilias() {
+      const familias = (JSON.parse(localStorage.getItem('familias')) || []).filter(f => f.agenteLogin === sessaoAtiva.login);
+      document.getElementById('resumoFamilias').innerText = `${familias.length} família(s) cadastrada(s)`;
+      const lista = document.getElementById('listaPreviewFamilias');
+      if (familias.length === 0) {
+        lista.innerHTML = '<p class="text-slate-500">Nenhuma família cadastrada.</p>';
+      } else {
+        lista.innerHTML = familias.map(f => `
+          <div class="flex justify-between gap-2 py-1 border-b border-white/5">
+            <span class="text-slate-300">Nº ${f.prontuario} — ${f.responsavel}</span>
+            <span class="text-blue-400 font-700">${(f.membros || []).length} membro(s)</span>
+          </div>
+        `).join('');
+      }
+      document.getElementById('previewFamilias').classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function exportarFamiliasXML() {
+      const familias = (JSON.parse(localStorage.getItem('familias')) || []).filter(f => f.agenteLogin === sessaoAtiva.login);
+
+      let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
+      xml += `<relatorioFamilias>\n`;
+      xml += `  <agente>${sessaoAtiva.name}</agente>\n`;
+      xml += `  <login>${sessaoAtiva.login}</login>\n`;
+      xml += `  <unidade>${sessaoAtiva.unit}</unidade>\n`;
+      xml += `  <equipe>${sessaoAtiva.team || ''}</equipe>\n`;
+      xml += `  <area>${sessaoAtiva.area || ''}</area>\n`;
+      xml += `  <totalFamilias>${familias.length}</totalFamilias>\n`;
+      xml += `  <familias>\n`;
+      familias.forEach(f => {
+        const esc = s => (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        xml += `    <familia>\n`;
+        xml += `      <prontuario>${f.prontuario || ''}</prontuario>\n`;
+        xml += `      <responsavel>${esc(f.responsavel)}</responsavel>\n`;
+        xml += `      <logradouro>${esc(f.logradouro)}</logradouro>\n`;
+        xml += `      <numero>${f.numCasa || ''}</numero>\n`;
+        xml += `      <complemento>${esc(f.complemento)}</complemento>\n`;
+        xml += `      <bairro>${esc(f.bairro)}</bairro>\n`;
+        xml += `      <cidade>${esc(f.cidade)}</cidade>\n`;
+        xml += `      <uf>${f.uf || ''}</uf>\n`;
+        xml += `      <membros>\n`;
+        (f.membros || []).forEach(m => {
+          xml += `        <membro>\n`;
+          xml += `          <nome>${esc(m.nome)}</nome>\n`;
+          xml += `          <nascimento>${m.nascimento || ''}</nascimento>\n`;
+          xml += `          <sexo>${m.sexo || ''}</sexo>\n`;
+          xml += `          <cpf>${m.cpf || ''}</cpf>\n`;
+          xml += `          <sus>${m.sus || ''}</sus>\n`;
+          xml += `          <telefone>${m.telefone || ''}</telefone>\n`;
+          xml += `          <hipertenso>${m.hipertenso ? 'sim' : 'nao'}</hipertenso>\n`;
+          xml += `          <diabetico>${m.diabetico ? 'sim' : 'nao'}</diabetico>\n`;
+          xml += `          <gestante>${m.gestante ? 'sim' : 'nao'}</gestante>\n`;
+          xml += `          <vacinaAtrasada>${m.vacinaAtrasada ? 'sim' : 'nao'}</vacinaAtrasada>\n`;
+          xml += `          <tuberculose>${m.tuberculose ? 'sim' : 'nao'}</tuberculose>\n`;
+          xml += `          <hanseniase>${m.hanseniase ? 'sim' : 'nao'}</hanseniase>\n`;
+          xml += `          <deficienteFisico>${m.deficienteFisico ? 'sim' : 'nao'}</deficienteFisico>\n`;
+          xml += `        </membro>\n`;
+        });
+        xml += `      </membros>\n`;
+        xml += `    </familia>\n`;
+      });
+      xml += `  </familias>\n`;
+      xml += `</relatorioFamilias>`;
+
+      baixarXML(xml, `familias_${sessaoAtiva.login}.xml`);
+    }
+
+    /* ═══ RELATÓRIO DE CONSULTAS AGENDADAS ═════════════════════════════ */
+    const NOMES_MES_CONS = ['','Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+
+    function situacaoConsulta(c) {
+      if (c.presenca === 'compareceu') return { chave: 'compareceu', rotulo: 'Compareceu' };
+      if (c.presenca === 'faltou') return { chave: 'faltou', rotulo: 'Faltou' };
+      if (c.data < hojeISO()) return { chave: 'sem_registro', rotulo: 'Sem registro de presença' };
+      return { chave: 'aguardando', rotulo: c.data === hojeISO() ? 'Hoje (aguardando)' : 'Aguardando consulta' };
+    }
+
+    function getConsultasRelatorio() {
+      const mes = document.getElementById('relMesCons').value;
+      const ano = document.getElementById('relAnoCons').value;
+      const filtro = document.getElementById('relStatusCons').value;
+      return getConsultas().concat(getHistoricoConsultas())
+        .filter(c => c.agenteLogin === sessaoAtiva.login && c.status === 'agendado' && c.data)
+        .filter(c => { const [y, m] = c.data.split('-'); return m === mes && y === String(ano); })
+        .map(c => Object.assign({}, c, { _sit: situacaoConsulta(c), _tel: telefonePaciente(c.prontuario, c.membroIdx).numero }))
+        .filter(c => filtro === 'todas' || c._sit.chave === filtro)
+        .sort((a, b) => (a.data + (a.hora || '')).localeCompare(b.data + (b.hora || '')));
+    }
+
+    function contarSituacoes(lista) {
+      const n = { aguardando: 0, compareceu: 0, faltou: 0, sem_registro: 0 };
+      lista.forEach(c => n[c._sit.chave]++);
+      return n;
+    }
+
+    function previewRelatorioConsultas() {
+      const mes = document.getElementById('relMesCons').value;
+      const ano = document.getElementById('relAnoCons').value;
+      const lista = getConsultasRelatorio();
+      const n = contarSituacoes(lista);
+      document.getElementById('resumoConsultas').innerText = `${lista.length} consulta(s) em ${NOMES_MES_CONS[parseInt(mes)]}/${ano}`;
+      document.getElementById('detalheResumoConsultas').innerText =
+        `Compareceram: ${n.compareceu} | Faltaram: ${n.faltou} | Aguardando: ${n.aguardando} | Sem registro: ${n.sem_registro}`;
+      const cores = { compareceu: 'text-emerald-400', faltou: 'text-red-400', aguardando: 'text-sky-400', sem_registro: 'text-amber-400' };
+      document.getElementById('listaPreviewConsultas').innerHTML = lista.length === 0
+        ? '<p class="text-slate-500">Nenhuma consulta encontrada neste período.</p>'
+        : lista.map(c => `
+          <div class="flex justify-between gap-2 py-1 border-b border-white/5">
+            <span class="text-slate-300">${fmtData(c.data)}${c.hora ? ' ' + escCons(c.hora) : ''} — ${escCons(c.paciente || '—')}${c._tel ? ' — ' + escCons(c._tel) : ''}</span>
+            <span class="${cores[c._sit.chave]} font-700 flex-shrink-0">${c._sit.rotulo}</span>
+          </div>`).join('');
+      document.getElementById('previewConsultas').classList.remove('hidden');
+    }
+
+    function exportarConsultasXML() {
+      const mes = document.getElementById('relMesCons').value;
+      const ano = document.getElementById('relAnoCons').value;
+      const lista = getConsultasRelatorio();
+      const n = contarSituacoes(lista);
+      let xml = `<?xml version="1.0" encoding="UTF-8"?>\n<relatorioConsultas>\n`;
+      xml += `  <agente>${escCons(sessaoAtiva.name)}</agente>\n`;
+      xml += `  <login>${escCons(sessaoAtiva.login)}</login>\n`;
+      xml += `  <unidade>${escCons(sessaoAtiva.unit)}</unidade>\n`;
+      xml += `  <equipe>${escCons(sessaoAtiva.team || '')}</equipe>\n`;
+      xml += `  <area>${escCons(sessaoAtiva.area || '')}</area>\n`;
+      xml += `  <periodo>${NOMES_MES_CONS[parseInt(mes)]}/${ano}</periodo>\n`;
+      xml += `  <totalConsultas>${lista.length}</totalConsultas>\n`;
+      xml += `  <compareceram>${n.compareceu}</compareceram>\n  <faltaram>${n.faltou}</faltaram>\n`;
+      xml += `  <aguardando>${n.aguardando}</aguardando>\n  <semRegistro>${n.sem_registro}</semRegistro>\n`;
+      xml += `  <consultas>\n`;
+      lista.forEach(c => {
+        xml += `    <consulta>\n`;
+        xml += `      <data>${c.data}</data>\n      <hora>${escCons(c.hora || '')}</hora>\n`;
+        xml += `      <paciente>${escCons(c.paciente || '')}</paciente>\n`;
+        xml += `      <prontuario>${escCons(c.prontuario)}</prontuario>\n`;
+        xml += `      <telefone>${escCons(c._tel)}</telefone>\n`;
+        xml += `      <tipo>${escCons(c.tipo || '')}</tipo>\n      <local>${escCons(c.local || '')}</local>\n`;
+        xml += `      <situacao>${escCons(c._sit.rotulo)}</situacao>\n`;
+        xml += `      <presencaRegistradaEm>${escCons((c.presencaEm || '').slice(0, 10))}</presencaRegistradaEm>\n`;
+        xml += `      <observacoes>${escCons(c.obs || '')}</observacoes>\n`;
+        xml += `    </consulta>\n`;
+      });
+      xml += `  </consultas>\n</relatorioConsultas>`;
+      baixarXML(xml, `consultas_${mes}_${ano}_${sessaoAtiva.login}.xml`);
+    }
+
+    function exportarConsultasPDF() {
+      const mes = document.getElementById('relMesCons').value;
+      const ano = document.getElementById('relAnoCons').value;
+      const lista = getConsultasRelatorio();
+      const n = contarSituacoes(lista);
+      const nomeMes = NOMES_MES_CONS[parseInt(mes)];
+      const linhas = lista.length === 0
+        ? `<tr><td colspan="7" style="text-align:center;color:#7f8c8d;font-style:italic;">Nenhuma consulta encontrada neste período.</td></tr>`
+        : lista.map(c => `
+          <tr>
+            <td>${fmtData(c.data)}${c.hora ? '<br>' + escCons(c.hora) : ''}</td>
+            <td>${escCons(c.paciente || '—')}</td>
+            <td>${escCons(c.prontuario)}</td>
+            <td>${escCons(c._tel || '—')}</td>
+            <td>${escCons(c.tipo || '—')}${c.local ? '<br><span style="color:#667780">' + escCons(c.local) + '</span>' : ''}</td>
+            <td><strong>${c._sit.rotulo}</strong></td>
+            <td>${escCons(c.obs || '')}</td>
+          </tr>`).join('');
+      const html = `
+        <div class="cabecalho">
+          <div class="cabecalho-info">
+            <h1>Relatório de Consultas Agendadas</h1>
+            <p>Agente: <strong>${escCons(sessaoAtiva.name)}</strong> &nbsp;|&nbsp; Unidade: <strong>${escCons(sessaoAtiva.unit || '—')}</strong></p>
+            <p>Equipe: ${escCons(sessaoAtiva.team || '—')} &nbsp;|&nbsp; Área: ${escCons(sessaoAtiva.area || '—')}</p>
+          </div>
+          <span class="badge">${nomeMes} / ${ano}</span>
+        </div>
+        <h2>Resumo &nbsp;<span style="font-weight:400;font-size:10px;color:#667780;">${lista.length} consulta(s) — Compareceram: ${n.compareceu} | Faltaram: ${n.faltou} | Aguardando: ${n.aguardando} | Sem registro: ${n.sem_registro}</span></h2>
+        <table>
+          <thead><tr><th>Data / Hora</th><th>Paciente</th><th>Prontuário</th><th>Telefone</th><th>Atendimento</th><th>Situação</th><th>Observações</th></tr></thead>
+          <tbody>${linhas}</tbody>
+        </table>`;
+      gerarPDFJanela(html, `Consultas ${nomeMes} ${ano} — ${sessaoAtiva.name}`);
+    }
+
+    function baixarXML(conteudo, nomeArquivo) {
+      const blob = new Blob([conteudo], { type: 'application/xml' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = nomeArquivo;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function gerarPDFJanela(htmlConteudo, titulo) {
+      const janela = window.open('', '_blank');
+      janela.document.write(`<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>${titulo}</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Arial, Helvetica, sans-serif; font-size: 11px; color: #2c3e50; background: #fff; padding: 24px; }
+    h1 { font-size: 15px; font-weight: 700; color: #2c3e50; margin-bottom: 2px; }
+    h2 { font-size: 12px; font-weight: 700; color: #2c3e50; margin: 14px 0 6px; border-bottom: 1.5px solid #dde4e6; padding-bottom: 4px; }
+    .cabecalho { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #109ea3; padding-bottom: 10px; margin-bottom: 14px; }
+    .cabecalho-info p { font-size: 10px; color: #44545b; margin-top: 2px; }
+    .badge { display: inline-block; background: #e6f7f7; color: #0b777a; border: 1px solid #b2e5e7; border-radius: 6px; padding: 2px 8px; font-size: 10px; font-weight: 700; }
+    table { width: 100%; border-collapse: collapse; margin-top: 6px; }
+    th { background: #f0f4f5; color: #44545b; font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; padding: 6px 8px; text-align: left; border: 1px solid #dde4e6; }
+    td { padding: 6px 8px; border: 1px solid #dde4e6; font-size: 10px; color: #44545b; vertical-align: top; }
+    tr:nth-child(even) td { background: #f0f4f5; }
+    .familia-bloco { border: 1px solid #dde4e6; border-radius: 8px; padding: 10px 12px; margin-bottom: 12px; page-break-inside: avoid; }
+    .familia-titulo { font-size: 12px; font-weight: 700; color: #2c3e50; margin-bottom: 2px; }
+    .familia-end { font-size: 10px; color: #667780; margin-bottom: 8px; }
+    .rodape { margin-top: 20px; padding-top: 8px; border-top: 1px solid #dde4e6; font-size: 9px; color: #7f8c8d; display: flex; justify-content: space-between; }
+    @media print { body { padding: 12px; } .familia-bloco { page-break-inside: avoid; } }
+  </style>
+</head>
+<body>
+${htmlConteudo}
+<div class="rodape">
+  <span>ACS Conecta — Documento gerado automaticamente</span>
+  <span>${new Date().toLocaleString('pt-BR')}</span>
+</div>
+<script>window.onload = function(){ window.print(); }<\/script>
+</body>
+</html>`);
+      janela.document.close();
+    }
+
+    function exportarVisitasPDF() {
+      const mes = document.getElementById('relMes').value;
+      const ano = document.getElementById('relAno').value;
+      const visitas = getVisitasDoMes(mes, ano);
+      const nomesMes = ['','Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+      const nomeMes = nomesMes[parseInt(mes)];
+
+      const linhas = visitas.length === 0
+        ? `<tr><td colspan="4" style="text-align:center;color:#7f8c8d;font-style:italic;">Nenhuma visita registrada neste período.</td></tr>`
+        : visitas.map(v => `
+            <tr>
+              <td>${v.data ? v.data.split('-').reverse().join('/') : '—'}</td>
+              <td>${v.prontuario || '—'}</td>
+              <td>${v.motivo || '—'}</td>
+              <td>${v.desfecho || '—'}</td>
+            </tr>`).join('');
+
+      const html = `
+        <div class="cabecalho">
+          <div class="cabecalho-info">
+            <h1>Relatório Mensal de Visitas Domiciliares</h1>
+            <p>Agente: <strong>${sessaoAtiva.name}</strong> &nbsp;|&nbsp; Unidade: <strong>${sessaoAtiva.unit || '—'}</strong></p>
+            <p>Equipe: ${sessaoAtiva.team || '—'} &nbsp;|&nbsp; Área: ${sessaoAtiva.area || '—'}</p>
+          </div>
+          <span class="badge">${nomeMes} / ${ano}</span>
+        </div>
+        <h2>Visitas Realizadas &nbsp;<span style="font-weight:400;font-size:10px;color:#667780;">(${visitas.length} registro${visitas.length !== 1 ? 's' : ''})</span></h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Data</th>
+              <th>Prontuário</th>
+              <th>Motivo</th>
+              <th>Desfecho</th>
+            </tr>
+          </thead>
+          <tbody>${linhas}</tbody>
+        </table>`;
+
+      gerarPDFJanela(html, `Visitas ${nomeMes} ${ano} — ${sessaoAtiva.name}`);
+    }
+
+    function exportarFamiliasPDF() {
+      const familias = (JSON.parse(localStorage.getItem('familias')) || []).filter(f => f.agenteLogin === sessaoAtiva.login);
+
+      const blocos = familias.length === 0
+        ? `<p style="color:#7f8c8d;font-style:italic;">Nenhuma família cadastrada.</p>`
+        : familias.map(f => {
+            const esc = s => (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+            const linhasMembros = (f.membros || []).map(m => {
+              const condicoes = [
+                m.hipertenso && 'Hipertenso',
+                m.diabetico && 'Diabético',
+                m.gestante && 'Gestante',
+                m.vacinaAtrasada && 'Vacina Atrasada',
+                m.tuberculose && 'Tuberculose',
+                m.hanseniase && 'Hanseníase',
+                m.deficienteFisico && 'Def. Físico'
+              ].filter(Boolean).join(', ') || '—';
+              const nasc = m.nascimento ? m.nascimento.split('-').reverse().join('/') : '—';
+              return `<tr>
+                <td>${esc(m.nome)}</td>
+                <td>${nasc}</td>
+                <td>${m.sexo || '—'}</td>
+                <td>${m.cpf || '—'}</td>
+                <td>${m.sus || '—'}</td>
+                <td>${m.telefone || '—'}</td>
+                <td>${condicoes}</td>
+              </tr>`;
+            }).join('');
+
+            return `<div class="familia-bloco">
+              <div class="familia-titulo">Prontuário Nº ${esc(f.prontuario)} — ${esc(f.responsavel)}</div>
+              <div class="familia-end"><strong>Endereço:</strong> ${esc(f.logradouro)}, Nº ${esc(f.numCasa)}${f.complemento ? ` (${esc(f.complemento)})` : ''} — ${esc(f.bairro)} — ${esc(f.cidade)} / ${esc(f.uf)}</div>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Nome</th><th>Nascimento</th><th>Sexo</th><th>CPF</th><th>Cartão SUS</th><th>Telefone</th><th>Condições</th>
+                  </tr>
+                </thead>
+                <tbody>${linhasMembros}</tbody>
+              </table>
+            </div>`;
+          }).join('');
+
+      const html = `
+        <div class="cabecalho">
+          <div class="cabecalho-info">
+            <h1>Relatório de Famílias Cadastradas</h1>
+            <p>Agente: <strong>${sessaoAtiva.name}</strong> &nbsp;|&nbsp; Unidade: <strong>${sessaoAtiva.unit || '—'}</strong></p>
+            <p>Equipe: ${sessaoAtiva.team || '—'} &nbsp;|&nbsp; Área: ${sessaoAtiva.area || '—'}</p>
+          </div>
+          <span class="badge">${familias.length} família${familias.length !== 1 ? 's' : ''}</span>
+        </div>
+        <h2>Famílias e Membros</h2>
+        ${blocos}`;
+
+      gerarPDFJanela(html, `Famílias Cadastradas — ${sessaoAtiva.name}`);
+    }
+  </script>
+</body>
+</html>
