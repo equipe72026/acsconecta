@@ -1,0 +1,11 @@
+{
+  "name": "acsconecta",
+  "version": "1.0.0",
+  "private": true,
+  "description": "ACS Conecta - API (Vercel) + Postgres (Supabase)",
+  "engines": { "node": ">=18" },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "pg": "^8.11.3"
+  }
+}
