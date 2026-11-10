@@ -307,10 +307,10 @@
     document.getElementById('modalSenha').classList.add('hidden');
   }
 
-  // Função auxiliar para falar com o servidor (login.php)
+  // Função auxiliar para falar com o servidor (/api/login)
   async function api(acao, dados = {}) {
     try {
-      const r = await fetch('login.php', {
+      const r = await fetch('/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ acao, ...dados })
@@ -378,7 +378,7 @@
   }
 
   // ── Autenticação em 2 Fatores (2FA) ──
-  // A pergunta é sorteada e a resposta é conferida no servidor (login.php);
+  // A pergunta é sorteada e a resposta é conferida no servidor (/api/login);
   // nenhum dado pessoal do agente chega ao navegador antes da verificação.
   let tentativas2FA = 0;
 

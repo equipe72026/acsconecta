@@ -950,7 +950,7 @@
       const phoneRegex = /^\(\d{2}\)\s\d{5}-\d{4}$/;
       if (!phoneRegex.test(phone)) { optMsg('opt_msgDados','Formato inválido: (XX) XXXXX-XXXX',false); return; }
 
-      const r = await apiServidor('agentes.php', 'minha_conta', { phone, email });
+      const r = await apiServidor('/api/agentes', 'minha_conta', { phone, email });
       if (!r.ok) { optMsg('opt_msgDados', r.erro || 'Não foi possível salvar.', false); return; }
 
       sessaoAtiva.phone = phone;
@@ -970,7 +970,7 @@
       if (nova.length < 6) { optMsg('opt_msgSenha','A nova senha deve ter no mínimo 6 caracteres.',false); return; }
       if (nova !== confirma) { optMsg('opt_msgSenha','As senhas não coincidem.',false); return; }
 
-      const r = await apiServidor('agentes.php', 'minha_senha', { atual, nova });
+      const r = await apiServidor('/api/agentes', 'minha_senha', { atual, nova });
       if (!r.ok) { optMsg('opt_msgSenha', r.erro || 'Não foi possível alterar a senha.', false); return; }
 
       ['opt_senhaAtual','opt_senhaNova','opt_senhaConfirm'].forEach(id => document.getElementById(id).value = '');
@@ -1131,7 +1131,7 @@
       if (isEditing) return;
       const lbl = document.getElementById('lblProntuarioAuto');
       lbl.innerText = '...';
-      const r = await apiServidor('familias.php', 'prontuario');
+      const r = await apiServidor('/api/familias', 'prontuario');
       lbl.innerText = r.ok ? r.prontuario : '—';
     }
 
@@ -1155,7 +1155,7 @@
     }
 
     async function sincronizarVisitas() {
-      const r = await apiServidor('visitas.php', 'listar');
+      const r = await apiServidor('/api/visitas', 'listar');
       if (!r.ok) {
         mostrarToast(r.erro || 'Não foi possível carregar as visitas.', 'error');
         return false;
@@ -1171,7 +1171,7 @@
     }
 
     async function sincronizarConsultas() {
-      const r = await apiServidor('consultas.php', 'listar');
+      const r = await apiServidor('/api/consultas', 'listar');
       if (!r.ok) {
         mostrarToast(r.erro || 'Não foi possível carregar as consultas.', 'error');
         return false;
@@ -1181,7 +1181,7 @@
     }
 
     async function sincronizarFamilias() {
-      const r = await apiServidor('familias.php', 'listar');
+      const r = await apiServidor('/api/familias', 'listar');
       if (!r.ok) {
         mostrarToast(r.erro || 'Não foi possível carregar as famílias.', 'error');
         return false;
@@ -1528,7 +1528,7 @@
       const btn = document.getElementById('btnSubmitForm');
       salvandoFamilia = true;
       btn.disabled = true;
-      const r = await apiServidor('familias.php', 'salvar', {
+      const r = await apiServidor('/api/familias', 'salvar', {
         prontuario: editProntuarioId,
         cep: document.getElementById('cep').value,
         logradouro: document.getElementById('logradouro').value,
@@ -1704,7 +1704,7 @@
       if (salvandoVisita) return;
 
       salvandoVisita = true;
-      const r = await apiServidor('visitas.php', 'salvar', {
+      const r = await apiServidor('/api/visitas', 'salvar', {
         prontuario: document.getElementById('visitProntuarioTarget').value,
         data: document.getElementById('visitDate').value,
         motivo: document.getElementById('visitReason').value,
@@ -1877,7 +1877,7 @@
     }
 
     async function marcarAvisado(prontuario, membroIdx) {
-      const r = await apiServidor('consultas.php', 'avisado', { prontuario, membroIdx });
+      const r = await apiServidor('/api/consultas', 'avisado', { prontuario, membroIdx });
       if (!r.ok) { mostrarToast(r.erro || 'Não foi possível registrar o aviso.', 'error'); return; }
       aplicarConsultasDoServidor(r);
       renderAvisosConsultas();
@@ -1888,7 +1888,7 @@
       if (!c || !c.data) return;
       if (c.data > hojeISO()) { mostrarToast('A presença só pode ser registrada a partir do dia da consulta.', 'warning'); return; }
 
-      const r = await apiServidor('consultas.php', 'presenca', { prontuario, membroIdx, valor });
+      const r = await apiServidor('/api/consultas', 'presenca', { prontuario, membroIdx, valor });
       if (!r.ok) { mostrarToast(r.erro || 'Não foi possível registrar a presença.', 'error'); return; }
       aplicarConsultasDoServidor(r);
 
@@ -1900,7 +1900,7 @@
     }
 
     async function desfazerPresenca(prontuario, membroIdx) {
-      const r = await apiServidor('consultas.php', 'desfazer_presenca', { prontuario, membroIdx });
+      const r = await apiServidor('/api/consultas', 'desfazer_presenca', { prontuario, membroIdx });
       if (!r.ok) { mostrarToast(r.erro || 'Não foi possível desfazer o registro.', 'error'); return; }
       aplicarConsultasDoServidor(r);
       mostrarToast('Registro de presença removido.', 'info');
@@ -2179,7 +2179,7 @@
       const paciente = fam && fam.membros[membroIdx] ? fam.membros[membroIdx].nome : '';
 
       salvandoConsulta = true;
-      const r = await apiServidor('consultas.php', 'salvar', {
+      const r = await apiServidor('/api/consultas', 'salvar', {
         prontuario, membroIdx, status,
         data: status === 'agendado' ? data : '',
         hora: status === 'agendado' ? hora : '',
@@ -2212,7 +2212,7 @@
       if (!c) return;
       if (!confirm(`Cancelar a consulta de "${c.paciente || 'paciente'}" marcada para ${fmtData(c.data)}?\n\nO paciente voltará para o status "Agendar".`)) return;
 
-      const r = await apiServidor('consultas.php', 'cancelar', { prontuario, membroIdx });
+      const r = await apiServidor('/api/consultas', 'cancelar', { prontuario, membroIdx });
       if (!r.ok) { mostrarToast(r.erro || 'Não foi possível cancelar a consulta.', 'error'); return; }
       aplicarConsultasDoServidor(r);
 
@@ -2226,7 +2226,7 @@
     async function excluirFamilia(prontuario, responsavel) {
       if (!confirm('Excluir a família de "' + responsavel + '" (Nº ' + prontuario + ')?\n\nTodas as visitas desta família também serão removidas.')) return;
 
-      const r = await apiServidor('familias.php', 'excluir', { prontuario });
+      const r = await apiServidor('/api/familias', 'excluir', { prontuario });
       if (!r.ok) {
         mostrarToast(r.erro || 'Não foi possível excluir a família.', 'error');
         return;
@@ -2243,7 +2243,7 @@
 
     async function excluirVisita(id) {
       if (!confirm('Excluir este registro de visita?')) return;
-      const r = await apiServidor('visitas.php', 'excluir', { id });
+      const r = await apiServidor('/api/visitas', 'excluir', { id });
       if (!r.ok) {
         mostrarToast(r.erro || 'Não foi possível excluir a visita.', 'error');
         return;
@@ -2253,7 +2253,7 @@
       carregarPainelVisitas();
     }
 
-    // Chamada ao servidor (login.php / agentes.php)
+    // Chamada ao servidor (/api/login / /api/agentes)
     async function apiServidor(arquivo, acao, dados = {}) {
       try {
         const r = await fetch(arquivo, {
@@ -2270,13 +2270,13 @@
     // Encerra a sessão no servidor (PHP) e no navegador
     async function sairAgente() {
       localStorage.removeItem('agente_sessao');
-      await apiServidor('login.php', 'logout');
+      await apiServidor('/api/login', 'logout');
       window.location.href = 'index.html';
     }
 
     window.addEventListener('load', async () => {
       // A sessão é validada no servidor; o perfil do agente vem do MySQL.
-      const srv = await apiServidor('login.php', 'sessao');
+      const srv = await apiServidor('/api/login', 'sessao');
       if (!srv.ok || !srv.usuario || srv.usuario.perfil !== 'agente' || !srv.agente) {
         localStorage.removeItem('agente_sessao');
         window.location.href = 'index.html';

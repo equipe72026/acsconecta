@@ -1062,7 +1062,7 @@
     async function carregarSessaoGerencial() {
       // Pergunta ao servidor (PHP) quem está logado
       try {
-        const r = await fetch('login.php', {
+        const r = await fetch('/api/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ acao: 'sessao' })
@@ -1101,7 +1101,7 @@
       if (ev) ev.preventDefault();
       localStorage.removeItem('gerencia_sessao');
       try {
-        await fetch('login.php', {
+        await fetch('/api/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ acao: 'logout' })
@@ -1152,10 +1152,10 @@
       document.getElementById('confirmarSenha').value = '';
     }
 
-    // Chamada genérica ao servidor (gerentes.php)
+    // Chamada genérica ao servidor (/api/gerentes)
     async function apiGerentes(acao, dados = {}) {
       try {
-        const r = await fetch('gerentes.php', {
+        const r = await fetch('/api/gerentes', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ acao, ...dados })
@@ -1557,7 +1557,7 @@
       await renderizarGerentes();
     }
 
-    // ── Agentes e logs vêm do servidor (agentes.php / MySQL) ──
+    // ── Agentes e logs vêm do servidor (/api/agentes / Postgres) ──
     let agentesCache = [];
     let logsCache = [];
 
@@ -1567,7 +1567,7 @@
 
     async function apiAgentes(acao, dados = {}) {
       try {
-        const r = await fetch('agentes.php', {
+        const r = await fetch('/api/agentes', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ acao, ...dados })
@@ -1712,7 +1712,7 @@
       renderizarAgentes();
     });
 
-    // Visitas e famílias dos relatórios vêm do MySQL (visitas.php / familias.php) e ficam só em memória.
+    // Visitas e famílias dos relatórios vêm do Postgres (/api/visitas / /api/familias) e ficam só em memória.
     let dadosRel = { visitas: [], familias: [], consultas: [], historico: [] };
 
     async function carregarDadosRelatorios() {
@@ -1720,7 +1720,7 @@
         method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ acao })
       }).then(r => r.json()).catch(() => ({ ok: false }));
 
-      const [v, f, c] = await Promise.all([post('visitas.php', 'todas'), post('familias.php', 'todas'), post('consultas.php', 'todas')]);
+      const [v, f, c] = await Promise.all([post('/api/visitas', 'todas'), post('/api/familias', 'todas'), post('/api/consultas', 'todas')]);
       if (!v.ok || !f.ok || !c.ok) {
         mostrarToast('Não foi possível carregar os dados dos relatórios do servidor.', 'error');
         return;
