@@ -74,7 +74,14 @@ function dataConsultaValida(v) {
   if (!L.isoValida(v)) return false;
   const h = L.hoje();
   const limite = `${Number(h.slice(0, 4)) + 5}${h.slice(4)}`;
-  return v >= '2000-01-01' && v <= limite;
+  return v >= h && v <= limite;          // sem consultas retroativas: de hoje em diante
+}
+
+/** Hora atual (HH:MM) no fuso de São Paulo, igual ao L.hoje(). */
+function horaAgora() {
+  return new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'America/Sao_Paulo', hour: '2-digit', minute: '2-digit', hour12: false,
+  }).format(new Date());
 }
 
 const paciente = async (ag, body) =>
@@ -105,8 +112,11 @@ module.exports = L.handler('consultas', async (req, res, body) => {
 
     if (!['agendado', 'agendar'].includes(status)) L.fail('Status inválido.');
     if (status === 'agendado') {
+      if (!L.isoValida(data)) L.fail('Informe uma data de consulta válida.');
+      if (data < L.hoje()) L.fail('Não é possível agendar consultas em datas passadas.');
       if (!dataConsultaValida(data)) L.fail('Informe uma data de consulta válida.');
       if (hora !== '' && !/^([01]\d|2[0-3]):[0-5]\d$/.test(hora)) L.fail('Hora inválida.');
+      if (hora !== '' && data === L.hoje() && hora < horaAgora()) L.fail('Esse horário de hoje já passou. Escolha um horário futuro.');
     } else { data = ''; hora = ''; }
     if (tipo === '' || L.len(tipo) > 60) L.fail('Informe o tipo da consulta.');
     if (L.len(local) > 120) L.fail('O local está muito longo.');

@@ -17,6 +17,20 @@ async function exigirAgente(req) {
   return a;
 }
 
+/** Condições clínicas do membro: chave usada no painel -> coluna (smallint 0/1) em `membros`. */
+const CONDICOES = [
+  ['hipertenso', 'hipertenso'], ['diabetico', 'diabetico'], ['gestante', 'gestante'],
+  ['vacinaAtrasada', 'vacina_atrasada'], ['tuberculose', 'tuberculose'], ['hanseniase', 'hanseniase'],
+  ['deficienteFisico', 'deficiente_fisico'],
+  ['tea', 'tea'], ['deficienciaIntelectual', 'deficiencia_intelectual'], ['tdah', 'tdah'],
+  ['defVisual', 'def_visual'], ['defAuditiva', 'def_auditiva'], ['defMultipla', 'def_multipla'],
+  ['cardiovascular', 'cardiovascular'], ['renalGrave', 'renal_grave'], ['respiratoria', 'respiratoria'],
+  ['neoplasia', 'neoplasia'], ['avc', 'avc'], ['obesidade', 'obesidade'],
+  ['saudeMental', 'saude_mental'], ['alcool', 'alcool'], ['outrasDrogas', 'outras_drogas'],
+  ['puerpera', 'puerpera'], ['idosoFragilizado', 'idoso_fragilizado'],
+  ['situacaoRua', 'situacao_rua'], ['programaSocial', 'programa_social'],
+];
+
 /** Área do agente com 2 dígitos ("1" -> "01"). */
 function areaDoAgente(ag) {
   const n = L.digitos(ag.area);
@@ -41,13 +55,12 @@ async function listarFamilias(ag) {
     [familias.map((f) => f.id)]);
   const porFamilia = {};
   for (const m of ms) {
-    (porFamilia[m.familia_id] = porFamilia[m.familia_id] || []).push({
+    const membro = {
       id: Number(m.id), nome: m.nome, nascimento: m.data_nascimento, cpf: m.cpf, sus: m.cartao_sus,
       sexo: m.sexo, telefone: m.telefone ?? '',
-      hipertenso: !!m.hipertenso, diabetico: !!m.diabetico, gestante: !!m.gestante,
-      vacinaAtrasada: !!m.vacina_atrasada, tuberculose: !!m.tuberculose, hanseniase: !!m.hanseniase,
-      deficienteFisico: !!m.deficiente_fisico,
-    });
+    };
+    for (const [chave, coluna] of CONDICOES) membro[chave] = !!m[coluna];
+    (porFamilia[m.familia_id] = porFamilia[m.familia_id] || []).push(membro);
   }
   return familias.map((f) => {
     const membros = porFamilia[f.id] || [];
@@ -96,9 +109,7 @@ function validarFicha(inp) {
       sus: L.digitos(m.sus),
       sexo: String(m.sexo ?? '').trim(),
       tel: tel === '' ? null : tel,
-      hip: m.hipertenso ? 1 : 0, diab: m.diabetico ? 1 : 0, gest: m.gestante ? 1 : 0,
-      vac: m.vacinaAtrasada ? 1 : 0, tub: m.tuberculose ? 1 : 0, han: m.hanseniase ? 1 : 0,
-      def: m.deficienteFisico ? 1 : 0,
+      cond: CONDICOES.map(([chave]) => (m[chave] ? 1 : 0)),   // mesma ordem de CONDICOES
     };
     if (x.nome === '' || L.len(x.nome) > 120) L.fail(`Membro ${n}: informe o nome.`);
     if (!dataValida(x.nasc)) L.fail(`Membro ${n}: data de nascimento inválida.`);
@@ -117,14 +128,21 @@ async function buscarFamilia(ag, prontuario) {
   return r || null;
 }
 
-/** Campos do membro na ordem usada nos INSERT/UPDATE ($n a partir de `de`). */
+/** Campos do membro na ordem usada nos INSERT/UPDATE: 7 dados pessoais + as condições de CONDICOES. */
 function camposMembro(x) {
-  return [x.nome, x.nasc, x.cpf, x.sus, x.sexo, x.tel, x.hip, x.diab, x.gest, x.vac, x.tub, x.han, x.def];
+  return [x.nome, x.nasc, x.cpf, x.sus, x.sexo, x.tel, ...x.cond];
 }
+const COLUNAS_COND = CONDICOES.map(([, coluna]) => coluna);
+// INSERT: $1 familia_id, $2 eh_responsavel, $3..$8 dados pessoais, $9.. condições
 const SQL_INS_MEMBRO =
   `INSERT INTO membros (familia_id, eh_responsavel, nome, data_nascimento, cpf, cartao_sus, sexo, telefone,
-                        hipertenso, diabetico, gestante, vacina_atrasada, tuberculose, hanseniase, deficiente_fisico)
-   VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)`;
+                        ${COLUNAS_COND.join(', ')})
+   VALUES (${Array.from({ length: 8 + COLUNAS_COND.length }, (_, i) => `$${i + 1}`).join(', ')})`;
+// UPDATE: $1 eh_responsavel, $2..$7 dados pessoais, $8.. condições, depois id e familia_id
+const SQL_UPD_MEMBRO =
+  `UPDATE membros SET eh_responsavel = $1, nome = $2, data_nascimento = $3, cpf = $4, cartao_sus = $5, sexo = $6,
+          telefone = $7, ${COLUNAS_COND.map((col, i) => `${col} = $${i + 8}`).join(', ')}
+    WHERE id = $${COLUNAS_COND.length + 8} AND familia_id = $${COLUNAS_COND.length + 9}`;
 
 /** Cria a família com novo prontuário. Repete se dois cadastros simultâneos colidirem. */
 async function criarFamilia(ag, f, membros) {
@@ -173,12 +191,7 @@ async function atualizarFamilia(fam, f, membros) {
       const x = membros[i];
       const resp = i === 0 ? 1 : 0;
       if (x.id > 0 && existentes.includes(x.id) && !mantidos.has(x.id)) {
-        await L.q(
-          `UPDATE membros SET eh_responsavel = $1, nome = $2, data_nascimento = $3, cpf = $4, cartao_sus = $5,
-                  sexo = $6, telefone = $7, hipertenso = $8, diabetico = $9, gestante = $10,
-                  vacina_atrasada = $11, tuberculose = $12, hanseniase = $13, deficiente_fisico = $14
-            WHERE id = $15 AND familia_id = $16`,
-          [resp, ...camposMembro(x), x.id, fam.id], c);
+        await L.q(SQL_UPD_MEMBRO, [resp, ...camposMembro(x), x.id, fam.id], c);
         mantidos.add(x.id);
       } else {
         await L.q(SQL_INS_MEMBRO, [fam.id, resp, ...camposMembro(x)], c);
