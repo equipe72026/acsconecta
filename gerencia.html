@@ -151,6 +151,21 @@
       try { localStorage.setItem('ss_fonte', String(p)); } catch (e) {}
     }
   </script>
+  <style id="modais-mobile">
+    /* Janelas (modais) sempre acima do menu inferior (z-50) e sem cortar o botão no fim no celular.
+       Obs.: as classes z-100 do HTML não existem no Tailwind; os z-index abaixo substituem. */
+    #modalCadastro, #modalRelatorios, #modalLogs, #modalOpcoes { z-index: 70; }
+    #modalSenha, #modalMeusDados, #modalGerentes { z-index: 80; }
+    @media (max-width: 767px) {
+      [id^="modal"].fixed {
+        height: 100dvh;
+        padding-bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
+      }
+      [id^="modal"].fixed > div {
+        max-height: calc(100dvh - 2rem - env(safe-area-inset-bottom, 0px)) !important;
+      }
+    }
+  </style>
 </head>
 <body class="h-full bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col md:flex-row overflow-hidden transition-colors duration-200">
 
