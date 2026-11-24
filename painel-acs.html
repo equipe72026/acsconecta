@@ -64,6 +64,11 @@
     :root:not(.dark) .bc-indigo { background:#e0e7ff; color:#3730a3; border-color:#a5b4fc; }
     :root:not(.dark) .bc-orange { background:#ffedd5; color:#9a3412; border-color:#fdba74; }
     :root:not(.dark) .bc-pink { background:#fce7f3; color:#9d174d; border-color:#f9a8d4; }
+    .cond-titulo { color:#5fe6eb; }
+    .cond-dica { color:#cbd5e1; }
+    :root:not(.dark) .cond-painel { background:#ffffff !important; border-color:#cfd9dc !important; }
+    :root:not(.dark) .cond-titulo { color:#0b777a; }
+    :root:not(.dark) .cond-dica { color:#44545b; }
     .cond-item { background:rgba(15,23,42,.6); border:1px solid rgba(255,255,255,.05); }
     .cond-grupo { border-color:rgba(255,255,255,.08); }
     .cond-icone { color:#1ec2c7; }
@@ -1416,9 +1421,9 @@
             <input type="tel" placeholder="(XX) XXXXX-XXXX" oninput="maskPhoneInput(this)" class="m-telefone w-full px-3 py-2 bg-slate-950 border border-white/10 rounded-lg text-white text-xs">
           </div>
         </div>
-        <div class="bg-slate-950/40 p-3 rounded-xl border border-white/5 space-y-2">
-          <p class="text-[10px] font-800 text-emerald-400 uppercase tracking-wider">Condições de Mapeamento Clínico</p>
-          <p class="text-[10px] text-slate-500 mb-1">Toque em um grupo para ver as opções.</p>
+        <div class="cond-painel bg-slate-950/40 p-3 rounded-xl border border-white/5 space-y-2">
+          <p class="cond-titulo text-[11px] font-800 uppercase tracking-wider">Condições de Mapeamento Clínico</p>
+          <p class="cond-dica text-[11px] font-600 mb-1">Toque em um grupo para ver as opções.</p>
           <div class="space-y-2">${htmlCondicoesClinicas(mContador)}</div>
         </div>
       `;
