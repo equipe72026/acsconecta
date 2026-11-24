@@ -92,6 +92,10 @@
     .ss-stat.ss-center { align-items:center; justify-content:center; text-align:center; min-height:170px; }
     .ss-stat.ss-center .uppercase { color:#2c3e50 !important; text-transform:none; font-size:1rem; letter-spacing:0; margin-bottom:14px !important; }
     .ss-stat.ss-center .text-3xl { font-size:2.8rem; }
+    /* centraliza o conteúdo dos cards (a classe "block" do Tailwind anulava o flex; <button> e <a> ficavam diferentes) */
+    .ss-stat.ss-center { display:flex !important; flex-direction:column; align-items:center !important; justify-content:center !important; text-align:center !important; }
+    .ss-stat.ss-center .text-3xl { order:1 !important; }
+    .ss-stat.ss-center .uppercase { order:2 !important; margin:10px 0 0 !important; }
 
     /* Boas-vindas e ações rápidas (painel do agente) */
     #boasVindas { color:#109ea3 !important; }
