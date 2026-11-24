@@ -47,6 +47,21 @@
       border:1px solid #dde4e6; box-shadow:0 18px 38px rgba(0,0,0,0.18); flex-shrink:0; }
     @media (min-width:1024px) { #app { gap:3rem; } .foto-lado { display:block; } }
     @media (min-width:1280px) { #app { gap:4.5rem; } .foto-lado { width:20rem; height:20rem; } }
+    /* Janelas baixas: a página cresce com o conteúdo (não corta mais o topo) e o cartão fica mais compacto */
+    #app { height: auto !important; min-height: 100vh; min-height: 100dvh; padding-top: 1.25rem; padding-bottom: 1.25rem; }
+    @media (max-height: 820px) {
+      #loginCard, #card2FA { padding: 1.1rem 1.5rem !important; }
+      .login-logo { padding-bottom: 8px; margin-bottom: 10px; }
+      .login-logo img { max-width: 5.6rem; }
+      #loginCard h1 { font-size: 1.35rem; }
+      #loginCard > p { margin-bottom: .75rem !important; }
+      #loginCard form { gap: .65rem; }
+      #loginCard form > * { margin-top: 0 !important; margin-bottom: 0 !important; }
+      #loginCard .mt-5 { margin-top: .7rem !important; }
+      #loginCard .mt-4 { margin-top: .6rem !important; padding-top: .6rem !important; }
+      #loginCard .mt-6 { margin-top: .7rem !important; padding-top: .5rem !important; }
+      #loginCard .py-2\.5 { padding-top: .5rem; padding-bottom: .5rem; }
+    }
     .toast-item { animation: toastIn .25s ease; }
     @keyframes toastIn { from { opacity:0; transform:translateY(-8px);} to { opacity:1; transform:none; } }
   </style>
