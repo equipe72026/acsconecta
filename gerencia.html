@@ -151,21 +151,6 @@
       try { localStorage.setItem('ss_fonte', String(p)); } catch (e) {}
     }
   </script>
-  <style id="modais-mobile">
-    /* Janelas (modais) sempre acima do menu inferior (z-50) e sem cortar o botão no fim no celular.
-       Obs.: as classes z-100 do HTML não existem no Tailwind; os z-index abaixo substituem. */
-    #modalCadastro, #modalRelatorios, #modalLogs, #modalOpcoes { z-index: 70; }
-    #modalSenha, #modalMeusDados, #modalGerentes { z-index: 80; }
-    @media (max-width: 767px) {
-      [id^="modal"].fixed {
-        height: 100dvh;
-        padding-bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
-      }
-      [id^="modal"].fixed > div {
-        max-height: calc(100dvh - 2rem - env(safe-area-inset-bottom, 0px)) !important;
-      }
-    }
-  </style>
 </head>
 <body class="h-full bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col md:flex-row overflow-hidden transition-colors duration-200">
 
@@ -268,12 +253,28 @@
       </div>
       <div class="ss-stat bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-white/10 shadow-sm dark:shadow-none transition-colors duration-200">
         <p class="text-3xl font-800 text-slate-900 dark:text-white" id="totalVisitas">0</p>
-        <p class="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider font-700 mt-1">Visitas Realizadas</p>
+        <p class="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider font-700 mt-1">Visitas no Mês</p>
       </div>
       <div class="ss-stat bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-white/10 shadow-sm dark:shadow-none transition-colors duration-200">
         <p class="text-3xl font-800 text-slate-900 dark:text-white" id="totalAgentes">0</p>
         <p class="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider font-700 mt-1">Agentes Ativos</p>
       </div>
+    </div>
+
+    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-white/10 p-5 shadow-sm dark:shadow-none transition-colors duration-200">
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
+        <div>
+          <h2 class="font-800 text-lg text-slate-900 dark:text-white">Andamento das Visitas dos ACS</h2>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1" id="graficoAndamentoMes"></p>
+        </div>
+        <div class="flex items-center gap-4 text-xs font-700 text-slate-500 dark:text-slate-400">
+          <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>Visitadas</span>
+          <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-red-500"></span>Pendentes</span>
+        </div>
+      </div>
+      <div id="graficoGeralVisitas" class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6"></div>
+      <p class="text-[11px] font-700 uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3">Por agente</p>
+      <div id="graficoAndamentoVisitas" class="space-y-4"></div>
     </div>
 
     <!-- Tabela Gerada Automaticamente -->
@@ -287,7 +288,7 @@
               <th class="pb-3 font-700">Unidade</th>
               <th class="pb-3 font-700">Equipe</th>
               <th class="pb-3 font-700 text-center">Famílias</th>
-              <th class="pb-3 font-700 text-center">Visitas</th>
+              <th class="pb-3 font-700 text-center">Visitas (mês)</th>
               <th class="pb-3 font-700 text-center">Ações</th>
             </tr>
           </thead>
@@ -1650,6 +1651,7 @@
       document.getElementById('totalFamilias').innerText = qtdFamilias;
       document.getElementById('totalVisitas').innerText = qtdVisitas;
       document.getElementById('totalAgentes').innerText = agentes.length;
+      renderizarGraficoAndamento();
       lucide.createIcons();
     }
 
@@ -1724,7 +1726,8 @@
       if (!sessaoValida) return;
       const temaSalvo = localStorage.getItem('theme') || 'light';
       aplicarTema(temaSalvo);
-      renderizarAgentes();
+      await renderizarAgentes();
+      await carregarDadosRelatorios();
     });
 
     // Visitas e famílias dos relatórios vêm do Postgres (/api/visitas / /api/familias) e ficam só em memória.
@@ -1741,6 +1744,162 @@
         return;
       }
       dadosRel = { visitas: v.visitas, familias: f.familias, consultas: c.consultas, historico: c.historico };
+      renderizarGraficoAndamento();
+    }
+
+    function mesAtualIsoGerencial() {
+      const partes = new Intl.DateTimeFormat('en-US', {
+        timeZone: 'America/Sao_Paulo',
+        year: 'numeric',
+        month: '2-digit'
+      }).formatToParts(new Date());
+      const ano = partes.find(p => p.type === 'year').value;
+      const mes = partes.find(p => p.type === 'month').value;
+      return `${ano}-${mes}`;
+    }
+
+    // Gráfico geral do mês: rosca (visitadas x pendentes) + evolução diária acumulada.
+    function renderizarGraficoGeral(agentes, mesAtual, nomesMes) {
+      const box = document.getElementById('graficoGeralVisitas');
+      if (!box) return;
+      const logins = new Set(agentes.map(a => a.login));
+      const familias = dadosRel.familias.filter(f => logins.has(f.agenteLogin));
+      const [ano, mes] = mesAtual.split('-').map(Number);
+      const diasMes = new Date(ano, mes, 0).getDate();
+      const hojeIso = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Sao_Paulo' }).format(new Date());
+      const diaHoje = hojeIso.startsWith(mesAtual) ? Number(hojeIso.slice(8, 10)) : diasMes;
+
+      // dia em que cada família recebeu a 1ª visita do mês
+      const primeiro = {};
+      dadosRel.visitas.forEach(v => {
+        if (!logins.has(v.agenteLogin) || !String(v.data).startsWith(mesAtual)) return;
+        const d = Math.min(Number(String(v.data).slice(8, 10)), diaHoje);
+        if (primeiro[v.prontuario] === undefined || d < primeiro[v.prontuario]) primeiro[v.prontuario] = d;
+      });
+      const total = familias.length;
+      const dias = familias.map(f => primeiro[f.prontuario]).filter(d => d !== undefined);
+      const visitadas = dias.length;
+      const pendentes = total - visitadas;
+      const pct = total > 0 ? Math.round((visitadas / total) * 100) : 0;
+
+      // rosca
+      const R = 42, C = 2 * Math.PI * R;
+      const arco = total > 0 ? (visitadas / total) * C : 0;
+      const rosca = `
+        <svg viewBox="0 0 120 120" class="w-36 h-36 shrink-0">
+          <circle cx="60" cy="60" r="${R}" fill="none" stroke="#ef4444" stroke-width="14" opacity="${total > 0 ? 1 : 0.2}"/>
+          <circle cx="60" cy="60" r="${R}" fill="none" stroke="#10b981" stroke-width="14"
+                  stroke-dasharray="${arco} ${C}" transform="rotate(-90 60 60)"/>
+          <text x="60" y="62" text-anchor="middle" class="fill-slate-900 dark:fill-white" style="font-size:22px;font-weight:800">${pct}%</text>
+          <text x="60" y="78" text-anchor="middle" class="fill-slate-500 dark:fill-slate-400" style="font-size:8px;font-weight:700">VISITADAS</text>
+        </svg>`;
+
+      // linha acumulada (dia 1 .. hoje) x ritmo ideal linear
+      const larg = box.clientWidth || 600;
+      const W = Math.max(250, Math.round(window.innerWidth >= 1024 ? larg * 2 / 3 - 42 : larg - 34));
+      const H = W < 400 ? 170 : 190, mL = 30, mR = 10, mT = 12, mB = 24;
+      const yMax = Math.max(total, 1);
+      const x = d => mL + ((d - 1) / Math.max(diasMes - 1, 1)) * (W - mL - mR);
+      const y = v => mT + (1 - v / yMax) * (H - mT - mB);
+      let acum = 0, pts = [];
+      for (let d = 1; d <= diaHoje; d++) {
+        acum += dias.filter(v => v === d).length;
+        pts.push(`${x(d).toFixed(1)},${y(acum).toFixed(1)}`);
+      }
+      const ticks = [...new Set([1, 10, 20, diasMes])].filter(d => d <= diasMes);
+      const linha = `
+        <svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" class="max-w-full h-auto">
+          <g class="text-slate-200 dark:text-white/10" stroke="currentColor" stroke-width="1">
+            <line x1="${mL}" y1="${y(0)}" x2="${W - mR}" y2="${y(0)}"/>
+            <line x1="${mL}" y1="${y(yMax / 2)}" x2="${W - mR}" y2="${y(yMax / 2)}" stroke-dasharray="2 4"/>
+            <line x1="${mL}" y1="${y(yMax)}" x2="${W - mR}" y2="${y(yMax)}" stroke-dasharray="2 4"/>
+          </g>
+          <line x1="${x(1)}" y1="${y(0)}" x2="${x(diasMes)}" y2="${y(total)}" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="5 4"/>
+          <polyline points="${pts.join(' ')}" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+          <circle cx="${x(diaHoje)}" cy="${y(acum)}" r="4" fill="#10b981"/>
+          <g class="fill-slate-500 dark:fill-slate-400" style="font-size:10px;font-weight:700">
+            <text x="${mL - 6}" y="${y(0) + 3}" text-anchor="end">0</text>
+            <text x="${mL - 6}" y="${y(yMax) + 3}" text-anchor="end">${total}</text>
+            ${ticks.map(d => `<text x="${x(d)}" y="${H - 6}" text-anchor="middle">${d}</text>`).join('')}
+          </g>
+        </svg>`;
+
+      box.innerHTML = `
+        <div class="rounded-xl border border-slate-200 dark:border-white/10 p-4 flex flex-wrap items-center justify-center sm:justify-start gap-4">
+          ${rosca}
+          <div class="text-xs space-y-1.5 text-slate-600 dark:text-slate-300">
+            <p class="text-[11px] font-700 uppercase tracking-wider text-slate-500 dark:text-slate-400">${nomesMes[mes - 1]}</p>
+            <p class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span><b class="text-slate-900 dark:text-white">${visitadas}</b> visitadas</p>
+            <p class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-red-500"></span><b class="text-slate-900 dark:text-white">${pendentes}</b> pendentes</p>
+            <p class="text-slate-500 dark:text-slate-400">${total} famílias no total</p>
+          </div>
+        </div>
+        <div class="lg:col-span-2 rounded-xl border border-slate-200 dark:border-white/10 p-4">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+            <p class="text-[11px] font-700 uppercase tracking-wider text-slate-500 dark:text-slate-400">Famílias visitadas por dia (acumulado)</p>
+            <div class="flex items-center gap-3 text-[11px] font-700 text-slate-500 dark:text-slate-400">
+              <span class="flex items-center gap-1.5"><span class="w-4 h-0.5 bg-emerald-500"></span>Realizado</span>
+              <span class="flex items-center gap-1.5"><span class="w-4 border-t-2 border-dashed border-slate-400"></span>Ritmo ideal</span>
+            </div>
+          </div>
+          ${linha}
+        </div>`;
+    }
+
+    let _rzGrafico;
+    window.addEventListener('resize', () => {   // girar o celular / redimensionar: redesenha na nova largura
+      clearTimeout(_rzGrafico);
+      _rzGrafico = setTimeout(() => { if (document.getElementById('graficoGeralVisitas')) renderizarGraficoAndamento(); }, 200);
+    });
+
+    function renderizarGraficoAndamento() {
+      const container = document.getElementById('graficoAndamentoVisitas');
+      if (!container) return;
+
+      const mesAtual = mesAtualIsoGerencial();
+      const nomesMes = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+      const [ano, mes] = mesAtual.split('-');
+      document.getElementById('graficoAndamentoMes').innerText =
+        `${nomesMes[Number(mes) - 1]} de ${ano} · situação atual das famílias`;
+
+      const agentes = obterAgentes();
+      if (!agentes.length) {
+        container.innerHTML = '<p class="text-sm text-slate-500 dark:text-slate-400">Nenhum agente cadastrado.</p>';
+        const gb = document.getElementById('graficoGeralVisitas'); if (gb) gb.innerHTML = '';
+        return;
+      }
+
+      renderizarGraficoGeral(agentes, mesAtual, nomesMes);
+      container.innerHTML = '';
+      agentes.forEach(agente => {
+        const familias = dadosRel.familias.filter(f => f.agenteLogin === agente.login);
+        const prontuariosVisitados = new Set(
+          dadosRel.visitas
+            .filter(v => v.agenteLogin === agente.login && String(v.data).startsWith(mesAtual))
+            .map(v => v.prontuario)
+        );
+        const visitadas = familias.filter(f => prontuariosVisitados.has(f.prontuario)).length;
+        const pendentes = Math.max(0, familias.length - visitadas);
+        const total = familias.length;
+        const percentual = total > 0 ? Math.round((visitadas / total) * 100) : 0;
+        const restante = total > 0 ? (pendentes / total) * 100 : 0;
+
+        const linha = document.createElement('div');
+        linha.innerHTML = `
+          <div class="flex items-center justify-between gap-3 mb-1.5">
+            <div class="min-w-0">
+              <p class="text-sm font-800 text-slate-900 dark:text-white truncate">${agente.name}</p>
+              <p class="text-[11px] text-slate-500 dark:text-slate-400">${visitadas} visitadas · ${pendentes} pendentes · ${total} famílias</p>
+            </div>
+            <span class="text-sm font-800 text-emerald-600 dark:text-emerald-400">${percentual}%</span>
+          </div>
+          <div class="h-3 rounded-full bg-slate-100 dark:bg-white/10 overflow-hidden flex" title="${percentual}% concluído">
+            <div class="h-full bg-emerald-500" style="width:${percentual}%"></div>
+            ${restante > 0 ? `<div class="h-full bg-red-500" style="width:${restante}%"></div>` : ''}
+          </div>
+        `;
+        container.appendChild(linha);
+      });
     }
 
     async function abrirRelatorios() {
