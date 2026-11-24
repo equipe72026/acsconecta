@@ -44,6 +44,51 @@
     }
     :root:not(.dark) .bg-white { background-color: rgba(255,255,255,0.96); }
 
+    /* ===== Condições clínicas: cores legíveis nos dois temas ===== */
+    .bc { border:1px solid; padding:2px 6px; border-radius:4px; font-size:9px; font-weight:700; display:inline-block; }
+    .bc-red { background:rgba(239,68,68,.1); color:#f87171; border-color:rgba(239,68,68,.25); }
+    .bc-blue { background:rgba(59,130,246,.1); color:#60a5fa; border-color:rgba(59,130,246,.25); }
+    .bc-purple { background:rgba(168,85,247,.1); color:#c084fc; border-color:rgba(168,85,247,.25); }
+    .bc-amber { background:rgba(245,158,11,.1); color:#fbbf24; border-color:rgba(245,158,11,.25); }
+    .bc-yellow { background:rgba(234,179,8,.1); color:#facc15; border-color:rgba(234,179,8,.25); }
+    .bc-teal { background:rgba(20,184,166,.1); color:#2dd4bf; border-color:rgba(20,184,166,.25); }
+    .bc-indigo { background:rgba(99,102,241,.1); color:#818cf8; border-color:rgba(99,102,241,.25); }
+    .bc-orange { background:rgba(249,115,22,.1); color:#fb923c; border-color:rgba(249,115,22,.25); }
+    .bc-pink { background:rgba(236,72,153,.1); color:#f472b6; border-color:rgba(236,72,153,.25); }
+    :root:not(.dark) .bc-red { background:#fdecea; color:#b42318; border-color:#f5aaa3; }
+    :root:not(.dark) .bc-blue { background:#e0efff; color:#1d4ed8; border-color:#93c5fd; }
+    :root:not(.dark) .bc-purple { background:#f1eafd; color:#6d28d9; border-color:#c4b5fd; }
+    :root:not(.dark) .bc-amber { background:#fef5e1; color:#92400e; border-color:#f8c25c; }
+    :root:not(.dark) .bc-yellow { background:#fef9c3; color:#854d0e; border-color:#fde047; }
+    :root:not(.dark) .bc-teal { background:#ccfbf1; color:#0f766e; border-color:#5eead4; }
+    :root:not(.dark) .bc-indigo { background:#e0e7ff; color:#3730a3; border-color:#a5b4fc; }
+    :root:not(.dark) .bc-orange { background:#ffedd5; color:#9a3412; border-color:#fdba74; }
+    :root:not(.dark) .bc-pink { background:#fce7f3; color:#9d174d; border-color:#f9a8d4; }
+    .cond-item { background:rgba(15,23,42,.6); border:1px solid rgba(255,255,255,.05); }
+    .cond-grupo { border-color:rgba(255,255,255,.08); }
+    .cond-icone { color:#1ec2c7; }
+    .cond-cont { background:rgba(30,194,199,.2); color:#5fe6eb; }
+    :root:not(.dark) .cond-item { background:#ffffff; border:1px solid #dde4e6; }
+    :root:not(.dark) .cond-grupo { background:#f4f7fb !important; border-color:#cfd9dc !important; }
+    :root:not(.dark) .cond-icone { color:#109ea3; }
+    :root:not(.dark) .cond-cont { background:#109ea3; color:#ffffff; }
+    :root:not(.dark) .cond-item .toggle-label { background:#b8c4c8; }
+    :root:not(.dark) .cond-item .toggle-checkbox:checked + .toggle-label { background:#109ea3; }
+
+    /* Barra lateral: só a lista de menus rola; o rodapé (Sair, A-/A+) fica sempre visível */
+    aside { overflow:hidden; }
+    aside nav { flex:1 1 auto; min-height:0; overflow-y:auto; overscroll-behavior:contain; padding-right:2px; }
+    aside > div:last-child { flex-shrink:0; }
+    @media (max-height: 800px) {
+      aside { padding-top:16px !important; padding-bottom:14px !important; }
+      .ss-brand { padding-bottom:10px; margin-bottom:10px; }
+      .ss-brand img { max-width:6rem; }
+      .ss-title { padding-bottom:10px; margin-bottom:10px; }
+      aside nav { gap:4px; }
+      aside nav > a, aside nav > button { padding:9px 12px !important; }
+      aside > div:last-child { padding-top:12px !important; }
+    }
+
     /* Menu lateral */
     aside {
       width: 14.875rem !important; padding: 26px 18px !important;
@@ -1076,34 +1121,24 @@
       ]}
     ];
     const CONDICOES_LISTA = GRUPOS_CLINICOS.flatMap(g => g.itens);
-    const BADGE_COR = {
-      red: 'bg-red-500/10 text-red-400 border-red-500/20',
-      blue: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
-      purple: 'bg-purple-500/10 text-purple-400 border-purple-500/20',
-      amber: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
-      yellow: 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20',
-      teal: 'bg-teal-500/10 text-teal-400 border-teal-500/20',
-      indigo: 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20',
-      orange: 'bg-orange-500/10 text-orange-400 border-orange-500/20',
-      pink: 'bg-pink-500/10 text-pink-400 border-pink-500/20'
-    };
+    const BADGE_COR = Object.fromEntries(['red','blue','purple','amber','yellow','teal','indigo','orange','pink'].map(c => [c, 'bc-' + c]));
 
     // Grupos em "abas" (sanfona): só abrem ao clicar
     function htmlCondicoesClinicas(n) {
       return GRUPOS_CLINICOS.map(g => `
-        <div class="cond-grupo bg-slate-950 rounded-lg border border-white/5 overflow-hidden">
+        <div class="cond-grupo bg-slate-950 rounded-lg border overflow-hidden">
           <button type="button" onclick="toggleGrupoClinico(this)" aria-expanded="false" class="w-full flex items-center justify-between gap-2 px-3 py-2.5 text-left hover:bg-white/5 transition-colors">
             <span class="flex items-center gap-2 text-xs font-700 text-slate-200">
-              <i data-lucide="${g.icone}" style="width:14px;height:14px;" class="text-emerald-400"></i>
+              <i data-lucide="${g.icone}" style="width:14px;height:14px;" class="cond-icone"></i>
               ${g.titulo}
-              <span class="cond-cont hidden min-w-[18px] h-[18px] px-1 rounded-full bg-emerald-500/20 text-emerald-400 text-[10px] font-800 items-center justify-center">0</span>
+              <span class="cond-cont hidden min-w-[18px] h-[18px] px-1 rounded-full text-[10px] font-800 items-center justify-center">0</span>
             </span>
             <span class="cond-seta text-slate-400 transition-transform"><i data-lucide="chevron-down" style="width:14px;height:14px;"></i></span>
           </button>
           <div class="cond-corpo hidden px-3 pb-3 pt-1">
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
               ${g.itens.map(([chave, nome]) => `
-              <div class="flex items-center justify-between gap-2 bg-slate-900/60 p-2 rounded-lg border border-white/5">
+              <div class="cond-item flex items-center justify-between gap-2 p-2 rounded-lg">
                 <span class="text-xs font-600 text-slate-300">${nome}</span>
                 <div class="toggle-wrap">
                   <input type="checkbox" id="c${n}_${chave}" data-cond="${chave}" onchange="atualizarContadorGrupo(this)" class="toggle-checkbox"/>
@@ -1517,11 +1552,11 @@
                     const hoje = new Date();
                     const nasc = new Date(m.nascimento);
                     const idade = hoje.getFullYear() - nasc.getFullYear() - (hoje < new Date(hoje.getFullYear(), nasc.getMonth(), nasc.getDate()) ? 1 : 0);
-                    if(idade >= 60) badgesSaude += `<span class="bg-orange-500/10 text-orange-400 border border-orange-500/20 px-1.5 py-0.5 rounded text-[9px] font-700">Idoso(a)</span> `;
-                    if(idade < 12) badgesSaude += `<span class="bg-pink-500/10 text-pink-400 border border-pink-500/20 px-1.5 py-0.5 rounded text-[9px] font-700">Criança</span> `;
+                    if(idade >= 60) badgesSaude += `<span class="bc bc-orange">Idoso(a)</span> `;
+                    if(idade < 12) badgesSaude += `<span class="bc bc-pink">Criança</span> `;
                   }
                   CONDICOES_LISTA.forEach(([chave, , curto, cor]) => {
-                    if (m[chave]) badgesSaude += `<span class="${BADGE_COR[cor]} border px-1.5 py-0.5 rounded text-[9px] font-700">${curto}</span> `;
+                    if (m[chave]) badgesSaude += `<span class="bc ${BADGE_COR[cor]}">${curto}</span> `;
                   });
                   return `
                     <div class="bg-white/[0.02] border border-white/5 p-3 rounded-lg text-xs flex flex-col justify-between space-y-2">
