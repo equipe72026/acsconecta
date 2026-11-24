@@ -181,6 +181,12 @@
         Logs de Autenticação
       </button>
 
+      <button onclick="abrirSolicitacoesReset()" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left text-slate-600 dark:text-slate-400 hover:bg-slate-100 hover:dark:bg-slate-800 hover:text-slate-900 hover:dark:text-white transition-colors">
+        <i data-lucide="key-round" style="width:18px;height:18px;"></i>
+        <span class="flex-1">Solicitações de Senha</span>
+        <span id="badgeResetDesk" class="hidden min-w-[20px] h-5 px-1.5 rounded-full bg-red-500 text-white text-[11px] font-800 items-center justify-center animate-pulse">0</span>
+      </button>
+
       <button onclick="abrirOpcoes()" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left text-slate-600 dark:text-slate-400 hover:bg-slate-100 hover:dark:bg-slate-800 hover:text-slate-900 hover:dark:text-white transition-colors">
         <i data-lucide="settings" style="width:18px;height:18px;"></i>
         Opções
@@ -201,7 +207,10 @@
       <img src="img/logosemfundo.png" alt="ACS Conecta" style="height:38px;width:auto;">
       <span class="font-800 text-sm text-slate-900 dark:text-white">ACS Conecta</span>
     </div>
-    <div class="flex items-center gap-2"><button type="button" class="ss-fonte-btn" onclick="ssFonte(-1)" aria-label="Diminuir fonte" title="Diminuir fonte">A-</button><button type="button" class="ss-fonte-btn" onclick="ssFonte(1)" aria-label="Aumentar fonte" title="Aumentar fonte">A+</button>
+    <div class="flex items-center gap-2"><button type="button" onclick="abrirSolicitacoesReset()" aria-label="Solicitações de senha" class="relative text-slate-500 dark:text-slate-400 hover:text-emerald-600 mr-1">
+        <i data-lucide="bell" style="width:20px;height:20px;"></i>
+        <span id="badgeResetMob" class="hidden absolute -top-1.5 -right-2 min-w-[16px] h-4 px-1 rounded-full bg-red-500 text-white text-[10px] font-800 items-center justify-center animate-pulse">0</span>
+      </button><button type="button" class="ss-fonte-btn" onclick="ssFonte(-1)" aria-label="Diminuir fonte" title="Diminuir fonte">A-</button><button type="button" class="ss-fonte-btn" onclick="ssFonte(1)" aria-label="Aumentar fonte" title="Aumentar fonte">A+</button>
       <a href="index.html" onclick="sairGerencia(event)" aria-label="Sair" class="text-slate-500 dark:text-slate-400 hover:text-red-500 dark:hover:text-red-400 ml-1">
         <i data-lucide="log-out" style="width:18px;height:18px;"></i>
       </a>
@@ -1047,6 +1056,27 @@
     </div>
   </div>
 
+  <!-- Modal Solicitações de Reset de Senha (pedidos dos ACS) -->
+  <div id="modalSolicitacoesReset" class="fixed inset-0 bg-slate-950/40 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-white/10 p-6 max-w-lg w-full shadow-xl space-y-4 max-h-[85vh] flex flex-col">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 bg-amber-500/10 rounded-xl flex items-center justify-center">
+            <i data-lucide="key-round" style="width:18px;height:18px;" class="text-amber-500 dark:text-amber-400"></i>
+          </div>
+          <div>
+            <h3 class="text-lg font-800 text-slate-900 dark:text-white">Solicitações de Senha</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Agentes que pediram para resetar a senha</p>
+          </div>
+        </div>
+        <button onclick="fecharSolicitacoesReset()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
+          <i data-lucide="x" style="width:20px;height:20px;"></i>
+        </button>
+      </div>
+      <div id="listaSolicitacoesReset" class="space-y-2 overflow-y-auto"></div>
+    </div>
+  </div>
+
   <script>
     // ── Sistema de notificações (toast) ──
     function mostrarToast(mensagem, tipo = 'success') {
@@ -1693,6 +1723,7 @@
     function fecharSenhaAgente() {
       document.getElementById('modalSenhaAgente').classList.add('hidden');
       senhaAgenteEditIndex = null;
+      resetSolicitacaoAtual = null;
     }
 
     async function salvarSenhaAgente() {
@@ -1717,8 +1748,130 @@
 
       const r = await apiAgentes('senha', { id: agentes[senhaAgenteEditIndex].id, senha: nova });
       if (!r.ok) { mostrarToast(r.erro || 'Não foi possível alterar a senha.', 'error'); return; }
-      mostrarToast('Senha do agente atualizada com sucesso!', 'success');
+      const solId = resetSolicitacaoAtual;
       fecharSenhaAgente();
+      if (solId) {
+        await apiReset('resolver', { id: solId, status: 'resolvida' });
+        mostrarToast('Senha redefinida! Passe a nova senha para o agente.', 'success');
+        await carregarSolicitacoesReset();
+        if (!document.getElementById('modalSolicitacoesReset').classList.contains('hidden')) renderizarSolicitacoesReset();
+      } else {
+        mostrarToast('Senha do agente atualizada com sucesso!', 'success');
+      }
+    }
+
+    // ── Solicitações de reset de senha (pedidas pelos ACS na tela de login) ──
+    let solicitacoesReset = [];            // pendentes que casam com um agente cadastrado
+    let resetIdsVistos = null;             // ids já avisados por toast (null = primeira carga)
+    let resetSolicitacaoAtual = null;      // solicitação que está sendo resolvida agora
+
+    function escHtmlReset(t) {
+      return String(t == null ? '' : t).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    }
+
+    async function apiReset(acao, dados = {}) {
+      try {
+        const r = await fetch('/api/reset-senha', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ acao, ...dados })
+        });
+        if (r.status === 401) { window.location.href = 'index.html'; }
+        return await r.json();
+      } catch (e) {
+        return { ok: false, erro: 'Não foi possível conectar ao servidor.' };
+      }
+    }
+
+    function atualizarBadgeReset() {
+      const n = solicitacoesReset.length;
+      ['badgeResetDesk', 'badgeResetMob'].forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.textContent = n;
+        el.classList.toggle('hidden', n === 0);
+        el.classList.toggle('flex', n > 0);
+      });
+    }
+
+    async function carregarSolicitacoesReset() {
+      const r = await apiReset('listar');
+      if (!r.ok) return;
+      const lista = r.solicitacoes || [];
+      solicitacoesReset = lista;
+      atualizarBadgeReset();
+
+      // aviso (toast) para o que ainda não foi avisado
+      const novas = resetIdsVistos === null ? lista : lista.filter(x => !resetIdsVistos.has(x.id));
+      if (novas.length === 1) {
+        mostrarToast(`O agente <b>${escHtmlReset(novas[0].nome)}</b> quer resetar a senha.`, 'warning');
+      } else if (novas.length > 1) {
+        mostrarToast(`${novas.length} agentes pediram para resetar a senha.`, 'warning');
+      }
+      resetIdsVistos = new Set(lista.map(x => x.id));
+
+      if (!document.getElementById('modalSolicitacoesReset').classList.contains('hidden')) renderizarSolicitacoesReset();
+    }
+
+    function renderizarSolicitacoesReset() {
+      const box = document.getElementById('listaSolicitacoesReset');
+      if (solicitacoesReset.length === 0) {
+        box.innerHTML = '<p class="py-6 text-center text-sm text-slate-500 dark:text-slate-400">Nenhuma solicitação pendente.</p>';
+        return;
+      }
+      box.innerHTML = solicitacoesReset.map(x => {
+        const quando = new Date(x.criado_em).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
+        return `
+          <div class="bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div class="min-w-0">
+              <p class="text-sm font-700 text-slate-800 dark:text-white truncate">${escHtmlReset(x.nome)}</p>
+              <p class="text-xs text-slate-500 dark:text-slate-400">Usuário: ${escHtmlReset(x.login)} • ${escHtmlReset(x.unidade || '')}</p>
+              <p class="text-[11px] text-slate-400 mt-0.5">Pedido em ${escHtmlReset(quando)}</p>
+            </div>
+            <div class="flex gap-2 flex-shrink-0">
+              <button onclick="resetarSenhaSolicitada(${Number(x.id)})" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-700 transition-colors">
+                <i data-lucide="key-round" style="width:14px;height:14px;"></i> Resetar
+              </button>
+              <button onclick="dispensarSolicitacaoReset(${Number(x.id)})" class="px-3 py-1.5 rounded-lg bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 text-xs font-700 transition-colors">Dispensar</button>
+            </div>
+          </div>`;
+      }).join('');
+      lucide.createIcons();
+    }
+
+    async function abrirSolicitacoesReset() {
+      document.getElementById('modalSolicitacoesReset').classList.remove('hidden');
+      await carregarSolicitacoesReset();
+      renderizarSolicitacoesReset();
+    }
+
+    function fecharSolicitacoesReset() {
+      document.getElementById('modalSolicitacoesReset').classList.add('hidden');
+    }
+
+    // Abre o modal "Alterar Senha do Agente" (já existente) para a solicitação escolhida
+    async function resetarSenhaSolicitada(id) {
+      const sol = solicitacoesReset.find(x => x.id === id);
+      if (!sol) return;
+      let idx = obterAgentes().findIndex(a => a.id === sol.usuarioId);
+      if (idx < 0) { await carregarAgentes(); idx = obterAgentes().findIndex(a => a.id === sol.usuarioId); }
+      if (idx < 0) { mostrarToast('Agente não encontrado.', 'error'); return; }
+      abrirSenhaAgente(idx);
+      resetSolicitacaoAtual = id;   // depois de abrirSenhaAgente, para não ser limpo
+    }
+
+    async function dispensarSolicitacaoReset(id) {
+      if (!confirm('Dispensar este pedido? A senha do agente NÃO será alterada.')) return;
+      const r = await apiReset('resolver', { id, status: 'dispensada' });
+      if (!r.ok) { mostrarToast(r.erro || 'Não foi possível dispensar o pedido.', 'error'); return; }
+      await carregarSolicitacoesReset();
+      renderizarSolicitacoesReset();
+    }
+
+    function iniciarSolicitacoesReset() {
+      carregarSolicitacoesReset();
+      setInterval(() => { if (!document.hidden) carregarSolicitacoesReset(); }, 30000);
+      document.addEventListener('visibilitychange', () => { if (!document.hidden) carregarSolicitacoesReset(); });
     }
 
     window.addEventListener('load', async function () {
@@ -1727,6 +1880,7 @@
       const temaSalvo = localStorage.getItem('theme') || 'light';
       aplicarTema(temaSalvo);
       await renderizarAgentes();
+      iniciarSolicitacoesReset();
       await carregarDadosRelatorios();
     });
 

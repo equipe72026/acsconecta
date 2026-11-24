@@ -88,7 +88,7 @@
     </form>
 
     <div class="mt-5 text-center">
-     <p class="text-slate-500 text-xs">Esqueceu sua senha? <a href="#" class="text-emerald-600 hover:text-emerald-700 font-600 transition-colors">Recuperar</a></p>
+     <p class="text-slate-500 text-xs">Esqueceu sua senha? <a href="#" onclick="abrirModalReset(event)" class="text-emerald-600 hover:text-emerald-700 font-600 transition-colors">Resetar</a></p>
     </div>
 
     <div class="mt-4 pt-4 border-t border-slate-200 flex flex-col gap-2">
@@ -166,6 +166,43 @@
       <div class="flex gap-2 mt-5">
         <button onclick="fecharModalSenha()" class="flex-1 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-600 font-600 text-sm transition-colors">Cancelar</button>
         <button onclick="confirmarSenha()" class="flex-1 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-700 text-sm transition-colors">Entrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Resetar Senha (solicitação ao gerente) -->
+  <div id="modalReset" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="w-full max-w-xs bg-white rounded-2xl p-6 border border-slate-200 shadow-2xl">
+      <div class="flex items-center gap-3 mb-5">
+        <div class="w-10 h-10 bg-emerald-500/15 rounded-xl flex items-center justify-center flex-shrink-0">
+          <i data-lucide="key-round" style="width:20px;height:20px;" class="text-emerald-600"></i>
+        </div>
+        <div>
+          <p class="font-700 text-slate-900 text-sm">Resetar senha</p>
+          <p class="text-slate-500 text-xs">Somente o gerente pode redefinir</p>
+        </div>
+      </div>
+
+      <div id="resetForm">
+        <p class="text-slate-500 text-xs leading-relaxed mb-3">Digite o seu usuário (login). O gerente será avisado e vai redefinir a sua senha para você voltar a usar o sistema.</p>
+        <label for="resetLogin" class="block text-xs font-600 text-slate-600 mb-1">Usuário</label>
+        <input type="text" id="resetLogin" placeholder="Digite seu usuário" autocomplete="username" maxlength="60"
+          onkeydown="if(event.key==='Enter') enviarReset()"
+          class="w-full px-3 py-2.5 rounded-xl bg-slate-100 border border-slate-200 text-slate-900 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm transition-all">
+        <p id="erroReset" class="text-red-500 text-xs mt-2 hidden"></p>
+        <div class="flex gap-2 mt-5">
+          <button type="button" onclick="fecharModalReset()" class="flex-1 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-600 font-600 text-sm transition-colors">Cancelar</button>
+          <button type="button" id="btnEnviarReset" onclick="enviarReset()" class="flex-1 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-700 text-sm transition-colors">Enviar</button>
+        </div>
+      </div>
+
+      <div id="resetOk" class="hidden">
+        <div class="bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-4 text-center">
+          <i data-lucide="check-circle" style="width:28px;height:28px;" class="text-emerald-600 mx-auto mb-2"></i>
+          <p class="text-slate-900 text-sm font-700 mb-1">Solicitação enviada!</p>
+          <p class="text-slate-500 text-xs leading-relaxed">O gerente foi avisado. Aguarde ele redefinir a sua senha e entre em contato com ele para receber a nova senha.</p>
+        </div>
+        <button type="button" onclick="fecharModalReset()" class="w-full mt-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-700 text-sm transition-colors">Fechar</button>
       </div>
     </div>
   </div>
@@ -364,6 +401,57 @@
     icon.setAttribute('data-lucide', mostrar ? 'eye-off' : 'eye');
     lucide.createIcons();
   }
+
+  // ── Resetar senha: o ACS pede, o gerente redefine ──
+  function abrirModalReset(e) {
+    if (e) e.preventDefault();
+    document.getElementById('resetLogin').value = document.getElementById('username').value.trim();
+    document.getElementById('erroReset').classList.add('hidden');
+    document.getElementById('resetForm').classList.remove('hidden');
+    document.getElementById('resetOk').classList.add('hidden');
+    document.getElementById('modalReset').classList.remove('hidden');
+    lucide.createIcons();
+    setTimeout(() => document.getElementById('resetLogin').focus(), 50);
+  }
+  function fecharModalReset() {
+    document.getElementById('modalReset').classList.add('hidden');
+  }
+  async function enviarReset() {
+    const login = document.getElementById('resetLogin').value.trim();
+    const erro = document.getElementById('erroReset');
+    if (!login) {
+      erro.textContent = 'Digite o seu usuário para continuar.';
+      erro.classList.remove('hidden');
+      return;
+    }
+    const btn = document.getElementById('btnEnviarReset');
+    btn.disabled = true;
+    btn.classList.add('opacity-60');
+    try {
+      const r = await fetch('/api/reset-senha', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ acao: 'solicitar', login })
+      }).then(x => x.json());
+      if (r.ok) {
+        erro.classList.add('hidden');
+        document.getElementById('resetForm').classList.add('hidden');
+        document.getElementById('resetOk').classList.remove('hidden');
+        lucide.createIcons();
+      } else {
+        erro.textContent = r.erro || 'Não foi possível enviar a solicitação.';
+        erro.classList.remove('hidden');
+      }
+    } catch (e) {
+      erro.textContent = 'Não foi possível conectar ao servidor.';
+      erro.classList.remove('hidden');
+    }
+    btn.disabled = false;
+    btn.classList.remove('opacity-60');
+  }
+  document.getElementById('modalReset').addEventListener('click', function(e) {
+    if (e.target === this) fecharModalReset();
+  });
 
   // Fechar clicando fora do modal
   document.getElementById('modalSenha').addEventListener('click', function(e) {

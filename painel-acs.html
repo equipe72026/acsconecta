@@ -432,11 +432,11 @@
               </div>
               <div>
                 <label for="consultaData" class="block text-xs font-600 text-slate-300 mb-1">Data da Consulta <span id="consultaDataObrig">*</span></label>
-                <input type="date" id="consultaData" class="w-full px-3 py-2 bg-slate-950 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" required>
+                <input type="date" id="consultaData" onchange="atualizarLimitesConsulta()" class="w-full px-3 py-2 bg-slate-950 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" required>
               </div>
               <div>
                 <label for="consultaHora" class="block text-xs font-600 text-slate-300 mb-1">Horário</label>
-                <input type="time" id="consultaHora" class="w-full px-3 py-2 bg-slate-950 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                <input type="time" id="consultaHora" onchange="atualizarLimitesConsulta()" class="w-full px-3 py-2 bg-slate-950 border border-white/10 rounded-xl text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
               </div>
             </div>
 
@@ -1035,6 +1035,108 @@
     }
 
     let sessaoAtiva = null;
+    // ── Condições de Mapeamento Clínico: [chave, nome completo, nome curto (selo), cor] ──
+    // As chaves são as mesmas que /api/familias grava no banco.
+    const GRUPOS_CLINICOS = [
+      { titulo: 'Doenças Crônicas e Infecciosas', icone: 'heart-pulse', itens: [
+        ['hipertenso', 'Hipertenso', 'Hipertensão', 'red'],
+        ['diabetico', 'Diabético', 'Diabetes', 'blue'],
+        ['cardiovascular', 'Doença Cardiovascular / Insuficiência Cardíaca', 'Cardiovascular', 'red'],
+        ['renalGrave', 'Problema Renal Grave / Hemodiálise', 'Renal grave', 'orange'],
+        ['respiratoria', 'Asma / Bronquite / DPOC (Doença Pulmonar Obstrutiva Crônica)', 'Respiratória', 'blue'],
+        ['neoplasia', 'Neoplasia / Câncer em Tratamento', 'Câncer', 'purple'],
+        ['avc', 'AVC / Derrame (Com sequelas)', 'AVC', 'red'],
+        ['obesidade', 'Obesidade / Sobrepeso', 'Obesidade', 'amber'],
+        ['tuberculose', 'Tuberculose', 'Tuberculose', 'yellow'],
+        ['hanseniase', 'Hanseníase', 'Hanseníase', 'teal']
+      ]},
+      { titulo: 'Gestação e Vacinação', icone: 'baby', itens: [
+        ['gestante', 'Gestante', 'Gestante', 'purple'],
+        ['puerpera', 'Puérpera (Até 42 dias após o parto)', 'Puérpera', 'purple'],
+        ['vacinaAtrasada', 'Vacina Atrasada', 'Vacina de risco', 'amber']
+      ]},
+      { titulo: 'Deficiências e Neurodesenvolvimento', icone: 'accessibility', itens: [
+        ['deficienteFisico', 'Deficiente Físico', 'Def. Físico', 'indigo'],
+        ['tea', 'Transtorno do Espectro Autista (TEA)', 'TEA', 'indigo'],
+        ['deficienciaIntelectual', 'Deficiência Intelectual / Cognitiva', 'Def. Intelectual', 'indigo'],
+        ['tdah', 'Transtorno de Deficit de Atenção e Hiperatividade (TDAH)', 'TDAH', 'indigo'],
+        ['defVisual', 'Deficiência Visual (Baixa visão / Cegueira)', 'Def. Visual', 'teal'],
+        ['defAuditiva', 'Deficiência Auditiva (Surdez / Perda auditiva)', 'Def. Auditiva', 'teal'],
+        ['defMultipla', 'Deficiência Múltipla', 'Def. Múltipla', 'indigo']
+      ]},
+      { titulo: 'Saúde Mental e Substâncias', icone: 'brain', itens: [
+        ['saudeMental', 'Saúde Mental (Ansiedade, Depressão, Esquizofrenia, etc.)', 'Saúde Mental', 'purple'],
+        ['alcool', 'Uso Abusivo de Álcool', 'Álcool', 'amber'],
+        ['outrasDrogas', 'Uso de Outras Drogas', 'Outras drogas', 'amber']
+      ]},
+      { titulo: 'Vulnerabilidade Social', icone: 'users', itens: [
+        ['idosoFragilizado', 'Idoso Fragilizado', 'Idoso fragilizado', 'orange'],
+        ['situacaoRua', 'Situação de Rua', 'Sit. de Rua', 'pink'],
+        ['programaSocial', 'Atendidos por Programa Social (Bolsa Família, etc.)', 'Prog. Social', 'teal']
+      ]}
+    ];
+    const CONDICOES_LISTA = GRUPOS_CLINICOS.flatMap(g => g.itens);
+    const BADGE_COR = {
+      red: 'bg-red-500/10 text-red-400 border-red-500/20',
+      blue: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
+      purple: 'bg-purple-500/10 text-purple-400 border-purple-500/20',
+      amber: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
+      yellow: 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20',
+      teal: 'bg-teal-500/10 text-teal-400 border-teal-500/20',
+      indigo: 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20',
+      orange: 'bg-orange-500/10 text-orange-400 border-orange-500/20',
+      pink: 'bg-pink-500/10 text-pink-400 border-pink-500/20'
+    };
+
+    // Grupos em "abas" (sanfona): só abrem ao clicar
+    function htmlCondicoesClinicas(n) {
+      return GRUPOS_CLINICOS.map(g => `
+        <div class="cond-grupo bg-slate-950 rounded-lg border border-white/5 overflow-hidden">
+          <button type="button" onclick="toggleGrupoClinico(this)" aria-expanded="false" class="w-full flex items-center justify-between gap-2 px-3 py-2.5 text-left hover:bg-white/5 transition-colors">
+            <span class="flex items-center gap-2 text-xs font-700 text-slate-200">
+              <i data-lucide="${g.icone}" style="width:14px;height:14px;" class="text-emerald-400"></i>
+              ${g.titulo}
+              <span class="cond-cont hidden min-w-[18px] h-[18px] px-1 rounded-full bg-emerald-500/20 text-emerald-400 text-[10px] font-800 items-center justify-center">0</span>
+            </span>
+            <span class="cond-seta text-slate-400 transition-transform"><i data-lucide="chevron-down" style="width:14px;height:14px;"></i></span>
+          </button>
+          <div class="cond-corpo hidden px-3 pb-3 pt-1">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              ${g.itens.map(([chave, nome]) => `
+              <div class="flex items-center justify-between gap-2 bg-slate-900/60 p-2 rounded-lg border border-white/5">
+                <span class="text-xs font-600 text-slate-300">${nome}</span>
+                <div class="toggle-wrap">
+                  <input type="checkbox" id="c${n}_${chave}" data-cond="${chave}" onchange="atualizarContadorGrupo(this)" class="toggle-checkbox"/>
+                  <label for="c${n}_${chave}" class="toggle-label"><span class="toggle-dot"></span></label>
+                </div>
+              </div>`).join('')}
+            </div>
+          </div>
+        </div>`).join('');
+    }
+
+    function toggleGrupoClinico(btn) {
+      const corpo = btn.nextElementSibling;
+      const aberto = corpo.classList.toggle('hidden') === false;
+      btn.setAttribute('aria-expanded', aberto ? 'true' : 'false');
+      btn.querySelector('.cond-seta').classList.toggle('rotate-180', aberto);
+    }
+
+    function atualizarContadorGrupo(el) {
+      const g = el.closest('.cond-grupo');
+      const n = g.querySelectorAll('[data-cond]:checked').length;
+      const c = g.querySelector('.cond-cont');
+      c.textContent = n;
+      c.classList.toggle('hidden', n === 0);
+      c.classList.toggle('flex', n > 0);
+    }
+
+    function condicoesDoCard(card) {
+      const o = {};
+      card.querySelectorAll('[data-cond]').forEach(cb => { o[cb.dataset.cond] = cb.checked; });
+      return o;
+    }
+
     let mContador = 0;
 
     function updateNavigation() {
@@ -1280,58 +1382,9 @@
           </div>
         </div>
         <div class="bg-slate-950/40 p-3 rounded-xl border border-white/5 space-y-2">
-          <p class="text-[10px] font-800 text-emerald-400 uppercase tracking-wider mb-2">Condições de Mapeamento Clínico</p>
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div class="flex items-center justify-between bg-slate-950 p-2 rounded-lg border border-white/5">
-              <span class="text-xs font-600 text-slate-300">Hipertenso</span>
-              <div class="toggle-wrap">
-                <input type="checkbox" id="hip_${mContador}" class="m-hipertenso toggle-checkbox"/>
-                <label for="hip_${mContador}" class="toggle-label"><span class="toggle-dot"></span></label>
-              </div>
-            </div>
-            <div class="flex items-center justify-between bg-slate-950 p-2 rounded-lg border border-white/5">
-              <span class="text-xs font-600 text-slate-300">Diabético</span>
-              <div class="toggle-wrap">
-                <input type="checkbox" id="diab_${mContador}" class="m-diabetico toggle-checkbox"/>
-                <label for="diab_${mContador}" class="toggle-label"><span class="toggle-dot"></span></label>
-              </div>
-            </div>
-            <div class="flex items-center justify-between bg-slate-950 p-2 rounded-lg border border-white/5">
-              <span class="text-xs font-600 text-slate-300">Gestante</span>
-              <div class="toggle-wrap">
-                <input type="checkbox" id="gest_${mContador}" class="m-gestante toggle-checkbox"/>
-                <label for="gest_${mContador}" class="toggle-label"><span class="toggle-dot"></span></label>
-              </div>
-            </div>
-            <div class="flex items-center justify-between bg-slate-950 p-2 rounded-lg border border-white/5">
-              <span class="text-xs font-600 text-slate-300">Vacina Atrasada</span>
-              <div class="toggle-wrap">
-                <input type="checkbox" id="vac_${mContador}" class="m-vacina toggle-checkbox"/>
-                <label for="vac_${mContador}" class="toggle-label"><span class="toggle-dot"></span></label>
-              </div>
-            </div>
-            <div class="flex items-center justify-between bg-slate-950 p-2 rounded-lg border border-white/5">
-              <span class="text-xs font-600 text-slate-300">Tuberculose</span>
-              <div class="toggle-wrap">
-                <input type="checkbox" id="tub_${mContador}" class="m-tuberculose toggle-checkbox"/>
-                <label for="tub_${mContador}" class="toggle-label"><span class="toggle-dot"></span></label>
-              </div>
-            </div>
-            <div class="flex items-center justify-between bg-slate-950 p-2 rounded-lg border border-white/5">
-              <span class="text-xs font-600 text-slate-300">Hanseníase</span>
-              <div class="toggle-wrap">
-                <input type="checkbox" id="han_${mContador}" class="m-hanseniase toggle-checkbox"/>
-                <label for="han_${mContador}" class="toggle-label"><span class="toggle-dot"></span></label>
-              </div>
-            </div>
-            <div class="flex items-center justify-between bg-slate-950 p-2 rounded-lg border border-white/5">
-              <span class="text-xs font-600 text-slate-300">Deficiente Físico</span>
-              <div class="toggle-wrap">
-                <input type="checkbox" id="def_${mContador}" class="m-deficiente toggle-checkbox"/>
-                <label for="def_${mContador}" class="toggle-label"><span class="toggle-dot"></span></label>
-              </div>
-            </div>
-          </div>
+          <p class="text-[10px] font-800 text-emerald-400 uppercase tracking-wider">Condições de Mapeamento Clínico</p>
+          <p class="text-[10px] text-slate-500 mb-1">Toque em um grupo para ver as opções.</p>
+          <div class="space-y-2">${htmlCondicoesClinicas(mContador)}</div>
         </div>
       `;
       
@@ -1343,13 +1396,8 @@
         card.querySelector('.m-sus').value = data.sus || '';
         card.querySelector('.m-sexo').value = data.sexo || '';
         card.querySelector('.m-telefone').value = data.telefone || '';
-        card.querySelector('.m-hipertenso').checked = !!data.hipertenso;
-        card.querySelector('.m-diabetico').checked = !!data.diabetico;
-        card.querySelector('.m-gestante').checked = !!data.gestante;
-        card.querySelector('.m-vacina').checked = !!data.vacinaAtrasada;
-        card.querySelector('.m-tuberculose').checked = !!data.tuberculose;
-        card.querySelector('.m-hanseniase').checked = !!data.hanseniase;
-        card.querySelector('.m-deficiente').checked = !!data.deficienteFisico;
+        card.querySelectorAll('[data-cond]').forEach(cb => { cb.checked = !!data[cb.dataset.cond]; });
+        card.querySelectorAll('.cond-grupo').forEach(g => atualizarContadorGrupo(g.querySelector('[data-cond]')));
       }
       lucide.createIcons();
     }
@@ -1472,13 +1520,9 @@
                     if(idade >= 60) badgesSaude += `<span class="bg-orange-500/10 text-orange-400 border border-orange-500/20 px-1.5 py-0.5 rounded text-[9px] font-700">Idoso(a)</span> `;
                     if(idade < 12) badgesSaude += `<span class="bg-pink-500/10 text-pink-400 border border-pink-500/20 px-1.5 py-0.5 rounded text-[9px] font-700">Criança</span> `;
                   }
-                  if(m.hipertenso) badgesSaude += `<span class="bg-red-500/10 text-red-400 border border-red-500/20 px-1.5 py-0.5 rounded text-[9px] font-700">Hipertensão</span> `;
-                  if(m.diabetico) badgesSaude += `<span class="bg-blue-500/10 text-blue-400 border border-blue-500/20 px-1.5 py-0.5 rounded text-[9px] font-700">Diabetes</span> `;
-                  if(m.gestante) badgesSaude += `<span class="bg-purple-500/10 text-purple-400 border border-purple-500/20 px-1.5 py-0.5 rounded text-[9px] font-700">Gestante</span> `;
-                  if(m.vacinaAtrasada) badgesSaude += `<span class="bg-amber-500/10 text-amber-400 border border-amber-500/20 px-1.5 py-0.5 rounded text-[9px] font-700">Vacina de risco</span>`;
-                  if(m.tuberculose) badgesSaude += ` <span class="bg-yellow-500/10 text-yellow-400 border border-yellow-500/20 px-1.5 py-0.5 rounded text-[9px] font-700">Tuberculose</span>`;
-                  if(m.hanseniase) badgesSaude += ` <span class="bg-teal-500/10 text-teal-400 border border-teal-500/20 px-1.5 py-0.5 rounded text-[9px] font-700">Hanseníase</span>`;
-                  if(m.deficienteFisico) badgesSaude += ` <span class="bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 px-1.5 py-0.5 rounded text-[9px] font-700">Def. Físico</span>`;
+                  CONDICOES_LISTA.forEach(([chave, , curto, cor]) => {
+                    if (m[chave]) badgesSaude += `<span class="${BADGE_COR[cor]} border px-1.5 py-0.5 rounded text-[9px] font-700">${curto}</span> `;
+                  });
                   return `
                     <div class="bg-white/[0.02] border border-white/5 p-3 rounded-lg text-xs flex flex-col justify-between space-y-2">
                       <div>
@@ -1533,13 +1577,7 @@
           sus: item.querySelector('.m-sus').value,
           sexo: item.querySelector('.m-sexo').value,
           telefone: item.querySelector('.m-telefone').value,
-          hipertenso: item.querySelector('.m-hipertenso').checked,
-          diabetico: item.querySelector('.m-diabetico').checked,
-          gestante: item.querySelector('.m-gestante').checked,
-          vacinaAtrasada: item.querySelector('.m-vacina').checked,
-          tuberculose: item.querySelector('.m-tuberculose').checked,
-          hanseniase: item.querySelector('.m-hanseniase').checked,
-          deficienteFisico: item.querySelector('.m-deficiente').checked
+          ...condicoesDoCard(item)
         });
       }
 
@@ -2159,6 +2197,35 @@
       const campoData = document.getElementById('consultaData');
       campoData.required = agendado;
       document.getElementById('consultaDataObrig').innerText = agendado ? '*' : '(opcional)';
+      atualizarLimitesConsulta();
+    }
+
+    // Consulta só de hoje em diante (e, se for hoje, só em horário que ainda não passou)
+    function agoraHHMM() {
+      const d = new Date();
+      return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+    }
+    function atualizarLimitesConsulta() {
+      const campoData = document.getElementById('consultaData');
+      const campoHora = document.getElementById('consultaHora');
+      const hoje = hojeISO();
+      campoData.min = hoje;
+      campoData.max = `${Number(hoje.slice(0, 4)) + 5}${hoje.slice(4)}`;
+      if (document.getElementById('consultaStatus').value !== 'agendado') { campoHora.removeAttribute('min'); return; }
+
+      if (campoData.value && campoData.value < hoje) {
+        campoData.value = hoje;
+        mostrarToast('Não é possível agendar consultas em datas passadas.', 'warning');
+      }
+      if (campoData.value === hoje) {
+        campoHora.min = agoraHHMM();
+        if (campoHora.value && campoHora.value < campoHora.min) {
+          campoHora.value = '';
+          mostrarToast('Esse horário de hoje já passou. Escolha um horário futuro.', 'warning');
+        }
+      } else {
+        campoHora.removeAttribute('min');
+      }
     }
 
     function abrirFormConsulta(prontuario, membroIdx) {
@@ -2181,7 +2248,7 @@
         `Paciente: ${membro.nome || 'Sem nome'} — Família de ${fam.responsavel} (Prontuário Nº ${fam.prontuario})`;
 
       document.getElementById('consultaStatus').value = existente ? existente.status : 'agendado';
-      document.getElementById('consultaData').value = (existente && existente.data) ? existente.data : hojeISO();
+      document.getElementById('consultaData').value = (existente && existente.data && existente.data >= hojeISO()) ? existente.data : hojeISO();
       document.getElementById('consultaHora').value = (existente && existente.hora) ? existente.hora : '';
       document.getElementById('consultaTipo').value = (existente && existente.tipo) ? existente.tipo : 'Clínica Geral';
       document.getElementById('consultaLocal').value = (existente && existente.local) ? existente.local : (sessaoAtiva.unit || '');
@@ -2214,6 +2281,16 @@
       if (status === 'agendado' && !data) {
         mostrarToast('Informe a data da consulta para marcar como agendada.', 'warning');
         return;
+      }
+      if (status === 'agendado') {
+        if (data < hojeISO()) {
+          mostrarToast('Não é possível agendar consultas em datas passadas.', 'error');
+          return;
+        }
+        if (data === hojeISO() && hora && hora < agoraHHMM()) {
+          mostrarToast('Esse horário de hoje já passou. Escolha um horário futuro.', 'error');
+          return;
+        }
       }
 
       const fam = (JSON.parse(localStorage.getItem('familias')) || []).find(f => f.prontuario === prontuario);
@@ -2472,13 +2549,9 @@
           xml += `          <cpf>${m.cpf || ''}</cpf>\n`;
           xml += `          <sus>${m.sus || ''}</sus>\n`;
           xml += `          <telefone>${m.telefone || ''}</telefone>\n`;
-          xml += `          <hipertenso>${m.hipertenso ? 'sim' : 'nao'}</hipertenso>\n`;
-          xml += `          <diabetico>${m.diabetico ? 'sim' : 'nao'}</diabetico>\n`;
-          xml += `          <gestante>${m.gestante ? 'sim' : 'nao'}</gestante>\n`;
-          xml += `          <vacinaAtrasada>${m.vacinaAtrasada ? 'sim' : 'nao'}</vacinaAtrasada>\n`;
-          xml += `          <tuberculose>${m.tuberculose ? 'sim' : 'nao'}</tuberculose>\n`;
-          xml += `          <hanseniase>${m.hanseniase ? 'sim' : 'nao'}</hanseniase>\n`;
-          xml += `          <deficienteFisico>${m.deficienteFisico ? 'sim' : 'nao'}</deficienteFisico>\n`;
+          CONDICOES_LISTA.forEach(([chave]) => {
+            xml += `          <${chave}>${m[chave] ? 'sim' : 'nao'}</${chave}>\n`;
+          });
           xml += `        </membro>\n`;
         });
         xml += `      </membros>\n`;
@@ -2702,15 +2775,7 @@ ${htmlConteudo}
         : familias.map(f => {
             const esc = s => (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
             const linhasMembros = (f.membros || []).map(m => {
-              const condicoes = [
-                m.hipertenso && 'Hipertenso',
-                m.diabetico && 'Diabético',
-                m.gestante && 'Gestante',
-                m.vacinaAtrasada && 'Vacina Atrasada',
-                m.tuberculose && 'Tuberculose',
-                m.hanseniase && 'Hanseníase',
-                m.deficienteFisico && 'Def. Físico'
-              ].filter(Boolean).join(', ') || '—';
+              const condicoes = CONDICOES_LISTA.filter(([chave]) => m[chave]).map(([, , curto]) => curto).join(', ') || '—';
               const nasc = m.nascimento ? m.nascimento.split('-').reverse().join('/') : '—';
               return `<tr>
                 <td>${esc(m.nome)}</td>
